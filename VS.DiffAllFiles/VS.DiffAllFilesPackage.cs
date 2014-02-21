@@ -36,9 +36,6 @@ namespace DansKingdom.VS_DiffAllFiles
 	[ProvideOptionPage(typeof(DiffAllFilesSettings), "Diff All Files", "General", 0, 0, true)]
     public sealed class VS_DiffAllFilesPackage : Package
     {
-		// Settings window instance to use. We only want to allow one settings window open at a time.
-		private SettingsWindow _settingsWindow = null;
-
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -64,47 +61,9 @@ namespace DansKingdom.VS_DiffAllFiles
             Debug.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
 
-            // Add our command handlers for menu (commands must exist in the .vsct file)
-            OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if ( null != mcs )
-            {
-                // Create the command for the menu item.
-                CommandID menuCommandID = new CommandID(GuidList.guidVS_DiffAllFilesCmdSet, (int)PkgCmdIDList.cmdidDiffAllFilesSettings);
-                MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID );
-                mcs.AddCommand( menuItem );
-            }
-
 			// Save a handle to the Settings for this package.
 			DiffAllFilesSettings.Settings = GetDialogPage(typeof(DiffAllFilesSettings)) as DiffAllFilesSettings;
         }
         #endregion
-
-        /// <summary>
-        /// This function is the callback used to execute a command when the a menu item is clicked.
-        /// See the Initialize method to see how the menu item is associated to this function using
-        /// the OleMenuCommandService service and the MenuCommand class.
-        /// </summary>
-        private void MenuItemCallback(object sender, EventArgs e)
-        {
-			// If the Settings Window is not already open, create and show it.
-			// We do this so that there is only ever one Settings window open at a time.
-			if (_settingsWindow == null)
-			{
-				_settingsWindow = new SettingsWindow();
-				_settingsWindow.Closed += _settingsWindow_Closed;
-				_settingsWindow.Show();
-			}
-
-			// Make sure the Settings Window is in the foreground.
-			_settingsWindow.Activate();
-		}
-
-		private void _settingsWindow_Closed(object sender, EventArgs e)
-		{
-			// Record that the Settings window was closed.
-			_settingsWindow.Closed -= _settingsWindow_Closed;
-			_settingsWindow = null;
-		}
-
     }
 }
