@@ -19,23 +19,27 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 	/// <summary>
 	/// Interaction logic for PendingChangesDiffAllControl.xaml
 	/// </summary>
-	public partial class PendingChangesDiffAllControl : UserControl
+	public partial class PendingChangesControl : UserControl
 	{
-		public PendingChangesDiffAllControl()
+		private PendingChangesSection _parentSection = null;
+
+		public PendingChangesControl(PendingChangesSection parentSection)
 		{
 			InitializeComponent();
+			_parentSection = parentSection;
+			this.DataContext = _parentSection;
 		}
 
-		/// <summary>
-		/// Parent section.
-		/// </summary>
-		public PendingChangesDiffAllSection ParentSection
-		{
-			get { return (PendingChangesDiffAllSection)GetValue(ParentSectionProperty); }
-			set { SetValue(ParentSectionProperty, value); }
-		}
-		public static readonly DependencyProperty ParentSectionProperty =
-			DependencyProperty.Register("ParentSection", typeof(PendingChangesDiffAllSection), typeof(PendingChangesDiffAllControl));
+		///// <summary>
+		///// Parent section.
+		///// </summary>
+		//public PendingChangesSection ParentSection
+		//{
+		//	get { return (PendingChangesSection)GetValue(ParentSectionProperty); }
+		//	private set { SetValue(ParentSectionProperty, value); }
+		//}
+		//public static readonly DependencyProperty ParentSectionProperty =
+		//	DependencyProperty.Register("ParentSection", typeof(PendingChangesSection), typeof(PendingChangesControl));
 
 		/// <summary>
 		/// Handles the Click event of the btnDiffAllFiles control.
@@ -64,7 +68,7 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffIncludedFiles_Click(object sender, RoutedEventArgs e)
 		{
-			await ParentSection.CompareIncludedPendingChanges();
+			await _parentSection.CompareIncludedPendingChanges();
 		}
 
 		/// <summary>

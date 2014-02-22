@@ -151,17 +151,15 @@
     <Compile Include="Code\DiffAllFilesSettings.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Code\DiffAllFilesSettingsPageControl.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="Code\DiffAllFilesSettingsPageControl.xaml.cs">
+      <DependentUpon>DiffAllFilesSettingsPageControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Code\DiffAllFilesSettingsPageControl.Designer.cs">
-      <DependentUpon>DiffAllFilesSettingsPageControl.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Code\IDiffAllFilesSection.cs" />
     <Compile Include="Code\PackageHelper.cs" />
-    <Compile Include="Code\PendingChangesDiffAllControl.xaml.cs">
-      <DependentUpon>PendingChangesDiffAllControl.xaml</DependentUpon>
+    <Compile Include="Code\PendingChangesControl.xaml.cs">
+      <DependentUpon>PendingChangesControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Code\PendingChangesDiffAllSection.cs" />
+    <Compile Include="Code\PendingChangesSection.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -174,9 +172,6 @@
     <Compile Include="PkgCmdID.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Code\DiffAllFilesSettingsPageControl.resx">
-      <DependentUpon>DiffAllFilesSettingsPageControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -207,7 +202,11 @@
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Code\PendingChangesDiffAllControl.xaml">
+    <Page Include="Code\DiffAllFilesSettingsPageControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Code\PendingChangesControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

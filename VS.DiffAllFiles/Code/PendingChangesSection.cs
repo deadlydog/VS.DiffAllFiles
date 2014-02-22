@@ -17,34 +17,41 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 	/// <summary>
 	/// Selected file info section.
 	/// </summary>
-	[TeamExplorerSection(PendingChangesDiffAllSection.SectionId, TeamExplorerPageIds.PendingChanges, 35)]
-	public class PendingChangesDiffAllSection : TeamExplorerBaseSection
+	[TeamExplorerSection(PendingChangesSection.SectionId, TeamExplorerPageIds.PendingChanges, 35)]
+	public class PendingChangesSection : TeamExplorerBaseSection, IDiffAllFilesSection
 	{
-		#region Members
+		#region Notify Property Changed
+		/// <summary>
+		/// Inherited event from INotifyPropertyChanged.
+		/// </summary>
+		public event PropertyChangedEventHandler PropertyChanged;
 
-		public const string SectionId = "D7792573-517F-4B52-898C-CA28E7BDE37E";
-
+		/// <summary>
+		/// Fires the PropertyChanged event of INotifyPropertyChanged with the given property name.
+		/// </summary>
+		/// <param name="propertyName">The name of the property to fire the event against</param>
+		public void NotifyPropertyChanged(string propertyName)
+		{
+			if (PropertyChanged != null)
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
 		#endregion
 
 		/// <summary>
-		/// Constructor.
+		/// The unique ID of this section.
 		/// </summary>
-		public PendingChangesDiffAllSection()
+		public const string SectionId = "D7792573-517F-4B52-898C-CA28E7BDE37E";
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PendingChangesSection"/> class.
+		/// </summary>
+		public PendingChangesSection()
 			: base()
 		{
 			this.Title = "Diff All Files";
 			this.IsExpanded = true;
 			this.IsBusy = false;
-			this.SectionContent = new PendingChangesDiffAllControl();
-			this.View.ParentSection = this;
-		}
-
-		/// <summary>
-		/// Get the view.
-		/// </summary>
-		protected PendingChangesDiffAllControl View
-		{
-			get { return this.SectionContent as PendingChangesDiffAllControl; }
+			this.SectionContent = new PendingChangesControl(this);
 		}
 
 		/// <summary>
@@ -54,13 +61,10 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		{
 			base.Initialize(sender, e);
 
-			// Find the Pending Changes extensibility service and sign up for
-			// property change notifications
-			IPendingChangesExt pcExt = this.GetService<IPendingChangesExt>();
-			if (pcExt != null)
-			{
-				pcExt.PropertyChanged += pcExt_PropertyChanged;
-			}
+			// Find the Pending Changes extensibility service and sign up for property change notifications.
+			var pendingChangesExtensibility = this.GetService<IPendingChangesExt>();
+			if (pendingChangesExtensibility != null)
+				pendingChangesExtensibility.PropertyChanged += pendingChangesExtensibility_PropertyChanged;
 		}
 
 		/// <summary>
@@ -68,11 +72,9 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		/// </summary>
 		public override void Dispose()
 		{
-			IPendingChangesExt pcExt = this.GetService<IPendingChangesExt>();
-			if (pcExt != null)
-			{
-				pcExt.PropertyChanged -= pcExt_PropertyChanged;
-			}
+			var pendingChangesExtensibility = this.GetService<IPendingChangesExt>();
+			if (pendingChangesExtensibility != null)
+				pendingChangesExtensibility.PropertyChanged -= pendingChangesExtensibility_PropertyChanged;
 
 			base.Dispose();
 		}
@@ -80,10 +82,11 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		/// <summary>
 		/// Pending Changes Extensibility PropertyChanged event handler.
 		/// </summary>
-		private void pcExt_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		private void pendingChangesExtensibility_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
 			{
+				case "SelectedExcludedItems":
 				case "SelectedIncludedItems":
 					Refresh();
 					break;
@@ -133,8 +136,8 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 			var fileTypesConfiguredToUseExternalDiffTool = DiffAllFilesHelper.FileTypesWithExplicitDiffToolConfigured;
 
 			// Get a handle to the settings to use.
-			var settings = DiffAllFilesSettings.Settings;
-
+			var settings = DiffAllFilesSettings.CurrentSettings;
+			
 			// Save the list of pending changes before looping through them.
 			// Only grab the files that are not on the list of file extensions to ignore.
 			var pendingChanges = GetService<IPendingChangesExt>();
@@ -167,17 +170,30 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 				// Else this file type is not explicitly configured, so use the default built-in Visual Studio diff tool.
 				else
 				{
-					// Perform the diff using the VS API method to ensure the diff window opens in this instance of VS.
-					Difference.VisualDiffItems(pendingChange.VersionControlServer, new DiffItemPendingChangeBase(pendingChange),
-						new DiffItemLocalFile(pendingChange.LocalItem, pendingChange.Encoding, pendingChange.CreationDate, false), settings.CompareFilesOneAtATime);
-
-					// We are likely opening several diff windows, so make sure they don't just replace one another in the Preview Tab.
-					if (PackageHelper.IsCommandAvailable("Window.KeepTabOpen"))
-						dte2.ExecuteCommand("Window.KeepTabOpen");
+					// If we want to diff the files one by one we cannot do it asynchronously, as it will use a modal window which needs access to the GUI.
+					if (settings.CompareFilesOneAtATime)
+						RunVisualDiff(pendingChange, settings, dte2);
+					// Else diff all of the files asynchronously.
+					else
+					{
+						var change = pendingChange;
+						await Task.Run(() => RunVisualDiff(change, settings, dte2)).ConfigureAwait(true);
+					}
 				}
 			}
 
 			this.IsBusy = false;
+		}
+
+		private void RunVisualDiff(PendingChange pendingChange, DiffAllFilesSettings settings, DTE2 dte2)
+		{
+			// Perform the diff using the VS API method to ensure the diff window opens in this instance of VS.
+			Difference.VisualDiffItems(pendingChange.VersionControlServer, new DiffItemPendingChangeBase(pendingChange),
+				new DiffItemLocalFile(pendingChange.LocalItem, pendingChange.Encoding, pendingChange.CreationDate, false), settings.CompareFilesOneAtATime);
+
+			// We are likely opening several diff windows, so make sure they don't just replace one another in the Preview Tab.
+			if (PackageHelper.IsCommandAvailable("Window.KeepTabOpen"))
+				dte2.ExecuteCommand("Window.KeepTabOpen");
 		}
 
 		///// <summary>
@@ -323,5 +339,26 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		//	set { m_encoding = value; RaisePropertyChanged("Encoding"); }
 		//}
 		//private string m_encoding = String.Empty;
+
+
+		public bool IsViewAllFilesEnabled
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool IsViewSelectedFilesEnabled
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool IsViewIncludedFilesEnabled
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public bool IsViewExcludedFilesEnabled
+		{
+			get { throw new NotImplementedException(); }
+		}
 	}
 }

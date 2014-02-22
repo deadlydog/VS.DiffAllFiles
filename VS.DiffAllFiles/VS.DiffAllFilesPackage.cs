@@ -62,8 +62,8 @@ namespace DansKingdom.VS_DiffAllFiles
             Debug.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
 
-			// Save a handle to the Settings for this package.
-			DiffAllFilesSettings.Settings = GetDialogPage(typeof(DiffAllFilesSettings)) as DiffAllFilesSettings;
+			// Load the current settings for this package and save a handle to them.
+			DiffAllFilesSettings.CurrentSettings = GetDialogPage(typeof(DiffAllFilesSettings)) as DiffAllFilesSettings;
         }
         #endregion
     }
