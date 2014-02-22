@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,14 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 				return false;
 
 			return command.IsAvailable;
+		}
+
+		/// <summary>
+		/// Gets the full path to TF.exe.
+		/// </summary>
+		public static string VisualStudioExecutablePath
+		{
+			get { return System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName; }
 		}
 	}
 }

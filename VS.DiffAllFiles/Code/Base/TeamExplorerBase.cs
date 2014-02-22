@@ -2,6 +2,9 @@
 * Copyright (c) Microsoft Corporation. All rights reserved. This code released
 * under the terms of the Microsoft Limited Public License (MS-LPL).
 */
+
+// Base files' code obtained from http://code.msdn.microsoft.com/windowsdesktop/Extending-Explorer-in-9dccd594/view/Reviews
+
 using System;
 using System.ComponentModel;
 using System.Diagnostics;

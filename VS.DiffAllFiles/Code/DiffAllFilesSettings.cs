@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Shell;
 namespace DansKingdom.VS_DiffAllFiles.Code
 {
 	[ClassInterface(ClassInterfaceType.AutoDual)]
-	[CLSCompliant(false), ComVisible(true)]
+	[Guid("1D9ECCF3-5D2F-4112-9B25-264596873DC9")]	// Special guid to tell it that this is a custom Options dialog page, not the built-in grid dialog page.
 	public class DiffAllFilesSettings : DialogPage
 	{
 		/// <summary>
@@ -16,30 +16,77 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		/// </summary>
 		public static DiffAllFilesSettings Settings { get; set; }
 
-		[Category("Diff All Files Category")]
-		[DisplayName("File Extensions To Ignore")]
-		[Description("Files with these extensions will not be compared.")]
-		public List<string> FileExtensionsToIgnore { get; set; }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DiffAllFilesSettings"/> class.
+		/// </summary>
+		public DiffAllFilesSettings()
+		{
+			ResetSettings();
+		}
 
-		[Category("Diff All Files Category")]
-		[DisplayName("Compare Files Not Changed")]
-		[Description("If files that are checked out, but not actually changed should be compared.")]
-		public bool CompareItemsNotChanged { get; set; }
+		/// <summary>
+		/// Should be overridden to reset settings to their default values.
+		/// </summary>
+		public override void ResetSettings()
+		{
+			base.ResetSettings();
 
-		[Category("Diff All Files Category")]
-		[DisplayName("Compare New Files")]
-		[Description("If files being added to source control should be compared.")]
-		public bool CompareNewItems { get; set; }
+			// Specify the default values for all of the properties.
+			FileExtensionsToIgnoreList = new List<string>() { "exe", "bmp", "gif", "jpg", "jpeg", "png", "raw", "tif", "tiff" };
+			CompareFilesNotChanged = true;
+			CompareNewFiles = true;
+			CompareDeletedFiles = true;
+			CompareFilesOneAtATime = true;
+		}
 
-		[Category("Diff All Files Category")]
-		[DisplayName("Compare Deleted Files")]
-		[Description("If files being deleted from source control should be compared.")]
-		public bool CompareDeletedItems { get; set; }
+		/// <summary>
+		/// Get / Set if new files being added to source control should be compared.
+		/// </summary>
+		public bool CompareNewFiles { get; set; }
 
-		[Category("Diff All Files Category")]
-		[DisplayName("Try To Compare Files One At A Time")]
-		[Description("If we should try and launch the diff application one file at a time, or all files at once. This may or may not work depending on your selected diff application.")]
-		public bool CompareOneAtATime { get { return _compareOneAtATime; } set { _compareOneAtATime = value; } }
-		private bool _compareOneAtATime = false;
+		/// <summary>
+		/// Get / Set if files being deleted from source control should be compared.
+		/// </summary>
+		public bool CompareDeletedFiles { get; set; }
+
+		/// <summary>
+		/// Get / Set if files whose contents have not been changed should be compared.
+		/// </summary>
+		public bool CompareFilesNotChanged { get; set; }
+
+		/// <summary>
+		/// Get / Set if we should try and compare files one at a time, rather than launching the diff tool for all files at once.
+		/// </summary>
+		public bool CompareFilesOneAtATime { get; set; }
+
+		/// <summary>
+		/// Get / Set the list of file extensions to not compare.
+		/// </summary>
+		public List<string> FileExtensionsToIgnoreList { get; set; }
+
+		/// <summary>
+		/// Get / Set the list of file extensions to ignore as a comma separated string.
+		/// </summary>
+		public string FileExtensionsToIgnore
+		{
+			get { return string.Join(",", FileExtensionsToIgnoreList.ToArray()); }
+			set
+			{
+				FileExtensionsToIgnoreList.Clear();
+				if (value != null)
+					FileExtensionsToIgnoreList = value.Split(',').ToList();
+
+				// Remove any empty entries (i.e. the string ended with a comma).
+				FileExtensionsToIgnoreList.RemoveAll(string.IsNullOrWhiteSpace);
+			}
+		}
+
+		/// <summary>
+		/// Gets the window that is used as the user interface of the dialog page.
+		/// </summary>
+		protected override System.Windows.Forms.IWin32Window Window
+		{
+			get { return new DiffAllFilesSettingsPageControl(); }
+		}
 	}
 }

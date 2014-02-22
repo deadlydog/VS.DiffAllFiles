@@ -104,8 +104,6 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 			// Set the Busy flag while we work.
 			this.IsBusy = true;
 
-			DiffAllFilesSettings.Settings.CompareOneAtATime = true;
-
 			// Get a handle to the Automation Model that we can use to interact with the VS IDE.
 			var dte2 = PackageHelper.DTE2;
 			if (dte2 == null)
@@ -124,42 +122,59 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 			//if (versionControlServer == null) return;
 
 			// Use the TFS Configured Diff tool for this version of Visual Studio.
-			var tfFilePath = Path.Combine(Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName), "TF.exe");
+			var tfFilePath = DiffAllFilesHelper.TfFilePath;
 			if (!File.Exists(tfFilePath))
 			{
 				ShowNotification(string.Format("Could not locate TF.exe. Expected to find it at '{0}'.", tfFilePath), NotificationType.Error);
 				return;
 			}
 
+			// Get all of the file types that are configured to use an external diff tool.
+			var fileTypesConfiguredToUseExternalDiffTool = DiffAllFilesHelper.FileTypesWithExplicitDiffToolConfigured;
+
+			// Get a handle to the settings to use.
+			var settings = DiffAllFilesSettings.Settings;
+
 			// Save the list of pending changes before looping through them.
 			// Only grab the files that are not on the list of file extensions to ignore.
 			var pendingChanges = GetService<IPendingChangesExt>();
 			if (pendingChanges == null) return;
-			var includedItemsList = pendingChanges.IncludedChanges.Where(p => !DiffAllFilesSettings.Settings.FileExtensionsToIgnore.Contains(System.IO.Path.GetExtension(p.LocalOrServerItem))).ToList();
-			//var includedItemsList = pendingChanges.IncludedChanges.ToList();
+			var includedItemsList = pendingChanges.IncludedChanges.Where(p => !settings.FileExtensionsToIgnore.Contains(System.IO.Path.GetExtension(p.LocalOrServerItem).TrimStart('.'))).ToList();
 
 			// Loop through and diff each of the pending changes.
-			foreach (var pendingChangeItem in includedItemsList)
+			foreach (var pendingChange in includedItemsList)
 			{
-				var pendingChange = pendingChangeItem;
+				// If this file type is configured to use an external diff tool.
+				if (fileTypesConfiguredToUseExternalDiffTool.Contains(Path.GetExtension(pendingChange.LocalOrServerItem)) ||
+					fileTypesConfiguredToUseExternalDiffTool.Contains(".*"))
+				{
+					// Launch the configured diff tool to diff this file.
+					var diffProcess = new System.Diagnostics.Process
+					{
+						StartInfo =
+						{
+							FileName = tfFilePath,
+							Arguments = string.Format("diff \"{0}\"", pendingChange.LocalOrServerItem),
+							CreateNoWindow = true,
+							UseShellExecute = false
+						}
+					};
+					diffProcess.Start();
 
-				Difference.VisualDiffItems(pendingChange.VersionControlServer, new DiffItemPendingChangeBase(pendingChange),
-					new DiffItemLocalFile(pendingChange.LocalItem, pendingChange.Encoding, pendingChange.CreationDate, false), false);
+					if (settings.CompareFilesOneAtATime)
+						diffProcess.WaitForExit();
+				}
+				// Else this file type is not explicitly configured, so use the default built-in Visual Studio diff tool.
+				else
+				{
+					// Perform the diff using the VS API method to ensure the diff window opens in this instance of VS.
+					Difference.VisualDiffItems(pendingChange.VersionControlServer, new DiffItemPendingChangeBase(pendingChange),
+						new DiffItemLocalFile(pendingChange.LocalItem, pendingChange.Encoding, pendingChange.CreationDate, false), settings.CompareFilesOneAtATime);
 
-				if (PackageHelper.IsCommandAvailable("Window.KeepTabOpen"))
-					dte2.ExecuteCommand("Window.KeepTabOpen");
-
-				//Difference.VisualDiffFiles(pendingChange.VersionControlServer, pendingChange.ServerItem, VersionSpec.Latest, pendingChange.LocalItem, null);
-
-				//var diffProcess = new System.Diagnostics.Process();
-				//diffProcess.StartInfo.FileName = tfFilePath;
-				//diffProcess.StartInfo.Arguments = string.Format("diff \"{0}\"", pendingChange.LocalOrServerItem);
-				//diffProcess.StartInfo.CreateNoWindow = true;
-				//diffProcess.StartInfo.UseShellExecute = false;
-				//diffProcess.Start();
-
-				//if (DiffAllFilesSettings.CompareOneAtATime)
-				//	diffProcess.WaitForExit(10000);
+					// We are likely opening several diff windows, so make sure they don't just replace one another in the Preview Tab.
+					if (PackageHelper.IsCommandAvailable("Window.KeepTabOpen"))
+						dte2.ExecuteCommand("Window.KeepTabOpen");
+				}
 			}
 
 			this.IsBusy = false;

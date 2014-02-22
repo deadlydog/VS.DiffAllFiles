@@ -30,10 +30,11 @@ namespace DansKingdom.VS_DiffAllFiles
     // This attribute is used to register the information needed to show this package
     // in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
-    // This attribute is needed to let the shell know that this package exposes some menus.
-    [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(GuidList.guidVS_DiffAllFilesPkgString)]
+	// Add our DiffAllFilesSettings class to the Tools -> Options menu.
 	[ProvideOptionPage(typeof(DiffAllFilesSettings), "Diff All Files", "General", 0, 0, true)]
+	// Auto Load our assembly even when no solution is open (by using the Microsoft.VisualStudio.VSConstants.UICONTEXT_NoSolution guid).
+	[ProvideAutoLoad("ADFC4E64-0397-11D1-9F4E-00A0C911004F")]
     public sealed class VS_DiffAllFilesPackage : Package
     {
         /// <summary>
