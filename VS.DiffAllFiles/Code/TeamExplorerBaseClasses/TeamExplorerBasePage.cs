@@ -4,9 +4,10 @@
 */
 using System;
 using System.ComponentModel;
+using DansKingdom.VS_DiffAllFiles.Code.TeamExplorerBaseClasses;
 using Microsoft.TeamFoundation.Controls;
 
-namespace DansKingdom.VS_DiffAllFiles.Code.Base
+namespace DansKingdom.VS_DiffAllFiles.Code.TeamExplorerBaseClasses
 {
     /// <summary>
     /// Team Explorer page base class.

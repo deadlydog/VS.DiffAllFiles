@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
+using DansKingdom.VS_DiffAllFiles.Code.DiffAllFilesBaseClasses;
 using Microsoft.VisualStudio.Shell;
 
-namespace DansKingdom.VS_DiffAllFiles.Code
+namespace DansKingdom.VS_DiffAllFiles.Code.Settings
 {
 	[ClassInterface(ClassInterfaceType.AutoDual)]
 	[Guid("1D9ECCF3-5D2F-4112-9B25-264596873DC9")]	// Special guid to tell it that this is a custom Options dialog page, not the built-in grid dialog page.
@@ -38,16 +38,20 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		/// </summary>
 		public DiffAllFilesSettings()
 		{
-			ResetSettings();
+			// Initialize Global Settings.
+			ResetGlobalSettings();
+
+			// Initialize Per-Window Settings.
+			PendingChangesCompareVersionValue = CompareVersion.WorkspaceVersion.Value;
 		}
 
-		/// <summary>
-		/// Should be overridden to reset settings to their default values.
-		/// </summary>
-		public override void ResetSettings()
-		{
-			base.ResetSettings();
+		#region Global Extension Settings
 
+		/// <summary>
+		/// Resets all of the extensions Global settings to their default values.
+		/// </summary>
+		private void ResetGlobalSettings()
+		{
 			// Specify the default values for all of the properties.
 			FileExtensionsToIgnoreList = new List<string>() { "exe", "bmp", "gif", "jpg", "jpeg", "png", "raw", "tif", "tiff" };
 			CompareFilesNotChanged = true;
@@ -113,6 +117,38 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 			}
 		}
 
+		#endregion
+
+		#region Per-Window Settings
+
+		// Any time a change is made to a Per-Window setting we save the changes immediately, so that we can always restore these settings with the values they had last.
+		// This should work properly since the Tools -> Options window is modal, so Global and Per-Window settings cannot be modified at the same time.
+
+		// We have to use CompareVersion.Values because CompareVersion is a class that the DialogPage does not know how to save, so we save the int enum value.
+
+		/// <summary>
+		/// The version to compare against when in the Pending Changes window.
+		/// </summary>
+		public CompareVersion.Values PendingChangesCompareVersionValue
+		{
+			get { return _pendingChangesCompareVersionValue; }
+			set { _pendingChangesCompareVersionValue = value; SaveSettingsToStorage(); NotifyPropertyChanged("PendingChangesCompareVersionValue"); NotifyPropertyChanged("PendingChangesCompareVersion"); }
+		}
+		private CompareVersion.Values _pendingChangesCompareVersionValue = CompareVersion.Values.PreviousVersion;
+		
+		public CompareVersion PendingChangesCompareVersion
+		{
+			get { return CompareVersion.GetCompareVersionFromValue(PendingChangesCompareVersionValue); }
+			set { PendingChangesCompareVersionValue = value.Value; }
+		}
+
+		
+
+
+		#endregion
+
+		#region Overridden Functions
+
 		/// <summary>
 		/// Gets the Windows Presentation Foundation (WPF) child element to be hosted inside the Options dialog page.
 		/// </summary>
@@ -121,5 +157,16 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		{
 			get { return new DiffAllFilesSettingsPageControl(this); }
 		}
+
+		/// <summary>
+		/// Should be overridden to reset settings to their default values.
+		/// </summary>
+		public override void ResetSettings()
+		{
+			ResetGlobalSettings();
+			base.ResetSettings();
+		}
+
+		#endregion
 	}
 }

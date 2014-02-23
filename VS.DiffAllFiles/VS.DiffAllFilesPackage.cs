@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
 using DansKingdom.VS_DiffAllFiles.Code;
+using DansKingdom.VS_DiffAllFiles.Code.Settings;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.Win32;
@@ -24,11 +25,9 @@ namespace DansKingdom.VS_DiffAllFiles
     /// IVsPackage interface and uses the registration attributes defined in the framework to 
     /// register itself and its components with the shell.
     /// </summary>
-    // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is
-    // a package.
+    // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is a package.
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    // This attribute is used to register the information needed to show this package
-    // in the Help/About dialog of Visual Studio.
+    // This attribute is used to register the information needed to show this package in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [Guid(GuidList.guidVS_DiffAllFilesPkgString)]
 	// Add our DiffAllFilesSettings class to the Tools -> Options menu.

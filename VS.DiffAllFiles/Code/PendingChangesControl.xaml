@@ -11,13 +11,18 @@
 			<Setter Property="Padding" Value="5,2,5,2" />
 			<Setter Property="Margin" Value="0,2,5,2" />
 		</Style>
+		<Style TargetType="{x:Type ComboBox}">
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+			<Setter Property="Margin" Value="0,2,5,2" />
+		</Style>
 	</UserControl.Resources>
 	<Grid>
 		<WrapPanel Orientation="Horizontal">
-			<Button x:Name="btnDiffAllFiles" Content="All Files" Click="btnDiffAllFiles_Click" />
-			<Button x:Name="btnDiffSelectedFiles" Content="Selected" Click="btnDiffSelectedFiles_Click" />
-			<Button x:Name="btnDiffIncludedFiles" Content="Included" Click="btnDiffIncludedFiles_Click" />
-			<Button x:Name="btnDiffExcludedFiles" Content="Excluded" Click="btnDiffExcludedFiles_Click" />
+			<Button Content="All Files" IsEnabled="{Binding Path=IsViewAllFilesEnabled}" Click="btnDiffAllFiles_Click" ToolTip="Compare all files." />
+			<Button Content="Selected" IsEnabled="{Binding Path=IsViewSelectedFilesEnabled}" Click="btnDiffSelectedFiles_Click" ToolTip="Compare only selected files." />
+			<Button Content="Included" IsEnabled="{Binding Path=IsViewIncludedFilesEnabled}" Click="btnDiffIncludedFiles_Click" ToolTip="Compare only included files." />
+			<Button Content="Excluded" IsEnabled="{Binding Path=IsViewExcludedFilesEnabled}" Click="btnDiffExcludedFiles_Click" ToolTip="Compare only excluded files." />
+			<ComboBox x:Name="cboCompareVersions" ItemsSource="{Binding Path=CompareVersions}" SelectedItem="{Binding Path=Settings.PendingChangesCompareVersion}" Width="130" ToolTip="The file version to compare the local changes against." />
 		</WrapPanel>
 	</Grid>
 </UserControl>

@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using DansKingdom.VS_DiffAllFiles.Code.Base;
+using DansKingdom.VS_DiffAllFiles.Code.TeamExplorerBaseClasses;
 
 namespace DansKingdom.VS_DiffAllFiles.Code
 {
@@ -21,25 +21,19 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 	/// </summary>
 	public partial class PendingChangesControl : UserControl
 	{
-		private PendingChangesSection _parentSection = null;
+		private PendingChangesSection _pendingChangesViewModel = null;
 
-		public PendingChangesControl(PendingChangesSection parentSection)
+		public PendingChangesControl(PendingChangesSection pendingChangesSection)
 		{
 			InitializeComponent();
-			_parentSection = parentSection;
-			this.DataContext = _parentSection;
-		}
 
-		///// <summary>
-		///// Parent section.
-		///// </summary>
-		//public PendingChangesSection ParentSection
-		//{
-		//	get { return (PendingChangesSection)GetValue(ParentSectionProperty); }
-		//	private set { SetValue(ParentSectionProperty, value); }
-		//}
-		//public static readonly DependencyProperty ParentSectionProperty =
-		//	DependencyProperty.Register("ParentSection", typeof(PendingChangesSection), typeof(PendingChangesControl));
+			// Get a handle to the View Model to use and set it up as the default binding data context.
+			_pendingChangesViewModel = pendingChangesSection;
+			this.DataContext = _pendingChangesViewModel;
+
+			// Restore what the Compare Version used was.
+			
+		}
 
 		/// <summary>
 		/// Handles the Click event of the btnDiffAllFiles control.
@@ -68,7 +62,7 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffIncludedFiles_Click(object sender, RoutedEventArgs e)
 		{
-			await _parentSection.CompareIncludedPendingChanges();
+			await _pendingChangesViewModel.CompareIncludedPendingChanges();
 		}
 
 		/// <summary>

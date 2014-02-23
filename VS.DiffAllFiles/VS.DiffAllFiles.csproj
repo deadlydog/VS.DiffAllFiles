@@ -142,19 +142,21 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\Base\TeamExplorerBase.cs" />
-    <Compile Include="Code\Base\TeamExplorerBaseNavigationItem.cs" />
-    <Compile Include="Code\Base\TeamExplorerBaseNavigationLink.cs" />
-    <Compile Include="Code\Base\TeamExplorerBasePage.cs" />
-    <Compile Include="Code\Base\TeamExplorerBaseSection.cs" />
+    <Compile Include="Code\DiffAllFilesBaseClasses\DiffAllFilesSectionBase.cs" />
+    <Compile Include="Code\TeamExplorerBaseClasses\TeamExplorerBase.cs" />
+    <Compile Include="Code\TeamExplorerBaseClasses\TeamExplorerBaseNavigationItem.cs" />
+    <Compile Include="Code\TeamExplorerBaseClasses\TeamExplorerBaseNavigationLink.cs" />
+    <Compile Include="Code\TeamExplorerBaseClasses\TeamExplorerBasePage.cs" />
+    <Compile Include="Code\TeamExplorerBaseClasses\TeamExplorerBaseSection.cs" />
+    <Compile Include="Code\DiffAllFilesBaseClasses\CompareVersion.cs" />
     <Compile Include="Code\DiffAllFilesHelper.cs" />
-    <Compile Include="Code\DiffAllFilesSettings.cs">
+    <Compile Include="Code\Settings\DiffAllFilesSettings.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Code\DiffAllFilesSettingsPageControl.xaml.cs">
+    <Compile Include="Code\Settings\DiffAllFilesSettingsPageControl.xaml.cs">
       <DependentUpon>DiffAllFilesSettingsPageControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Code\IDiffAllFilesSection.cs" />
+    <Compile Include="Code\DiffAllFilesBaseClasses\IDiffAllFilesSection.cs" />
     <Compile Include="Code\PackageHelper.cs" />
     <Compile Include="Code\PendingChangesControl.xaml.cs">
       <DependentUpon>PendingChangesControl.xaml</DependentUpon>
@@ -202,7 +204,7 @@
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Code\DiffAllFilesSettingsPageControl.xaml">
+    <Page Include="Code\Settings\DiffAllFilesSettingsPageControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DansKingdom.VS_DiffAllFiles.Code.Base;
+using DansKingdom.VS_DiffAllFiles.Code.DiffAllFilesBaseClasses;
+using DansKingdom.VS_DiffAllFiles.Code.Settings;
+using DansKingdom.VS_DiffAllFiles.Code.TeamExplorerBaseClasses;
 using DansKingdom.VS_DiffAllFiles.Code;
 using EnvDTE;
 using EnvDTE80;
@@ -18,29 +21,17 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 	/// Selected file info section.
 	/// </summary>
 	[TeamExplorerSection(PendingChangesSection.SectionId, TeamExplorerPageIds.PendingChanges, 35)]
-	public class PendingChangesSection : TeamExplorerBaseSection, IDiffAllFilesSection
+	public class PendingChangesSection : DiffAllFilesSectionBase
 	{
-		#region Notify Property Changed
-		/// <summary>
-		/// Inherited event from INotifyPropertyChanged.
-		/// </summary>
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		/// <summary>
-		/// Fires the PropertyChanged event of INotifyPropertyChanged with the given property name.
-		/// </summary>
-		/// <param name="propertyName">The name of the property to fire the event against</param>
-		public void NotifyPropertyChanged(string propertyName)
-		{
-			if (PropertyChanged != null)
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-		}
-		#endregion
-
 		/// <summary>
 		/// The unique ID of this section.
 		/// </summary>
 		public const string SectionId = "D7792573-517F-4B52-898C-CA28E7BDE37E";
+
+		/// <summary>
+		/// Handle to the Pending Changes Extensibility service.
+		/// </summary>
+		private IPendingChangesExt _pendingChangesService = null;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PendingChangesSection"/> class.
@@ -61,10 +52,15 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		{
 			base.Initialize(sender, e);
 
-			// Find the Pending Changes extensibility service and sign up for property change notifications.
-			var pendingChangesExtensibility = this.GetService<IPendingChangesExt>();
-			if (pendingChangesExtensibility != null)
-				pendingChangesExtensibility.PropertyChanged += pendingChangesExtensibility_PropertyChanged;
+			// Find the Pending Changes extensibility service and save a handle to it.
+			_pendingChangesService = this.GetService<IPendingChangesExt>();
+
+			// Register for property change notifications on the Pending Changes window.
+			if (_pendingChangesService != null)
+				_pendingChangesService.PropertyChanged += pendingChangesService_PropertyChanged;
+
+			// Make sure the Version Control is available on load.
+			UpdateIfVersionControlIsAvailable();
 		}
 
 		/// <summary>
@@ -72,9 +68,9 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		/// </summary>
 		public override void Dispose()
 		{
-			var pendingChangesExtensibility = this.GetService<IPendingChangesExt>();
-			if (pendingChangesExtensibility != null)
-				pendingChangesExtensibility.PropertyChanged -= pendingChangesExtensibility_PropertyChanged;
+			if (_pendingChangesService != null)
+				_pendingChangesService.PropertyChanged -= pendingChangesService_PropertyChanged;
+			_pendingChangesService = null;
 
 			base.Dispose();
 		}
@@ -82,13 +78,26 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		/// <summary>
 		/// Pending Changes Extensibility PropertyChanged event handler.
 		/// </summary>
-		private void pendingChangesExtensibility_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		private void pendingChangesService_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
 			{
+				case "IncludedChanges":
+				case "FilteredIncludedChanges":
+					NotifyPropertyChanged("IsViewIncludedFilesEnabled");
+					NotifyPropertyChanged("IsViewAllFilesEnabled");
+					break;
+
+				case "ExcludedChanges":
+				case "FilteredExcludedChanges":
+					NotifyPropertyChanged("IsViewExcludedFilesEnabled");
+					NotifyPropertyChanged("IsViewAllFilesEnabled");
+					break;
+
 				case "SelectedExcludedItems":
 				case "SelectedIncludedItems":
-					Refresh();
+					NotifyPropertyChanged("IsViewSelectedFilesEnabled");
+					NotifyPropertyChanged("IsViewAllFilesEnabled");
 					break;
 			}
 		}
@@ -99,13 +108,44 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		public async override void Refresh()
 		{
 			base.Refresh();
-			//await RefreshAsync();
+
+			// Make sure we can still connect to the version control.
+			await UpdateIfVersionControlIsAvailable();
+		}
+
+		private async Task UpdateIfVersionControlIsAvailable()
+		{
+			IsVersionControlServiceAvailable = await GetIfVersionControlServiceIsAvailable();
+		}
+
+		private async Task<bool> GetIfVersionControlServiceIsAvailable()
+		{
+			// Make sure we have a connection to Team Foundation.
+			ITeamFoundationContext context = this.CurrentContext;
+			if (context == null || !context.HasCollection)
+				return false;
+
+			// Make sure we can access the Version Control Server.
+			VersionControlServer versionControlService = null;
+			await Task.Run(() => versionControlService = context.TeamProjectCollection.GetService<VersionControlServer>());
+			if (versionControlService == null)
+				return false;
+
+			// If we got this far we could connect to Version Control.
+			return true;
 		}
 
 		public async Task CompareIncludedPendingChanges()
 		{
 			// Set the Busy flag while we work.
 			this.IsBusy = true;
+
+			// If we don't have a handle to the Pending Changes service, display an error and exit.
+			if (_pendingChangesService == null)
+			{
+				ShowNotification("Could not get a handle to the Pending Changes window.", NotificationType.Error);
+				return;
+			}
 
 			// Get a handle to the Automation Model that we can use to interact with the VS IDE.
 			var dte2 = PackageHelper.DTE2;
@@ -114,15 +154,6 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 				ShowNotification("Could not get a handle to the DTE2 (the Visual Studio IDE Automation Model).", NotificationType.Error);
 				return;
 			}
-
-			//// Make sure we have a connection to Team Foundation.
-			//ITeamFoundationContext context = this.CurrentContext;
-			//if (context == null || !context.HasCollection) return;
-			
-			//// Make sure we can access the Version Control Server.
-			//VersionControlServer versionControlServer = null;
-			//await Task.Run(() => versionControlServer = context.TeamProjectCollection.GetService<VersionControlServer>());
-			//if (versionControlServer == null) return;
 
 			// Use the TFS Configured Diff tool for this version of Visual Studio.
 			var tfFilePath = DiffAllFilesHelper.TfFilePath;
@@ -137,27 +168,49 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 
 			// Get a handle to the settings to use.
 			var settings = DiffAllFilesSettings.CurrentSettings;
-			
-			// Save the list of pending changes before looping through them.
-			// Only grab the files that are not on the list of file extensions to ignore.
-			var pendingChanges = GetService<IPendingChangesExt>();
-			if (pendingChanges == null) return;
-			var includedItemsList = pendingChanges.IncludedChanges.Where(p => !settings.FileExtensionsToIgnore.Contains(System.IO.Path.GetExtension(p.LocalOrServerItem).TrimStart('.'))).ToList();
+
+			// Save the list of pending changes to a new list before looping through them.
+			// If there are filtered included changes, only grab them, else grab all of the included changes.
+			var includedItemsList = _pendingChangesService.FilteredIncludedChanges.Length > 0 ? _pendingChangesService.FilteredIncludedChanges.ToList() : _pendingChangesService.IncludedChanges.ToList();
+			includedItemsList = includedItemsList.Where(p =>
+			{
+				// Only grab the files that are not on the list of file extensions to ignore.
+				var extension = System.IO.Path.GetExtension(p.LocalOrServerItem);
+				return extension != null && !settings.FileExtensionsToIgnore.Contains(extension.TrimStart('.'));
+			}).ToList();
 
 			// Loop through and diff each of the pending changes.
 			foreach (var pendingChange in includedItemsList)
 			{
+				// If we are supposed to skip new files and this is a new file, then skip it and move on to the next change.
+				if (!settings.CompareNewFiles &&
+					(pendingChange.ChangeType == ChangeType.Add || pendingChange.ChangeType == ChangeType.Branch || pendingChange.ChangeType == ChangeType.Undelete))
+					continue;
+
+				// If we are supposed to skip deleted files and this is a deleted file, then skip it and move on to the next change.
+				if (!settings.CompareDeletedFiles &&
+					(pendingChange.ChangeType == ChangeType.Delete || pendingChange.ChangeType == ChangeType.SourceRename))
+					continue;
+
+				// If we are supposed to skip files whose contents have not changed and this file's contents have not changed, skip it and move on to the next change.
+				// TOODO: Implement this.
+
 				// If this file type is configured to use an external diff tool.
 				if (fileTypesConfiguredToUseExternalDiffTool.Contains(Path.GetExtension(pendingChange.LocalOrServerItem)) ||
 					fileTypesConfiguredToUseExternalDiffTool.Contains(".*"))
 				{
+					// Get the string representation the TF.exe expects for the version to compare against.
+					string versionSpecToCompareAgainst = (settings.PendingChangesCompareVersion == CompareVersion.LatestVersion)
+						? "T"	// Comapre against Latest version.
+						: string.Format("W\"{0}\";\"{1}\"", _pendingChangesService.Workspace.Name, _pendingChangesService.Workspace.OwnerName);	// Compare against Workspace version.
+
 					// Launch the configured diff tool to diff this file.
 					var diffProcess = new System.Diagnostics.Process
 					{
 						StartInfo =
 						{
 							FileName = tfFilePath,
-							Arguments = string.Format("diff \"{0}\"", pendingChange.LocalOrServerItem),
+							Arguments = string.Format("diff \"{0}\" /version:{1}", pendingChange.LocalOrServerItem, versionSpecToCompareAgainst),
 							CreateNoWindow = true,
 							UseShellExecute = false
 						}
@@ -187,9 +240,16 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 
 		private void RunVisualDiff(PendingChange pendingChange, DiffAllFilesSettings settings, DTE2 dte2)
 		{
+			// Get the Source version to compare the local changes against.
+			IDiffItem source = (settings.PendingChangesCompareVersion == CompareVersion.LatestVersion)
+				? (IDiffItem)new DiffItemVersionedFile(pendingChange.VersionControlServer, pendingChange.ServerItem, VersionSpec.Latest)
+				: new DiffItemPendingChangeBase(pendingChange);
+
 			// Perform the diff using the VS API method to ensure the diff window opens in this instance of VS.
-			Difference.VisualDiffItems(pendingChange.VersionControlServer, new DiffItemPendingChangeBase(pendingChange),
-				new DiffItemLocalFile(pendingChange.LocalItem, pendingChange.Encoding, pendingChange.CreationDate, false), settings.CompareFilesOneAtATime);
+			Difference.VisualDiffItems(pendingChange.VersionControlServer,
+				source,
+				new DiffItemLocalFile(pendingChange.LocalItem, pendingChange.Encoding, pendingChange.CreationDate, false),
+				settings.CompareFilesOneAtATime);
 
 			// We are likely opening several diff windows, so make sure they don't just replace one another in the Preview Tab.
 			if (PackageHelper.IsCommandAvailable("Window.KeepTabOpen"))
@@ -223,7 +283,7 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		//		{
 		//			selectedItem = pendingChanges.SelectedIncludedItems[0];
 		//		}
-				
+
 		//		if (selectedItem != null && selectedItem.IsPendingChange && selectedItem.PendingChange != null)
 		//		{
 		//			// Check for rename
@@ -341,24 +401,45 @@ namespace DansKingdom.VS_DiffAllFiles.Code
 		//private string m_encoding = String.Empty;
 
 
-		public bool IsViewAllFilesEnabled
+		public override bool IsViewAllFilesEnabled
 		{
-			get { throw new NotImplementedException(); }
+			get { return IsViewIncludedFilesEnabled || IsViewExcludedFilesEnabled; }
 		}
 
-		public bool IsViewSelectedFilesEnabled
+		public override bool IsViewSelectedFilesEnabled
 		{
-			get { throw new NotImplementedException(); }
+			get { return IsVersionControlServiceAvailable && ((_pendingChangesService.SelectedIncludedItems.Length + _pendingChangesService.SelectedExcludedItems.Length) > 0); }
 		}
 
-		public bool IsViewIncludedFilesEnabled
+		public override bool IsViewIncludedFilesEnabled
 		{
-			get { throw new NotImplementedException(); }
+			get { return IsVersionControlServiceAvailable && ((_pendingChangesService.IncludedChanges.Length + _pendingChangesService.FilteredIncludedChanges.Length) > 0); }
 		}
 
-		public bool IsViewExcludedFilesEnabled
+		public override bool IsViewExcludedFilesEnabled
 		{
-			get { throw new NotImplementedException(); }
+			get { return IsVersionControlServiceAvailable && ((_pendingChangesService.ExcludedChanges.Length + _pendingChangesService.FilteredExcludedChanges.Length) > 0); }
 		}
+
+		public override IEnumerable<CompareVersion> CompareVersions
+		{
+			get { return _compareVersions; }
+		}
+		private readonly List<CompareVersion> _compareVersions = new List<CompareVersion> {CompareVersion.WorkspaceVersion, CompareVersion.LatestVersion};
+
+		public override bool IsVersionControlServiceAvailable
+		{
+			get { return _isVersionControlAvailable; }
+			set
+			{
+				_isVersionControlAvailable = value;
+				NotifyPropertyChanged("IsVersionControlServiceAvailable");
+				NotifyPropertyChanged("IsViewAllFilesEnabled");
+				NotifyPropertyChanged("IsViewSelectedFilesEnabled");
+				NotifyPropertyChanged("IsViewIncludedFilesEnabled");
+				NotifyPropertyChanged("IsViewExcludedFilesEnabled");
+			}
+		}
+		private bool _isVersionControlAvailable = false;
 	}
 }

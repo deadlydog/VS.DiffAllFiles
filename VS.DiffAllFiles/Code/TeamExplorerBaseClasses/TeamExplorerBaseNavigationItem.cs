@@ -4,25 +4,26 @@
 */
 using System;
 using System.ComponentModel.Composition;
+using DansKingdom.VS_DiffAllFiles.Code.TeamExplorerBaseClasses;
 using Microsoft.TeamFoundation.Controls;
 using Microsoft.VisualStudio.Shell;
 
-namespace DansKingdom.VS_DiffAllFiles.Code.Base
+namespace DansKingdom.VS_DiffAllFiles.Code.TeamExplorerBaseClasses
 {
     /// <summary>
-    /// Team Explorer base navigation link class.
+    /// Team Explorer base navigation item class.
     /// </summary>
-    public class TeamExplorerBaseNavigationLink : TeamExplorerBase, ITeamExplorerNavigationLink
+    public class TeamExplorerBaseNavigationItem : TeamExplorerBase, ITeamExplorerNavigationItem
     {
         /// <summary>
         /// Constructor.
         /// </summary>
-        public TeamExplorerBaseNavigationLink(IServiceProvider serviceProvider)
+        public TeamExplorerBaseNavigationItem(IServiceProvider serviceProvider)
         {
             this.ServiceProvider = serviceProvider;
         }
 
-        #region ITeamExplorerNavigationLink
+        #region ITeamExplorerNavigationItem
 
         /// <summary>
         /// Get/set the item text.
@@ -35,14 +36,14 @@ namespace DansKingdom.VS_DiffAllFiles.Code.Base
         private string m_text;
 
         /// <summary>
-        /// Get/set the IsEnabled flag.
+        /// Get/set the item image.
         /// </summary>
-        public bool IsEnabled
+        public System.Drawing.Image Image
         {
-            get { return m_isEnabled; }
-            set { m_isEnabled = value; RaisePropertyChanged("IsEnabled"); }
+            get { return m_image; }
+            set { m_image = value; RaisePropertyChanged("Image"); }
         }
-        private bool m_isEnabled = true;
+        private System.Drawing.Image m_image;
 
         /// <summary>
         /// Get/set the IsVisible flag.
@@ -55,14 +56,14 @@ namespace DansKingdom.VS_DiffAllFiles.Code.Base
         private bool m_isVisible = true;
 
         /// <summary>
-        /// Invalidate the link state.
+        /// Invalidate the item state.
         /// </summary>
         public virtual void Invalidate()
         {
         }
 
         /// <summary>
-        /// Execute the link action.
+        /// Execute the item action.
         /// </summary>
         public virtual void Execute()
         {
