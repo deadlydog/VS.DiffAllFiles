@@ -1,14 +1,17 @@
-﻿// Guids.cs
-// MUST match guids.h
-using System;
+﻿using System;
 
-namespace DansKingdom.VS_DiffAllFiles
+namespace VS_DiffAllFiles
 {
-    static class GuidList
+    static class Guids
     {
-        public const string guidVS_DiffAllFilesPkgString = "a58ff1ca-c661-4826-8d42-435179126ddf";
-        public const string guidVS_DiffAllFilesCmdSetString = "06fbfdc5-2f78-480a-adfc-76403b0dd132";
+		// VS 2013 Guids
+        public const string guidVS_DiffAllFiles_VS2013PkgString = "039e6c26-071e-40ea-a890-ac3e7601e83d";
+        public const string guidVS_DiffAllFiles_VS2013CmdSetString = "452d92f1-4676-4351-8d1e-68c8a1f7e203";
+        public static readonly Guid guidVS_DiffAllFiles_VS2013CmdSet = new Guid(guidVS_DiffAllFiles_VS2013CmdSetString);
 
-        public static readonly Guid guidVS_DiffAllFilesCmdSet = new Guid(guidVS_DiffAllFilesCmdSetString);
+		// VS 2012 Guids
+		public const string guidVS_DiffAllFiles_VS2012PkgString = "18CCAB91-171E-4A41-B273-67C56B1312A9";
+		public const string guidVS_DiffAllFiles_VS2012CmdSetString = "4BC6419D-2C2C-4B6F-B5A1-276EC5CA9D2D";
+		public static readonly Guid guidVS_DiffAllFiles_VS2012CmdSet = new Guid(guidVS_DiffAllFiles_VS2012CmdSetString);
     };
 }

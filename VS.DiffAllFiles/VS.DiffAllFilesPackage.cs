@@ -1,19 +1,10 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.ComponentModel.Design;
-using DansKingdom.VS_DiffAllFiles.Code;
-using DansKingdom.VS_DiffAllFiles.Code.Settings;
-using Microsoft.VisualStudio.Settings;
-using Microsoft.VisualStudio.Shell.Settings;
-using Microsoft.Win32;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.OLE.Interop;
+using VS_DiffAllFiles.Settings;
 using Microsoft.VisualStudio.Shell;
 
-namespace DansKingdom.VS_DiffAllFiles
+namespace VS_DiffAllFiles
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
@@ -29,7 +20,11 @@ namespace DansKingdom.VS_DiffAllFiles
     [PackageRegistration(UseManagedResourcesOnly = true)]
     // This attribute is used to register the information needed to show this package in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
-    [Guid(GuidList.guidVS_DiffAllFilesPkgString)]
+#if (VS2012)
+	[Guid(Guids.guidVS_DiffAllFiles_VS2012PkgString)]
+#else
+	[Guid(Guids.guidVS_DiffAllFiles_VS2013PkgString)]
+#endif
 	// Add our DiffAllFilesSettings class to the Tools -> Options menu.
 	[ProvideOptionPage(typeof(DiffAllFilesSettings), "Diff All Files", "General", 0, 0, true)]
 	// Auto Load our assembly even when no solution is open (by using the Microsoft.VisualStudio.VSConstants.UICONTEXT_NoSolution guid).

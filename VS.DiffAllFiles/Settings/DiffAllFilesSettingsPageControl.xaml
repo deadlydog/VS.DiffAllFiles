@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="VS_DiffAllFiles.Settings.DiffAllFilesSettingsPageControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="400" LostKeyboardFocus="UserControl_LostKeyboardFocus">
+	<UserControl.Resources>
+		<Style TargetType="{x:Type Button}">
+			<Setter Property="Padding" Value="5" />
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+		</Style>
+		<Style TargetType="{x:Type CheckBox}">
+			<Setter Property="Margin" Value="0,2,0,0" />
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+		</Style>
+		<Style TargetType="{x:Type TextBox}">
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+		</Style>
+	</UserControl.Resources>
+	
+	<Grid>
+		<StackPanel Orientation="Vertical">
+			<GroupBox Header="Diff All Files Settings" Padding="2">
+				<StackPanel Orientation="Vertical">
+					<CheckBox Content="Compare new files" IsChecked="{Binding Path=CompareNewFiles}" ToolTip="If files being added to source control should be compared." />
+					<CheckBox Content="Compare deleted files" IsChecked="{Binding Path=CompareDeletedFiles}" ToolTip="If files being deleted from source control should be compared." />
+					<CheckBox Content="Compare files whose contents have not changed" IsChecked="{Binding Path=CompareFilesNotChanged}" ToolTip="If files that are checked out, but not actually changed should be compared." />
+					<CheckBox Content="Compare files one at a time" IsChecked="{Binding Path=CompareFilesOneAtATime}">
+						<CheckBox.ToolTip>
+							<TextBlock>
+								If we should launch the diff tool one file at a time, or all files at once.<LineBreak />
+								Experience may differ depending on your selected diff tool.
+							</TextBlock>
+						</CheckBox.ToolTip>
+					</CheckBox>
+
+					<Label Content="File Extensions To Ignore (e.g. exe, bmp, png)" Margin="0,5,0,0" />
+					<TextBox x:Name="txtFileExtensionsToIgnore" Text="{Binding Path=FileExtensionsToIgnore}" HorizontalAlignment="Stretch" ToolTip="File types to not compare." />
+					<Button Content="Restore Default Settings" HorizontalAlignment="Right" Margin="0,5,0,0" Click="btnRestoreDefaultSettings_Click" />
+				</StackPanel>
+			</GroupBox>
+			<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10,0,0">
+					<Button Content="Configure Diff Tool" HorizontalAlignment="Left" Click="btnConfigureDiffTool_Click" ToolTip="Select the tool to use for comparing different types of files." />
+					<TextBlock VerticalAlignment="Center" Margin="5,0,0,0">
+						<Hyperlink NavigateUri="http://blogs.msdn.com/b/jmanning/archive/2006/02/20/diff-merge-configuration-in-team-foundation-common-command-and-argument-values.aspx" RequestNavigate="Hyperlink_RequestNavigate">View common diff tool configurations</Hyperlink>
+					</TextBlock>
+			</StackPanel>
+		</StackPanel>
+	</Grid>
+</UserControl>
