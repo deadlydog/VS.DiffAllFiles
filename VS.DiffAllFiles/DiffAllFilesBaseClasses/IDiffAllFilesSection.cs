@@ -28,6 +28,16 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		bool IsViewExcludedFilesEnabled { get; }
 
 		/// <summary>
+		/// Gets if the View Included Files command should be visible.
+		/// </summary>
+		bool IsViewIncludedFilesVisible { get; }
+
+		/// <summary>
+		/// Gets if the View Excluded Files command should be visible.
+		/// </summary>
+		bool IsViewExcludedFilesVisible { get; }
+
+		/// <summary>
 		/// The versions of files to compare against.
 		/// </summary>
 		IEnumerable<CompareVersion> CompareVersions { get; }

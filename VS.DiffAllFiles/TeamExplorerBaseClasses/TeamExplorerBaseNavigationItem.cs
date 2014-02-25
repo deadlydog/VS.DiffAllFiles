@@ -31,7 +31,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public string Text
         {
             get { return m_text; }
-            set { m_text = value; RaisePropertyChanged("Text"); }
+            set { m_text = value; NotifyPropertyChanged("Text"); }
         }
         private string m_text;
 
@@ -41,7 +41,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public System.Drawing.Image Image
         {
             get { return m_image; }
-            set { m_image = value; RaisePropertyChanged("Image"); }
+            set { m_image = value; NotifyPropertyChanged("Image"); }
         }
         private System.Drawing.Image m_image;
 
@@ -51,7 +51,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public bool IsVisible
         {
             get { return m_isVisible; }
-            set { m_isVisible = value; RaisePropertyChanged("IsVisible"); }
+            set { m_isVisible = value; NotifyPropertyChanged("IsVisible"); }
         }
         private bool m_isVisible = true;
 

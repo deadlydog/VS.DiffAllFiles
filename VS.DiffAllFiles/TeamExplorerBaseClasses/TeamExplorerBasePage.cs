@@ -45,7 +45,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public string Title
         {
             get { return m_title; }
-            set { m_title = value; RaisePropertyChanged("Title"); }
+            set { m_title = value; NotifyPropertyChanged("Title"); }
         }
         private string m_title;
 
@@ -55,7 +55,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public object PageContent
         {
             get { return m_pageContent; }
-            set { m_pageContent = value; RaisePropertyChanged("PageContent"); }
+            set { m_pageContent = value; NotifyPropertyChanged("PageContent"); }
         }
         private object m_pageContent;
 
@@ -65,7 +65,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public bool IsBusy
         {
             get { return m_isBusy; }
-            set { m_isBusy = value; RaisePropertyChanged("IsBusy"); }
+            set { m_isBusy = value; NotifyPropertyChanged("IsBusy"); }
         }
         private bool m_isBusy = false;
 

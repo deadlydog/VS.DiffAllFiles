@@ -37,7 +37,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public string Title
         {
             get { return m_title; }
-            set { m_title = value; RaisePropertyChanged("Title"); }
+            set { m_title = value; NotifyPropertyChanged("Title"); }
         }
         private string m_title;
 
@@ -47,7 +47,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public object SectionContent
         {
             get { return m_sectionContent; }
-            set { m_sectionContent = value; RaisePropertyChanged("SectionContent"); }
+            set { m_sectionContent = value; NotifyPropertyChanged("SectionContent"); }
         }
         private object m_sectionContent;
 
@@ -57,7 +57,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public bool IsVisible
         {
             get { return m_isVisible; }
-            set { m_isVisible = value; RaisePropertyChanged("IsVisible"); }
+            set { m_isVisible = value; NotifyPropertyChanged("IsVisible"); }
         }
         private bool m_isVisible = true;
 
@@ -67,7 +67,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public bool IsExpanded
         {
             get { return m_isExpanded; }
-            set { m_isExpanded = value; RaisePropertyChanged("IsExpanded"); }
+            set { m_isExpanded = value; NotifyPropertyChanged("IsExpanded"); }
         }
         private bool m_isExpanded = true;
 
@@ -77,7 +77,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public bool IsBusy
         {
             get { return m_isBusy; }
-            set { m_isBusy = value; RaisePropertyChanged("IsBusy"); }
+            set { m_isBusy = value; NotifyPropertyChanged("IsBusy"); }
         }
         private bool m_isBusy = false;
 

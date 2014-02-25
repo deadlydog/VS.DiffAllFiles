@@ -31,7 +31,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public string Text
         {
             get { return m_text; }
-            set { m_text = value; RaisePropertyChanged("Text"); }
+            set { m_text = value; NotifyPropertyChanged("Text"); }
         }
         private string m_text;
 
@@ -41,7 +41,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public bool IsEnabled
         {
             get { return m_isEnabled; }
-            set { m_isEnabled = value; RaisePropertyChanged("IsEnabled"); }
+            set { m_isEnabled = value; NotifyPropertyChanged("IsEnabled"); }
         }
         private bool m_isEnabled = true;
 
@@ -51,7 +51,7 @@ namespace VS_DiffAllFiles.TeamExplorerBaseClasses
         public bool IsVisible
         {
             get { return m_isVisible; }
-            set { m_isVisible = value; RaisePropertyChanged("IsVisible"); }
+            set { m_isVisible = value; NotifyPropertyChanged("IsVisible"); }
         }
         private bool m_isVisible = true;
 

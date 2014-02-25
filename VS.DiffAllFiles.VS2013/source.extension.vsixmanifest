@@ -2,8 +2,10 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
 		<Identity Id="039e6c26-071e-40ea-a890-ac3e7601e83d" Version="1.0" Language="en-US" Publisher="DansKingdom" />
-		<DisplayName>Diff All Files for VS 2013</DisplayName>
-		<Description xml:space="preserve">Quickly and easily compare (i.e. diff) all files with pending changes, in a shelveset, or in a changeset. Supports both TFS and Git.</Description>
+		<DisplayName>Diff All Files for VS2013</DisplayName>
+		<Description xml:space="preserve">Quickly and easily compare all files with pending changes, in a shelveset, or in a changeset to see what has changed. Supports both TFS and Git.</Description>
+		<Icon>FilesFromShared\Resources\PackageIcon.png</Icon>
+		<Tags>Diff, Compare, All, Many, Multiple, Files, Items, TFS, TF, Team Foundation, TFVC, Git, Changes, Shelveset, Changeset, Commit</Tags>
 	</Metadata>
 	<Installation InstalledByMsi="false">
 		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0]" />

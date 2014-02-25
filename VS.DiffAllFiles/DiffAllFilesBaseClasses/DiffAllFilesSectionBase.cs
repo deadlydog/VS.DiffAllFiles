@@ -8,23 +8,6 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 {
 	public abstract class DiffAllFilesSectionBase : TeamExplorerBaseSection, IDiffAllFilesSection
 	{
-		#region Notify Property Changed
-		/// <summary>
-		/// Inherited event from INotifyPropertyChanged.
-		/// </summary>
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		/// <summary>
-		/// Fires the PropertyChanged event of INotifyPropertyChanged with the given property name.
-		/// </summary>
-		/// <param name="propertyName">The name of the property to fire the event against</param>
-		public void NotifyPropertyChanged(string propertyName)
-		{
-			if (PropertyChanged != null)
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-		}
-		#endregion
-
 		#region IDiffAllFilesSection Properties
 		/// <summary>
 		/// Gets if the View All Files command should be enabled.
@@ -45,6 +28,18 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Gets if the View Excluded Files command should be enabled.
 		/// </summary>
 		public abstract bool IsViewExcludedFilesEnabled { get; }
+
+		/// <summary>
+		/// Gets if the View Included Files command should be visible.
+		/// </summary>
+		/// <exception cref="System.NotImplementedException"></exception>
+		public abstract bool IsViewIncludedFilesVisible { get; }
+
+		/// <summary>
+		/// Gets if the View Excluded Files command should be visible.
+		/// </summary>
+		/// <exception cref="System.NotImplementedException"></exception>
+		public abstract bool IsViewExcludedFilesVisible { get; }
 
 		/// <summary>
 		/// The versions of files to compare against.

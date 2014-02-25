@@ -26,8 +26,11 @@ namespace VS_DiffAllFiles
 		/// <summary>
 		/// The unique ID of this section.
 		/// </summary>
-		public const string SectionId = "D7792573-517F-4B52-898C-CA28E7BDE37E";
-
+#if (VS2012)
+		public const string SectionId = "BEAB0FD4-357F-4F4A-868E-8E39FA8B78C9";
+#else
+		public const string SectionId = "8C62E1EB-19E1-4652-BD83-817179EF82CD";
+#endif
 		/// <summary>
 		/// Handle to the Pending Changes Extensibility service.
 		/// </summary>
@@ -135,7 +138,7 @@ namespace VS_DiffAllFiles
 			return true;
 		}
 
-		public async Task CompareIncludedPendingChanges()
+		public async Task ComparePendingChanges(ItemStatusTypesToCompare itemStatusTypesToCompare)
 		{
 			// Set the Busy flag while we work.
 			this.IsBusy = true;
@@ -169,18 +172,39 @@ namespace VS_DiffAllFiles
 			// Get a handle to the settings to use.
 			var settings = DiffAllFilesSettings.CurrentSettings;
 
-			// Save the list of pending changes to a new list before looping through them.
-			// If there are filtered included changes, only grab them, else grab all of the included changes.
-			var includedItemsList = _pendingChangesService.FilteredIncludedChanges.Length > 0 ? _pendingChangesService.FilteredIncludedChanges.ToList() : _pendingChangesService.IncludedChanges.ToList();
-			includedItemsList = includedItemsList.Where(p =>
+			// Save the list of pending changes to compare to a new list before looping through them.
+			List<PendingChange> itemsToCompare = null;
+			switch (itemStatusTypesToCompare)
 			{
-				// Only grab the files that are not on the list of file extensions to ignore.
+				case ItemStatusTypesToCompare.All: 
+					itemsToCompare = _pendingChangesService.IncludedChanges.Union(_pendingChangesService.ExcludedChanges).ToList(); 
+					break;
+
+				case ItemStatusTypesToCompare.Selected: 
+					itemsToCompare = _pendingChangesService.SelectedIncludedItems.Where(i => i.IsPendingChange).Select(i => i.PendingChange)
+						.Union(_pendingChangesService.SelectedExcludedItems.Where(i => i.IsPendingChange).Select(i => i.PendingChange)).ToList(); 
+					break;
+
+				case ItemStatusTypesToCompare.Included:
+					// If there are filtered included changes, only grab them, else grab all of the included changes.
+					itemsToCompare = _pendingChangesService.FilteredIncludedChanges.Length > 0 ? _pendingChangesService.FilteredIncludedChanges.ToList() : _pendingChangesService.IncludedChanges.ToList();
+					break;
+
+				case ItemStatusTypesToCompare.Excluded:
+					// If there are filtered excluded changes, only grab them, else grab all of the excluded changes.
+					itemsToCompare = _pendingChangesService.FilteredExcludedChanges.Length > 0 ? _pendingChangesService.FilteredExcludedChanges.ToList() : _pendingChangesService.ExcludedChanges.ToList();
+					break;
+			}
+
+			// Only grab the files that are not on the list of file extensions to ignore.
+			itemsToCompare = itemsToCompare.Where(p =>
+			{
 				var extension = System.IO.Path.GetExtension(p.LocalOrServerItem);
 				return extension != null && !settings.FileExtensionsToIgnore.Contains(extension.TrimStart('.'));
 			}).ToList();
 
 			// Loop through and diff each of the pending changes.
-			foreach (var pendingChange in includedItemsList)
+			foreach (var pendingChange in itemsToCompare)
 			{
 				// If we are supposed to skip new files and this is a new file, then skip it and move on to the next change.
 				if (!settings.CompareNewFiles &&
@@ -419,6 +443,16 @@ namespace VS_DiffAllFiles
 		public override bool IsViewExcludedFilesEnabled
 		{
 			get { return IsVersionControlServiceAvailable && ((_pendingChangesService.ExcludedChanges.Length + _pendingChangesService.FilteredExcludedChanges.Length) > 0); }
+		}
+
+		public override bool IsViewIncludedFilesVisible
+		{
+			get { return true; }
+		}
+
+		public override bool IsViewExcludedFilesVisible
+		{
+			get { return true; }
 		}
 
 		public override IEnumerable<CompareVersion> CompareVersions

@@ -132,9 +132,9 @@
     <value>VS.DiffAllFiles.VS2012</value>
   </data>
   <data name="112" xml:space="preserve">
-    <value>Information about my package</value>
+    <value>Quickly and easily compare all files with pending changes, in a shelveset, or in a changeset to see what has changed. Supports both TFS and Git.</value>
   </data>
   <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\Package.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\VS.DiffAllFiles\Resources\PackageIcon_Small.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

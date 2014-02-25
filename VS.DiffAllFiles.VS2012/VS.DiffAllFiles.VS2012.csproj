@@ -143,6 +143,9 @@
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\IDiffAllFilesSection.cs">
       <Link>FilesFromShared\DiffAllFilesBaseClasses\IDiffAllFilesSection.cs</Link>
     </Compile>
+    <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\ItemStatusTypesToCompare.cs">
+      <Link>FilesFromShared\DiffAllFilesBaseClasses\ItemStatusTypesToCompare.cs</Link>
+    </Compile>
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesHelper.cs">
       <Link>FilesFromShared\DiffAllFilesHelper.cs</Link>
     </Compile>
@@ -202,6 +205,7 @@
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -213,7 +217,13 @@
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Package.ico" />
+    <Content Include="..\VS.DiffAllFiles\Resources\PackageIcon.png">
+      <Link>FilesFromShared\Resources\PackageIcon.png</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\VS.DiffAllFiles\Resources\PackageIcon_Small.ico">
+      <Link>FilesFromShared\Resources\PackageIcon_Small.ico</Link>
+    </Content>
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.dll" />
     <Resource Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.xml" />

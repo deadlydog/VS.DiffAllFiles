@@ -7,7 +7,7 @@
     <ProjectGuid>{992757D4-23CF-434A-802B-6A615706557C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VS.DiffAllFiles</RootNamespace>
+    <RootNamespace>VS_DiffAllFiles</RootNamespace>
     <AssemblyName>VS.DiffAllFiles</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -83,6 +83,7 @@
     <Compile Include="DiffAllFilesBaseClasses\CompareVersion.cs" />
     <Compile Include="DiffAllFilesBaseClasses\DiffAllFilesSectionBase.cs" />
     <Compile Include="DiffAllFilesBaseClasses\IDiffAllFilesSection.cs" />
+    <Compile Include="DiffAllFilesBaseClasses\ItemStatusTypesToCompare.cs" />
     <Compile Include="DiffAllFilesHelper.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="PackageHelper.cs" />
@@ -142,6 +143,10 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\PackageIcon.png" />
+    <Content Include="Resources\PackageIcon_Small.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
