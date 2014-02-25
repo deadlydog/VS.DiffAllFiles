@@ -84,6 +84,7 @@
     <Compile Include="DiffAllFilesBaseClasses\DiffAllFilesSectionBase.cs" />
     <Compile Include="DiffAllFilesBaseClasses\IDiffAllFilesSection.cs" />
     <Compile Include="DiffAllFilesBaseClasses\ItemStatusTypesToCompare.cs" />
+    <Compile Include="DiffAllFilesBaseClasses\TfsDiffAllFilesSectionBase.cs" />
     <Compile Include="DiffAllFilesHelper.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="PackageHelper.cs" />

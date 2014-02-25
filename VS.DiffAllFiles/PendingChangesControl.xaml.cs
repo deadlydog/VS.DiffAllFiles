@@ -26,11 +26,11 @@ namespace VS_DiffAllFiles
 
 		public PendingChangesControl(PendingChangesSection pendingChangesSection)
 		{
+			InitializeComponent();
+
 			// Get a handle to the View Model to use and set it up as the default binding data context.
 			_pendingChangesViewModel = pendingChangesSection;
 			this.DataContext = _pendingChangesViewModel;
-
-			InitializeComponent();
 		}
 
 		/// <summary>
@@ -40,7 +40,9 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffAllFiles_Click(object sender, RoutedEventArgs e)
 		{
+			(sender as Button).IsEnabled = false;
 			await _pendingChangesViewModel.ComparePendingChanges(ItemStatusTypesToCompare.All);
+			(sender as Button).IsEnabled = true;
 		}
 
 		/// <summary>
@@ -50,7 +52,9 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffSelectedFiles_Click(object sender, RoutedEventArgs e)
 		{
+			(sender as Button).IsEnabled = false;
 			await _pendingChangesViewModel.ComparePendingChanges(ItemStatusTypesToCompare.Selected);
+			(sender as Button).IsEnabled = true;
 		}
 
 		/// <summary>
@@ -60,7 +64,9 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffIncludedFiles_Click(object sender, RoutedEventArgs e)
 		{
+			(sender as Button).IsEnabled = false;
 			await _pendingChangesViewModel.ComparePendingChanges(ItemStatusTypesToCompare.Included);
+			(sender as Button).IsEnabled = true;
 		}
 
 		/// <summary>
@@ -70,7 +76,9 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffExcludedFiles_Click(object sender, RoutedEventArgs e)
 		{
+			(sender as Button).IsEnabled = false;
 			await _pendingChangesViewModel.ComparePendingChanges(ItemStatusTypesToCompare.Excluded);
+			(sender as Button).IsEnabled = true;
 		}
 	}
 }

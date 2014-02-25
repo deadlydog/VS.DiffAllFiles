@@ -21,7 +21,7 @@ namespace VS_DiffAllFiles
 	/// Selected file info section.
 	/// </summary>
 	[TeamExplorerSection(PendingChangesSection.SectionId, TeamExplorerPageIds.PendingChanges, 35)]
-	public class PendingChangesSection : DiffAllFilesSectionBase
+	public class PendingChangesSection : TfsDiffAllFilesSectionBase
 	{
 		/// <summary>
 		/// The unique ID of this section.
@@ -63,7 +63,7 @@ namespace VS_DiffAllFiles
 				_pendingChangesService.PropertyChanged += pendingChangesService_PropertyChanged;
 
 			// Make sure the Version Control is available on load.
-			UpdateIfVersionControlIsAvailable();
+			Refresh();
 		}
 
 		/// <summary>
@@ -103,39 +103,6 @@ namespace VS_DiffAllFiles
 					NotifyPropertyChanged("IsViewAllFilesEnabled");
 					break;
 			}
-		}
-
-		/// <summary>
-		/// Refresh override.
-		/// </summary>
-		public async override void Refresh()
-		{
-			base.Refresh();
-
-			// Make sure we can still connect to the version control.
-			await UpdateIfVersionControlIsAvailable();
-		}
-
-		private async Task UpdateIfVersionControlIsAvailable()
-		{
-			IsVersionControlServiceAvailable = await GetIfVersionControlServiceIsAvailable();
-		}
-
-		private async Task<bool> GetIfVersionControlServiceIsAvailable()
-		{
-			// Make sure we have a connection to Team Foundation.
-			ITeamFoundationContext context = this.CurrentContext;
-			if (context == null || !context.HasCollection)
-				return false;
-
-			// Make sure we can access the Version Control Server.
-			VersionControlServer versionControlService = null;
-			await Task.Run(() => versionControlService = context.TeamProjectCollection.GetService<VersionControlServer>());
-			if (versionControlService == null)
-				return false;
-
-			// If we got this far we could connect to Version Control.
-			return true;
 		}
 
 		public async Task ComparePendingChanges(ItemStatusTypesToCompare itemStatusTypesToCompare)

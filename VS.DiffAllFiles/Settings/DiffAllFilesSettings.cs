@@ -132,14 +132,14 @@ namespace VS_DiffAllFiles.Settings
 		public CompareVersion.Values PendingChangesCompareVersionValue
 		{
 			get { return _pendingChangesCompareVersionValue; }
-			set { _pendingChangesCompareVersionValue = value; SaveSettingsToStorage(); NotifyPropertyChanged("PendingChangesCompareVersionValue"); NotifyPropertyChanged("PendingChangesCompareVersion"); }
+			set { _pendingChangesCompareVersionValue = value; NotifyPropertyChanged("PendingChangesCompareVersionValue"); NotifyPropertyChanged("PendingChangesCompareVersion"); }
 		}
 		private CompareVersion.Values _pendingChangesCompareVersionValue = CompareVersion.Values.PreviousVersion;
 		
 		public CompareVersion PendingChangesCompareVersion
 		{
 			get { return CompareVersion.GetCompareVersionFromValue(PendingChangesCompareVersionValue); }
-			set { PendingChangesCompareVersionValue = value.Value; }
+			set { PendingChangesCompareVersionValue = value.Value; SaveSettingsToStorage(); }
 		}
 
 		

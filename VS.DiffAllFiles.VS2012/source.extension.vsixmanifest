@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="9b9064d1-4423-4f2c-b08c-db8d90f07b43" Version="1.0" Language="en-US" Publisher="DansKingdom" />
+		<Identity Id="A37551A5-FE12-445E-B4CD-F8FD62149B27" Version="1.0" Language="en-US" Publisher="DansKingdom" />
 		<DisplayName>Diff All Files for VS2012</DisplayName>
 		<Description xml:space="preserve">Quickly and easily compare all files with pending changes, in a shelveset, or in a changeset to see what has changed. Supports both TFS and Git.</Description>
 		<Icon>FilesFromShared\Resources\PackageIcon.png</Icon>
 		<Tags>Diff, Compare, All, Many, Multiple, Files, Items, TFS, TF, Team Foundation, TFVC, Git, Changes, Shelveset, Changeset, Commit</Tags>
 	</Metadata>
 	<Installation InstalledByMsi="false">
-		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="11.0" />
+		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[11.0]" />
 	</Installation>
 	<Dependencies>
 		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
