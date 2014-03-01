@@ -24,6 +24,8 @@ namespace VS_DiffAllFiles
 	[ProvideOptionPage(typeof(DiffAllFilesSettings), "Diff All Files", "General", 0, 0, true)]
 	// Auto Load our assembly even when no solution is open (by using the Microsoft.VisualStudio.VSConstants.UICONTEXT_NoSolution guid).
 	[ProvideAutoLoad("ADFC4E64-0397-11D1-9F4E-00A0C911004F")]
+	// Include other assemblies in the same directory as this package that this package depends on (e.g. WPF Extended Toolkit, QuickConverter, etc.).
+	[ProvideBindingPath]
     public abstract class VS_DiffAllFilesPackage : Package
     {
         /// <summary>
@@ -33,9 +35,15 @@ namespace VS_DiffAllFiles
         /// not sited yet inside Visual Studio environment. The place to do all the other 
         /// initialization is the Initialize method.
         /// </summary>
-        public VS_DiffAllFilesPackage()
+        protected VS_DiffAllFilesPackage()
         {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
+
+			// Setup Quick Converter.
+			// Add the System namespace so we can use primitive types (i.e. int, etc.).
+			QuickConverter.EquationTokenizer.AddNamespace(typeof(object));
+			// Add the System.Windows namespace so we can use Visibility.Collapsed, etc.
+			QuickConverter.EquationTokenizer.AddNamespace(typeof(System.Windows.Visibility));
         }
 
         /////////////////////////////////////////////////////////////////////////////

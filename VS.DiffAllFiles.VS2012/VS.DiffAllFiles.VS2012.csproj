@@ -66,6 +66,9 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="QuickConverter">
+      <HintPath>..\packages\QuickConverter.0.8.0.0\lib\net40\QuickConverter.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -76,6 +79,24 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="Xceed.Wpf.AvalonDock">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.DataGrid">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="EnvDTE">
@@ -158,12 +179,12 @@
     <Compile Include="..\VS.DiffAllFiles\PackageHelper.cs">
       <Link>FilesFromShared\PackageHelper.cs</Link>
     </Compile>
-    <Compile Include="..\VS.DiffAllFiles\PendingChangesControl.xaml.cs">
-      <Link>FilesFromShared\PendingChangesControl.xaml.cs</Link>
-      <DependentUpon>PendingChangesControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="..\VS.DiffAllFiles\PendingChangesSection.cs">
       <Link>FilesFromShared\PendingChangesSection.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\PendingChangesSectionControl.xaml.cs">
+      <Link>FilesFromShared\PendingChangesSectionControl.xaml.cs</Link>
+      <DependentUpon>PendingChangesSectionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\Settings\DiffAllFilesSettings.cs">
       <Link>FilesFromShared\Settings\DiffAllFilesSettings.cs</Link>
@@ -213,6 +234,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -236,15 +258,13 @@
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Controls.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="..\VS.DiffAllFiles\Settings\DiffAllFilesSettingsPageControl.xaml">
-      <Link>FilesFromShared\Settings\DiffAllFilesSettingsPageControl.xaml</Link>
+    <Page Include="..\VS.DiffAllFiles\PendingChangesSectionControl.xaml">
+      <Link>FilesFromShared\PendingChangesSectionControl.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="..\VS.DiffAllFiles\PendingChangesControl.xaml">
-      <Link>FilesFromShared\PendingChangesControl.xaml</Link>
+    <Page Include="..\VS.DiffAllFiles\Settings\DiffAllFilesSettingsPageControl.xaml">
+      <Link>FilesFromShared\Settings\DiffAllFilesSettingsPageControl.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

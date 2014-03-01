@@ -31,7 +31,13 @@ namespace VS_DiffAllFiles.Settings
 		/// <summary>
 		/// Gets or sets the Current Settings of the package.
 		/// </summary>
-		public static DiffAllFilesSettings CurrentSettings { get; set; }
+		public static DiffAllFilesSettings CurrentSettings { get { return _currentSettings; } set { _currentSettings = value; CurrentSettingsChanged(null, System.EventArgs.Empty); } }
+		private static DiffAllFilesSettings _currentSettings = null;
+
+		/// <summary>
+		/// Fires when the Current Settings instance is changed.
+		/// </summary>
+		public static event System.EventHandler CurrentSettingsChanged = delegate { }; 
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DiffAllFilesSettings"/> class.
@@ -58,6 +64,7 @@ namespace VS_DiffAllFiles.Settings
 			CompareNewFiles = true;
 			CompareDeletedFiles = true;
 			CompareFilesOneAtATime = true;
+			MultipleNumberOfFilesToCompareAtATime = 3;
 		}
 
 		/// <summary>
@@ -77,12 +84,23 @@ namespace VS_DiffAllFiles.Settings
 		/// </summary>
 		public bool CompareFilesNotChanged { get { return _compareFilesNotChanged; } set { _compareFilesNotChanged = value; NotifyPropertyChanged("CompareFilesNotChanged"); } }
 		private bool _compareFilesNotChanged = false;
-
+		 
 		/// <summary>
 		/// Get / Set if we should try and compare files one at a time, rather than launching the diff tool for all files at once.
 		/// </summary>
-		public bool CompareFilesOneAtATime { get { return _compareFilesOneAtATime; } set { _compareFilesOneAtATime = value; NotifyPropertyChanged("CompareFilesOneAtATime"); } }
+		public bool CompareFilesOneAtATime { get { return _compareFilesOneAtATime; } set { _compareFilesOneAtATime = value; NotifyPropertyChanged("CompareFilesOneAtATime"); NotifyPropertyChanged("NumberOfFilesToCompareAtATime"); } }
 		private bool _compareFilesOneAtATime = false;
+
+		/// <summary>
+		/// Get / Set the number of files to try and compare at a time, if not set to compare files one at a time.
+		/// </summary>
+		public int MultipleNumberOfFilesToCompareAtATime { get { return _multipleNumberOfFilesToCompareAtATime; } set { _multipleNumberOfFilesToCompareAtATime = value; NotifyPropertyChanged("MultipleNumberOfFilesToCompareAtATime"); NotifyPropertyChanged("NumberOfFilesToCompareAtATime"); } }
+		private int _multipleNumberOfFilesToCompareAtATime = 0;
+
+		/// <summary>
+		/// Get the number of files to compare at a time.
+		/// </summary>
+		public int NumberOfFilesToCompareAtATime { get { return CompareFilesOneAtATime ? 1 : MultipleNumberOfFilesToCompareAtATime; } }
 
 		/// <summary>
 		/// Get / Set the list of file extensions to not compare.

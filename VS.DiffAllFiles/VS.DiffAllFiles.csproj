@@ -66,6 +66,10 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="QuickConverter, Version=0.8.0.0, Culture=neutral, PublicKeyToken=9c892aa7bc2af2cf, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\QuickConverter.0.8.0.0\lib\net40\QuickConverter.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -78,6 +82,24 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="Xceed.Wpf.AvalonDock">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.DataGrid">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.1.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiffAllFilesBaseClasses\CompareVersion.cs" />
@@ -88,8 +110,8 @@
     <Compile Include="DiffAllFilesHelper.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="PackageHelper.cs" />
-    <Compile Include="PendingChangesControl.xaml.cs">
-      <DependentUpon>PendingChangesControl.xaml</DependentUpon>
+    <Compile Include="PendingChangesSectionControl.xaml.cs">
+      <DependentUpon>PendingChangesSectionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="PendingChangesSection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -107,7 +129,7 @@
     <Compile Include="VS.DiffAllFilesPackage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="PendingChangesControl.xaml">
+    <Page Include="PendingChangesSectionControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -148,6 +170,9 @@
   <ItemGroup>
     <Content Include="Resources\PackageIcon.png" />
     <Content Include="Resources\PackageIcon_Small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

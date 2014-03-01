@@ -20,11 +20,11 @@ namespace VS_DiffAllFiles
 	/// <summary>
 	/// Interaction logic for PendingChangesDiffAllControl.xaml
 	/// </summary>
-	public partial class PendingChangesControl : UserControl
+	public partial class PendingChangesSectionControl : UserControl
 	{
 		private PendingChangesSection _pendingChangesViewModel = null;
 
-		public PendingChangesControl(PendingChangesSection pendingChangesSection)
+		public PendingChangesSectionControl(PendingChangesSection pendingChangesSection)
 		{
 			InitializeComponent();
 
@@ -40,9 +40,7 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffAllFiles_Click(object sender, RoutedEventArgs e)
 		{
-			(sender as Button).IsEnabled = false;
 			await _pendingChangesViewModel.ComparePendingChanges(ItemStatusTypesToCompare.All);
-			(sender as Button).IsEnabled = true;
 		}
 
 		/// <summary>
@@ -52,9 +50,7 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffSelectedFiles_Click(object sender, RoutedEventArgs e)
 		{
-			(sender as Button).IsEnabled = false;
 			await _pendingChangesViewModel.ComparePendingChanges(ItemStatusTypesToCompare.Selected);
-			(sender as Button).IsEnabled = true;
 		}
 
 		/// <summary>
@@ -64,9 +60,7 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffIncludedFiles_Click(object sender, RoutedEventArgs e)
 		{
-			(sender as Button).IsEnabled = false;
 			await _pendingChangesViewModel.ComparePendingChanges(ItemStatusTypesToCompare.Included);
-			(sender as Button).IsEnabled = true;
 		}
 
 		/// <summary>
@@ -76,9 +70,37 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffExcludedFiles_Click(object sender, RoutedEventArgs e)
 		{
-			(sender as Button).IsEnabled = false;
 			await _pendingChangesViewModel.ComparePendingChanges(ItemStatusTypesToCompare.Excluded);
-			(sender as Button).IsEnabled = true;
+		}
+
+		/// <summary>
+		/// Handles the Click event of the btnNextSetOfFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+		private void btnNextSetOfFiles_Click(object sender, RoutedEventArgs e)
+		{
+			_pendingChangesViewModel.CompareNextSetOfFiles();
+		}
+
+		/// <summary>
+		/// Handles the Click event of the btnCancelComparingFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+		private void btnCancelComparingFiles_Click(object sender, RoutedEventArgs e)
+		{
+			_pendingChangesViewModel.Cancel();
+		}
+
+		/// <summary>
+		/// Handles the Click event of the btnCloseAllOpenDiffTools control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+		private void btnCloseAllOpenDiffTools_Click(object sender, RoutedEventArgs e)
+		{
+			
 		}
 	}
 }

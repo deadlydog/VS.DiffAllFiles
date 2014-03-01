@@ -8,37 +8,42 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 	public interface IDiffAllFilesSection : INotifyPropertyChanged
 	{
 		/// <summary>
-		/// Gets if the View All Files command should be enabled.
+		/// Gets if the Compare All Files command should be enabled.
 		/// </summary>
-		bool IsViewAllFilesEnabled { get; }
+		bool IsCompareAllFilesEnabled { get; }
 
 		/// <summary>
-		/// Gets if the View Selected Files command should be enabled.
+		/// Gets if the Compare Selected Files command should be enabled.
 		/// </summary>
-		bool IsViewSelectedFilesEnabled { get; }
+		bool IsCompareSelectedFilesEnabled { get; }
 
 		/// <summary>
-		/// Gets if the View Included Files command should be enabled.
+		/// Gets if one of the commands to compare files is currently running.
 		/// </summary>
-		bool IsViewIncludedFilesEnabled { get; }
+		bool IsRunningCompareFilesCommand { get; }
 
 		/// <summary>
-		/// Gets if the View Excluded Files command should be enabled.
+		/// Gets the total number of files that will be compared.
 		/// </summary>
-		bool IsViewExcludedFilesEnabled { get; }
+		int NumberOfFilesToCompare { get; }
 
 		/// <summary>
-		/// Gets if the View Included Files command should be visible.
+		/// Gets the number of files that have been compared already (that have been launched in the diff tool).
 		/// </summary>
-		bool IsViewIncludedFilesVisible { get; }
+		int NumberOfFilesCompared { get; }
 
 		/// <summary>
-		/// Gets if the View Excluded Files command should be visible.
+		/// Gets a user-friendly message describing how much progress has been made on comparing all of the files.
 		/// </summary>
-		bool IsViewExcludedFilesVisible { get; }
+		string FileComparisonProgressMessage { get; }
 
 		/// <summary>
-		/// The versions of files to compare against.
+		/// Gets a user-friendly label to use for the command used to compare the next set of files.
+		/// </summary>
+		string NextSetOfFilesCommandLabel { get; }
+
+		/// <summary>
+		/// The possible file versions to compare against.
 		/// </summary>
 		IEnumerable<CompareVersion> CompareVersions { get; }
 
@@ -52,5 +57,15 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Gets the Settings to use.
 		/// </summary>
 		DiffAllFilesSettings Settings { get; }
+
+		/// <summary>
+		/// Stop launching any more compare operations.
+		/// </summary>
+		void Cancel();
+
+		/// <summary>
+		/// Launches the diff tool to compare the next set of files in the currently running compare files set.
+		/// </summary>
+		void CompareNextSetOfFiles();
 	}
 }

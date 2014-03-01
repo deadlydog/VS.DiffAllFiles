@@ -26,11 +26,8 @@ namespace VS_DiffAllFiles
 		/// <summary>
 		/// The unique ID of this section.
 		/// </summary>
-#if (VS2012)
-		public const string SectionId = "BEAB0FD4-357F-4F4A-868E-8E39FA8B78C9";
-#else
 		public const string SectionId = "8C62E1EB-19E1-4652-BD83-817179EF82CD";
-#endif
+
 		/// <summary>
 		/// Handle to the Pending Changes Extensibility service.
 		/// </summary>
@@ -39,13 +36,12 @@ namespace VS_DiffAllFiles
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PendingChangesSection"/> class.
 		/// </summary>
-		public PendingChangesSection()
-			: base()
+		public PendingChangesSection() : base()
 		{
 			this.Title = "Diff All Files";
 			this.IsExpanded = true;
 			this.IsBusy = false;
-			this.SectionContent = new PendingChangesControl(this);
+			this.SectionContent = new PendingChangesSectionControl(this);
 		}
 
 		/// <summary>
@@ -87,20 +83,20 @@ namespace VS_DiffAllFiles
 			{
 				case "IncludedChanges":
 				case "FilteredIncludedChanges":
-					NotifyPropertyChanged("IsViewIncludedFilesEnabled");
-					NotifyPropertyChanged("IsViewAllFilesEnabled");
+					NotifyPropertyChanged("IsCompareIncludedFilesEnabled");
+					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
 
 				case "ExcludedChanges":
 				case "FilteredExcludedChanges":
-					NotifyPropertyChanged("IsViewExcludedFilesEnabled");
-					NotifyPropertyChanged("IsViewAllFilesEnabled");
+					NotifyPropertyChanged("IsCompareExcludedFilesEnabled");
+					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
 
 				case "SelectedExcludedItems":
 				case "SelectedIncludedItems":
-					NotifyPropertyChanged("IsViewSelectedFilesEnabled");
-					NotifyPropertyChanged("IsViewAllFilesEnabled");
+					NotifyPropertyChanged("IsCompareSelectedFilesEnabled");
+					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
 			}
 		}
@@ -109,6 +105,9 @@ namespace VS_DiffAllFiles
 		{
 			// Set the Busy flag while we work.
 			this.IsBusy = true;
+
+			// Notify that we are running one of the compare commands.
+			IsRunningCompareFilesCommand = true;
 
 			// If we don't have a handle to the Pending Changes service, display an error and exit.
 			if (_pendingChangesService == null)
@@ -139,7 +138,7 @@ namespace VS_DiffAllFiles
 			// Get a handle to the settings to use.
 			var settings = DiffAllFilesSettings.CurrentSettings;
 
-			// Save the list of pending changes to compare to a new list before looping through them.
+			// Get the list of pending changes to compare.
 			List<PendingChange> itemsToCompare = null;
 			switch (itemStatusTypesToCompare)
 			{
@@ -163,28 +162,33 @@ namespace VS_DiffAllFiles
 					break;
 			}
 
-			// Only grab the files that are not on the list of file extensions to ignore.
+			// Filter out added files if they should be skipped.
+			if (!settings.CompareNewFiles)
+				itemsToCompare = itemsToCompare.Where(p => p.ChangeType != ChangeType.Add && p.ChangeType != ChangeType.Branch && p.ChangeType != ChangeType.Undelete).ToList();
+
+			// Filter out deleted files if they should be skipped.
+			if (!settings.CompareDeletedFiles)
+				itemsToCompare = itemsToCompare.Where(p => p.ChangeType != ChangeType.Delete && p.ChangeType != ChangeType.SourceRename).ToList();
+
+			// Filter out files that are on the list of file extensions to ignore.
 			itemsToCompare = itemsToCompare.Where(p =>
 			{
 				var extension = System.IO.Path.GetExtension(p.LocalOrServerItem);
 				return extension != null && !settings.FileExtensionsToIgnore.Contains(extension.TrimStart('.'));
 			}).ToList();
 
+			// If we are supposed to skip files whose contents have not changed and this file's contents have not changed, skip it and move on to the next change.
+			// TOODO: Implement this.
+
+			// Update the number of files compared, and the number of files to be compared.
+			NumberOfFilesCompared = 0;
+			NumberOfFilesToCompare = itemsToCompare.Count;
+
 			// Loop through and diff each of the pending changes.
 			foreach (var pendingChange in itemsToCompare)
 			{
-				// If we are supposed to skip new files and this is a new file, then skip it and move on to the next change.
-				if (!settings.CompareNewFiles &&
-					(pendingChange.ChangeType == ChangeType.Add || pendingChange.ChangeType == ChangeType.Branch || pendingChange.ChangeType == ChangeType.Undelete))
-					continue;
-
-				// If we are supposed to skip deleted files and this is a deleted file, then skip it and move on to the next change.
-				if (!settings.CompareDeletedFiles &&
-					(pendingChange.ChangeType == ChangeType.Delete || pendingChange.ChangeType == ChangeType.SourceRename))
-					continue;
-
-				// If we are supposed to skip files whose contents have not changed and this file's contents have not changed, skip it and move on to the next change.
-				// TOODO: Implement this.
+				// Increment the number of items that we have compared.
+				NumberOfFilesCompared++;
 
 				// If this file type is configured to use an external diff tool.
 				if (fileTypesConfiguredToUseExternalDiffTool.Contains(Path.GetExtension(pendingChange.LocalOrServerItem)) ||
@@ -192,11 +196,11 @@ namespace VS_DiffAllFiles
 				{
 					// Get the string representation the TF.exe expects for the version to compare against.
 					string versionSpecToCompareAgainst = (settings.PendingChangesCompareVersion == CompareVersion.LatestVersion)
-						? "T"	// Comapre against Latest version.
+						? "T"	// Compare against Latest version.
 						: string.Format("W\"{0}\";\"{1}\"", _pendingChangesService.Workspace.Name, _pendingChangesService.Workspace.OwnerName);	// Compare against Workspace version.
 
 					// Launch the configured diff tool to diff this file.
-					var diffProcess = new System.Diagnostics.Process
+					var diffToolProcess = new System.Diagnostics.Process
 					{
 						StartInfo =
 						{
@@ -206,10 +210,14 @@ namespace VS_DiffAllFiles
 							UseShellExecute = false
 						}
 					};
-					diffProcess.Start();
+					diffToolProcess.Start();
 
+					// If we are comparing one file at a time, wait for the diff tool to close.
 					if (settings.CompareFilesOneAtATime)
-						diffProcess.WaitForExit();
+						await Task.Run(() => diffToolProcess.WaitForExit());
+					// Else we are comparing multiple files at a time, so add this process to our list of processes.
+					else
+						_diffToolProcessesRunning.Add(diffToolProcess);
 				}
 				// Else this file type is not explicitly configured, so use the default built-in Visual Studio diff tool.
 				else
@@ -221,14 +229,52 @@ namespace VS_DiffAllFiles
 					else
 					{
 						var change = pendingChange;
-						await Task.Run(() => RunVisualDiff(change, settings, dte2)).ConfigureAwait(true);
+						//await Task.Run(() => RunVisualDiff(change, settings, dte2)).ConfigureAwait(true);
+						await Task.Run(() => RunVisualDiff(change, settings, dte2));
+					}
+				}
+
+				// If we are not comparing files one at a time.
+				if (!settings.CompareFilesOneAtATime)
+				{
+					// If we have reached the maximum number of diff too instances to launch for this set, and there are still more to launch.
+					if (NumberOfFilesCompared % settings.NumberOfFilesToCompareAtATime == 0 && NumberOfFilesCompared < NumberOfFilesToCompare)
+					{
+						// Wait for all of the windows to be closed, or the "Next Set Of Files" or Cancel button to be pressed.
+						var processTasks = _diffToolProcessesRunning.Select(p => Task.Run(() => p.WaitForExit()));
+						await Task.WhenAny(Task.WhenAll(processTasks), Task.Run(() => 
+						{
+							// Just sleep this thread until the user wants to compare the next set of files, or cancel the compare operations.
+							while (!_compareNextSetOfFiles && !_cancelComparingFiles) 
+								System.Threading.Thread.Sleep(100); 
+						}));
+
+						// We are done comparing this set of files, so reset the flag to start comparing the next set of files.
+						_compareNextSetOfFiles = false;
+
+						// If the user wants to cancel comparing the rest of the files in this set, break out of the loop so we stop comparing more files.
+						if (_cancelComparingFiles)
+						{
+							_cancelComparingFiles = false;
+							break;
+						}
 					}
 				}
 			}
 
+			// Notify that we are done running one of the compare commands.
+			IsRunningCompareFilesCommand = false;
 			this.IsBusy = false;
 		}
 
+		List<System.Diagnostics.Process> _diffToolProcessesRunning = new List<System.Diagnostics.Process>();
+
+		/// <summary>
+		/// Runs the built-in Visual Studio Diff Tool in the current instance of Visual Studio.
+		/// </summary>
+		/// <param name="pendingChange">The pending change.</param>
+		/// <param name="settings">The settings.</param>
+		/// <param name="dte2">The dte2.</param>
 		private void RunVisualDiff(PendingChange pendingChange, DiffAllFilesSettings settings, DTE2 dte2)
 		{
 			// Get the Source version to compare the local changes against.
@@ -247,187 +293,48 @@ namespace VS_DiffAllFiles
 				dte2.ExecuteCommand("Window.KeepTabOpen");
 		}
 
-		///// <summary>
-		///// Refresh the changeset data asynchronously.
-		///// </summary>
-		//private async Task RefreshAsync()
-		//{
-		//	try
-		//	{
-		//		// Set our busy flag and clear the previous data
-		//		this.IsBusy = true;
-		//		this.ServerPath = null;
-		//		this.LocalPath = null;
-		//		this.LatestVersion = null;
-		//		this.WorkspaceVersion = null;
-		//		this.Encoding = null;
-
-		//		// Temp variables to hold the data as we retrieve it
-		//		string serverPath = null, localPath = null;
-		//		string latestVersion = null, workspaceVersion = null;
-		//		string encoding = null;
-
-		//		// Grab the selected included item from the Pending Changes extensibility object
-		//		PendingChangesItem selectedItem = null;
-		//		IPendingChangesExt pendingChanges = GetService<IPendingChangesExt>();
-		//		if (pendingChanges != null && pendingChanges.SelectedIncludedItems.Length > 0)
-		//		{
-		//			selectedItem = pendingChanges.SelectedIncludedItems[0];
-		//		}
-
-		//		if (selectedItem != null && selectedItem.IsPendingChange && selectedItem.PendingChange != null)
-		//		{
-		//			// Check for rename
-		//			if (selectedItem.PendingChange.IsRename && selectedItem.PendingChange.SourceServerItem != null)
-		//			{
-		//				serverPath = selectedItem.PendingChange.SourceServerItem;
-		//			}
-		//			else
-		//			{
-		//				serverPath = selectedItem.PendingChange.ServerItem;
-		//			}
-
-		//			localPath = selectedItem.ItemPath;
-		//			workspaceVersion = selectedItem.PendingChange.Version.ToString();
-		//			encoding = selectedItem.PendingChange.EncodingName;
-		//		}
-		//		else
-		//		{
-		//			serverPath = String.Empty;
-		//			localPath = selectedItem != null ? selectedItem.ItemPath : String.Empty;
-		//			latestVersion = String.Empty;
-		//			workspaceVersion = String.Empty;
-		//			encoding = String.Empty;
-		//		}
-
-		//		// Go get any missing data from the server
-		//		if (latestVersion == null || encoding == null)
-		//		{
-		//			// Make the server call asynchronously to avoid blocking the UI
-		//			await Task.Run(() =>
-		//			{
-		//				ITeamFoundationContext context = this.CurrentContext;
-		//				if (context != null && context.HasCollection)
-		//				{
-		//					VersionControlServer vcs = context.TeamProjectCollection.GetService<VersionControlServer>();
-		//					if (vcs != null)
-		//					{
-		//						Item item = vcs.GetItem(serverPath);
-		//						if (item != null)
-		//						{
-		//							latestVersion = latestVersion ?? item.ChangesetId.ToString();
-		//							encoding = encoding ?? FileType.GetEncodingName(item.Encoding);
-		//						}
-		//					}
-		//				}
-		//			});
-		//		}
-
-		//		// Now back on the UI thread, update the view data
-		//		this.ServerPath = serverPath;
-		//		this.LocalPath = localPath;
-		//		this.LatestVersion = latestVersion;
-		//		this.WorkspaceVersion = workspaceVersion;
-		//		this.Encoding = encoding;
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		ShowNotification(ex.Message, NotificationType.Error);
-		//	}
-		//	finally
-		//	{
-		//		// Always clear our busy flag when done
-		//		this.IsBusy = false;
-		//	}
-		//}
-
-		///// <summary>
-		///// Get/set the server path.
-		///// </summary>
-		//public string ServerPath
-		//{
-		//	get { return m_serverPath; }
-		//	set { m_serverPath = value; RaisePropertyChanged("ServerPath"); }
-		//}
-		//private string m_serverPath = String.Empty;
-
-		///// <summary>
-		///// Get/set the local path.
-		///// </summary>
-		//public string LocalPath
-		//{
-		//	get { return m_localPath; }
-		//	set { m_localPath = value; RaisePropertyChanged("LocalPath"); }
-		//}
-		//private string m_localPath = String.Empty;
-
-		///// <summary>
-		///// Get/set the latest version.
-		///// </summary>
-		//public string LatestVersion
-		//{
-		//	get { return m_latestVersion; }
-		//	set { m_latestVersion = value; RaisePropertyChanged("LatestVersion"); }
-		//}
-		//private string m_latestVersion = String.Empty;
-
-		///// <summary>
-		///// Get/set the workspace version.
-		///// </summary>
-		//public string WorkspaceVersion
-		//{
-		//	get { return m_workspaceVersion; }
-		//	set { m_workspaceVersion = value; RaisePropertyChanged("WorkspaceVersion"); }
-		//}
-		//private string m_workspaceVersion = String.Empty;
-
-		///// <summary>
-		///// Get/set the encoding.
-		///// </summary>
-		//public string Encoding
-		//{
-		//	get { return m_encoding; }
-		//	set { m_encoding = value; RaisePropertyChanged("Encoding"); }
-		//}
-		//private string m_encoding = String.Empty;
-
-
-		public override bool IsViewAllFilesEnabled
+		/// <summary>
+		/// Gets if the Compare All Files command should be enabled.
+		/// </summary>
+		public override bool IsCompareAllFilesEnabled
 		{
-			get { return IsViewIncludedFilesEnabled || IsViewExcludedFilesEnabled; }
+			get { return IsCompareIncludedFilesEnabled || IsCompareExcludedFilesEnabled; }
 		}
 
-		public override bool IsViewSelectedFilesEnabled
+		/// <summary>
+		/// Gets if the Compare Selected Files command should be enabled.
+		/// </summary>
+		public override bool IsCompareSelectedFilesEnabled
 		{
-			get { return IsVersionControlServiceAvailable && ((_pendingChangesService.SelectedIncludedItems.Length + _pendingChangesService.SelectedExcludedItems.Length) > 0); }
+			get { return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable && 
+				((_pendingChangesService.SelectedIncludedItems.Length + _pendingChangesService.SelectedExcludedItems.Length) > 0); }
 		}
 
-		public override bool IsViewIncludedFilesEnabled
+		public bool IsCompareIncludedFilesEnabled
 		{
-			get { return IsVersionControlServiceAvailable && ((_pendingChangesService.IncludedChanges.Length + _pendingChangesService.FilteredIncludedChanges.Length) > 0); }
+			get { return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable && 
+				((_pendingChangesService.IncludedChanges.Length + _pendingChangesService.FilteredIncludedChanges.Length) > 0); }
 		}
 
-		public override bool IsViewExcludedFilesEnabled
+		public bool IsCompareExcludedFilesEnabled
 		{
-			get { return IsVersionControlServiceAvailable && ((_pendingChangesService.ExcludedChanges.Length + _pendingChangesService.FilteredExcludedChanges.Length) > 0); }
+			get { return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable && 
+				((_pendingChangesService.ExcludedChanges.Length + _pendingChangesService.FilteredExcludedChanges.Length) > 0); }
 		}
 
-		public override bool IsViewIncludedFilesVisible
-		{
-			get { return true; }
-		}
-
-		public override bool IsViewExcludedFilesVisible
-		{
-			get { return true; }
-		}
-
+		/// <summary>
+		/// The possible file versions to compare against.
+		/// </summary>
 		public override IEnumerable<CompareVersion> CompareVersions
 		{
 			get { return _compareVersions; }
 		}
 		private readonly List<CompareVersion> _compareVersions = new List<CompareVersion> {CompareVersion.WorkspaceVersion, CompareVersion.LatestVersion};
 
+		/// <summary>
+		/// Gets if the Version Control provider is available or not.
+		/// <para>Commands should be disabled when version control is not available, as it is needed in order to compare files.</para>
+		/// </summary>
 		public override bool IsVersionControlServiceAvailable
 		{
 			get { return _isVersionControlAvailable; }
@@ -435,12 +342,30 @@ namespace VS_DiffAllFiles
 			{
 				_isVersionControlAvailable = value;
 				NotifyPropertyChanged("IsVersionControlServiceAvailable");
-				NotifyPropertyChanged("IsViewAllFilesEnabled");
-				NotifyPropertyChanged("IsViewSelectedFilesEnabled");
-				NotifyPropertyChanged("IsViewIncludedFilesEnabled");
-				NotifyPropertyChanged("IsViewExcludedFilesEnabled");
+				NotifyPropertyChanged("IsCompareAllFilesEnabled");
+				NotifyPropertyChanged("IsCompareSelectedFilesEnabled");
+				NotifyPropertyChanged("IsCompareIncludedFilesEnabled");
+				NotifyPropertyChanged("IsCompareExcludedFilesEnabled");
 			}
 		}
 		private bool _isVersionControlAvailable = false;
+
+		/// <summary>
+		/// Cancel any running operations.
+		/// </summary>
+		public override void Cancel()
+		{
+			_cancelComparingFiles = true;
+		}
+		private bool _cancelComparingFiles = false;
+
+		/// <summary>
+		/// Launches the diff tool to compare the next set of files in the currently running compare files set.
+		/// </summary>
+		public override void CompareNextSetOfFiles()
+		{
+			_compareNextSetOfFiles = true;
+		}
+		private bool _compareNextSetOfFiles = false;
 	}
 }
