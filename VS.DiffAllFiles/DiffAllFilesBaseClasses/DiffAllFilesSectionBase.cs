@@ -110,7 +110,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		public int NumberOfFilesToCompare
 		{
 			get { return _numberOfFilesToCompare; }
-			set { _numberOfFilesToCompare = value; NotifyPropertyChanged("NumberOfFilesToCompare"); NotifyPropertyChanged("FileComparisonProgressMessage"); }
+			set { _numberOfFilesToCompare = value; NotifyPropertyChanged("NumberOfFilesToCompare"); UpdateNumberOfFilesComparedMessages(); }
 		}
 		private int _numberOfFilesToCompare = 0;
 
@@ -120,7 +120,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		public int NumberOfFilesCompared
 		{
 			get { return _numberOfFilesCompared; }
-			set { _numberOfFilesCompared = value; NotifyPropertyChanged("NumberOfFilesCompared"); NotifyPropertyChanged("FileComparisonProgressMessage"); }
+			set { _numberOfFilesCompared = value; NotifyPropertyChanged("NumberOfFilesCompared"); UpdateNumberOfFilesComparedMessages(); }
 		}
 		private int _numberOfFilesCompared = 0;
 
@@ -130,9 +130,18 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		public int NumberOfFilesSkipped
 		{
 			get { return _numberOfFilesSkipped; }
-			set { _numberOfFilesSkipped = value; NotifyPropertyChanged("NumberOfFilesSkipped"); NotifyPropertyChanged("FileComparisonProgressMessage"); }
+			set { _numberOfFilesSkipped = value; NotifyPropertyChanged("NumberOfFilesSkipped"); UpdateNumberOfFilesComparedMessages(); }
 		}
 		private int _numberOfFilesSkipped = 0;
+
+		/// <summary>
+		/// Updates any messages that relate to the number of files compared.
+		/// </summary>
+		private void UpdateNumberOfFilesComparedMessages()
+		{
+			NotifyPropertyChanged("FileComparisonProgressMessage");
+			NotifyPropertyChanged("NextSetOfFilesCommandLabel");
+		}
 
 		/// <summary>
 		/// Gets a user-friendly message describing how much progress has been made on comparing all of the files.
@@ -153,7 +162,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		public string NextSetOfFilesCommandLabel
 		{
-			get { return (Settings != null && Settings.NumberOfFilesToCompareAtATime > 1) ? string.Format("Next {0} Files", Settings.NumberOfFilesToCompareAtATime) : "Next File"; }
+			get
+			{
+				int numberOfFilesToCompareNextSet = System.Math.Min(Settings.NumberOfFilesToCompareAtATime, (NumberOfFilesToCompare - NumberOfFilesCompared));
+				return (Settings != null && numberOfFilesToCompareNextSet > 1) ? string.Format("Next {0} Files", numberOfFilesToCompareNextSet) : "Next File"; 
+			}
 		}
 
 		/// <summary>
