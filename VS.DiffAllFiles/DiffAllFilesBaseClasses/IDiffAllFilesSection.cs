@@ -77,5 +77,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Closes any diff tool windows that are still open from the compare operations we launched.
 		/// </summary>
 		void CloseAllOpenCompareWindows();
+
+		/// <summary>
+		/// Gets the number of diff tool windows that we launched and are still open.
+		/// </summary>
+		int NumberOfCompareWindowsStillOpen { get; }
 	}
 }

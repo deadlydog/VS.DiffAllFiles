@@ -32,7 +32,7 @@
 			<WrapPanel Orientation="Horizontal" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsRunningCompareFilesCommand}}">
 				<Button Content="{Binding Path=NextSetOfFilesCommandLabel, FallbackValue=Next Set Of Files}" Click="btnNextSetOfFiles_Click" ToolTip="Launch the next set of file compares." />
 				<Button Content="Cancel" Click="btnCancelComparingFiles_Click" ToolTip="Do not compare any more files." />
-				<Button Content="Close All" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." />
+				<Button Content="Close All" IsEnabled="{QC:Binding '$P > 0', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Visibility="{QC:MultiBinding '($P1 > 0) || ($P2) ? Visibility.Visible : Visibility.Collapsed', P1={Binding Path=NumberOfCompareWindowsStillOpen}, P2={Binding Path=IsRunningCompareFilesCommand}}" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." />
 				<TextBlock Text="{Binding Path=FileComparisonProgressMessage, FallbackValue=File comparisons in progress}" VerticalAlignment="Center">
 					<TextBlock.ToolTip>
 						<TextBlock>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using VS_DiffAllFiles.Settings;
@@ -8,13 +9,57 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 {
 	public abstract class DiffAllFilesSectionBase : TeamExplorerBaseSection, IDiffAllFilesSection
 	{
+		/// <summary>
+		/// List of processes hosting any external diff tools that we launched and are still open.
+		/// </summary>
+		protected readonly ObservableCollection<System.Diagnostics.Process> ExternalDiffToolProcessesRunning = new ObservableCollection<System.Diagnostics.Process>();
+
+		/// <summary>
+		/// List of Visual Studio window captions of windows hosting any VS diff tools that we launched and are still open.
+		/// </summary>
+		protected readonly ObservableCollection<string> VsDiffToolTabCaptionsStillOpen = new ObservableCollection<string>();
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DiffAllFilesSectionBase"/> class.
+		/// </summary>
 		protected DiffAllFilesSectionBase() : base()
 		{
 			// Listen for changes to the Settings instance, and start watching property changes on the current one.
 			DiffAllFilesSettings.CurrentSettingsChanged += DiffAllFilesSettings_CurrentSettingsChanged;
 			DiffAllFilesSettings_CurrentSettingsChanged(null, System.EventArgs.Empty);
+
+			// Listen for when we launch new diff tool windows, and when the user closes them.
+			ExternalDiffToolProcessesRunning.CollectionChanged += ExternalDiffToolProcessesRunning_CollectionChanged;
+			VsDiffToolTabCaptionsStillOpen.CollectionChanged += VsDiffToolTabCaptionsStillOpen_CollectionChanged;
 		}
 
+		#region Event Handlers
+
+		/// <summary>
+		/// Handles the CollectionChanged event of the VsDiffToolTabCaptionsStillOpen control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+		void VsDiffToolTabCaptionsStillOpen_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			NotifyPropertyChanged("NumberOfCompareWindowsStillOpen");
+		}
+
+		/// <summary>
+		/// Handles the CollectionChanged event of the ExternalDiffToolProcessesRunning control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+		void ExternalDiffToolProcessesRunning_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			NotifyPropertyChanged("NumberOfCompareWindowsStillOpen");
+		}
+
+		/// <summary>
+		/// Handles the CurrentSettingsChanged event of the DiffAllFilesSettings control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		void DiffAllFilesSettings_CurrentSettingsChanged(object sender, System.EventArgs e)
 		{
 			// Listen for changes to this Settings instance's properties.
@@ -25,21 +70,18 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			}
 		}
 
+		/// <summary>
+		/// Handles the PropertyChanged event of the Settings control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
 		void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName.Equals("NumberOfFilesToCompareAtATime"))
 				NotifyPropertyChanged("NextSetOfFilesCommandLabel");
 		}
 
-		/// <summary>
-		/// List of processes hosting any external diff tools that we launched and are still open.
-		/// </summary>
-		protected readonly List<System.Diagnostics.Process> ExternalDiffToolProcessesRunning = new List<System.Diagnostics.Process>();
-
-		/// <summary>
-		/// List of Visual Studio window captions of windows hosting any VS diff tools that we launched and are still open.
-		/// </summary>
-		protected readonly List<string> VsDiffToolTabCaptionsStillOpen = new List<string>();
+		#endregion
 
 		#region IDiffAllFilesSection Properties
 		/// <summary>
@@ -143,6 +185,14 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Closes any diff tool windows that are still open from the compare operations we launched.
 		/// </summary>
 		public abstract void CloseAllOpenCompareWindows();
+
+		/// <summary>
+		/// Gets the number of diff tool windows that we launched and are still open.
+		/// </summary>
+		public int NumberOfCompareWindowsStillOpen
+		{
+			get { return ExternalDiffToolProcessesRunning.Count + VsDiffToolTabCaptionsStillOpen.Count; }
+		}
 
 		#endregion
 	}
