@@ -63,8 +63,7 @@ namespace VS_DiffAllFiles.Settings
 			CompareFilesNotChanged = true;
 			CompareNewFiles = true;
 			CompareDeletedFiles = true;
-			CompareFilesOneAtATime = true;
-			MultipleNumberOfFilesToCompareAtATime = 3;
+			NumberOfFilesToCompareAtATime = 1;
 		}
 
 		/// <summary>
@@ -84,23 +83,12 @@ namespace VS_DiffAllFiles.Settings
 		/// </summary>
 		public bool CompareFilesNotChanged { get { return _compareFilesNotChanged; } set { _compareFilesNotChanged = value; NotifyPropertyChanged("CompareFilesNotChanged"); } }
 		private bool _compareFilesNotChanged = false;
-		 
-		/// <summary>
-		/// Get / Set if we should try and compare files one at a time, rather than launching the diff tool for all files at once.
-		/// </summary>
-		public bool CompareFilesOneAtATime { get { return _compareFilesOneAtATime; } set { _compareFilesOneAtATime = value; NotifyPropertyChanged("CompareFilesOneAtATime"); NotifyPropertyChanged("NumberOfFilesToCompareAtATime"); } }
-		private bool _compareFilesOneAtATime = false;
 
 		/// <summary>
-		/// Get / Set the number of files to try and compare at a time, if not set to compare files one at a time.
+		/// Get / Set the number of files to compare at a time.
 		/// </summary>
-		public int MultipleNumberOfFilesToCompareAtATime { get { return _multipleNumberOfFilesToCompareAtATime; } set { _multipleNumberOfFilesToCompareAtATime = value; NotifyPropertyChanged("MultipleNumberOfFilesToCompareAtATime"); NotifyPropertyChanged("NumberOfFilesToCompareAtATime"); } }
-		private int _multipleNumberOfFilesToCompareAtATime = 0;
-
-		/// <summary>
-		/// Get the number of files to compare at a time.
-		/// </summary>
-		public int NumberOfFilesToCompareAtATime { get { return CompareFilesOneAtATime ? 1 : MultipleNumberOfFilesToCompareAtATime; } }
+		public int NumberOfFilesToCompareAtATime { get { return _numberOfFilesToCompareAtATime; } set { _numberOfFilesToCompareAtATime = value; NotifyPropertyChanged("NumberOfFilesToCompareAtATime"); } }
+		private int _numberOfFilesToCompareAtATime = 0;
 
 		/// <summary>
 		/// Get / Set the list of file extensions to not compare.

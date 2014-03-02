@@ -16,10 +16,6 @@
 			<Setter Property="Margin" Value="0,5,0,0" />
 			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
 		</Style>
-		<Style TargetType="{x:Type RadioButton}">
-			<Setter Property="Margin" Value="0,5,0,0" />
-			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
-		</Style>
 		<Style TargetType="{x:Type TextBox}">
 			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
 		</Style>
@@ -32,23 +28,21 @@
 					<CheckBox Content="Compare new files" IsChecked="{Binding Path=CompareNewFiles}" ToolTip="If files being added to source control should be compared." />
 					<CheckBox Content="Compare deleted files" IsChecked="{Binding Path=CompareDeletedFiles}" ToolTip="If files being deleted from source control should be compared." />
 					<CheckBox Content="Compare files whose contents have not changed (TFS only)" IsChecked="{Binding Path=CompareFilesNotChanged}" ToolTip="If files that are checked out of TFS, but not actually changed should be compared." />
-					<GroupBox Header="Number of file compares to launch at a time" Margin="0,10,0,0">
-						<GroupBox.ToolTip>
-							<TextBlock>
-									The number of diff tool instances to launch at a time.<LineBreak />
+
+					<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+						<Label Content="Compare up to this many files at a time:">
+							<Label.ToolTip>
+								<TextBlock>
+									The number of diff tool instances to launch at a time, allowing multiple files to be compared at the same time.<LineBreak />
 									Experience may differ depending on your configured diff tool(s).
-							</TextBlock>
-						</GroupBox.ToolTip>
-						<StackPanel Orientation="Vertical">
-							<RadioButton GroupName="NumberOfFilesToCompareAtATime" Content="Compare files one at a time" IsChecked="{Binding Path=CompareFilesOneAtATime}" ToolTip="Wait for one file's diff to close being opening the next one." />
-							<StackPanel Orientation="Horizontal">
-								<RadioButton GroupName="NumberOfFilesToCompareAtATime" Content="Compare up to this many files at a time:" IsChecked="{QC:Binding '!$P', P={Binding Path=CompareFilesOneAtATime, Mode=OneTime}}" ToolTip="Launch this many diff tools at once, allowing multiple files to be compared at the same time." />
-								<xctk:IntegerUpDown Minimum="1" Maximum="99" Increment="1"  Value="{Binding Path=MultipleNumberOfFilesToCompareAtATime}" Width="50" Margin="5,0,0,0" />
-							</StackPanel>
-						</StackPanel>
-					</GroupBox>
+								</TextBlock>
+							</Label.ToolTip>
+						</Label>
+						<xctk:IntegerUpDown Minimum="1" Maximum="99" Increment="1"  Value="{Binding Path=NumberOfFilesToCompareAtATime}" Width="50" Margin="5,0,0,0" />
+					</StackPanel>
+					
 					<Label Content="File Extensions To Ignore (e.g. exe, bmp, png)" Margin="0,10,0,0" />
-					<TextBox x:Name="txtFileExtensionsToIgnore" Text="{Binding Path=FileExtensionsToIgnore}" HorizontalAlignment="Stretch" ToolTip="File types to not compare." />
+					<TextBox Text="{Binding Path=FileExtensionsToIgnore}" HorizontalAlignment="Stretch" ToolTip="File types to not compare." />
 					<Button Content="Restore Default Settings" HorizontalAlignment="Right" Margin="0,5,0,0" Click="btnRestoreDefaultSettings_Click" />
 				</StackPanel>
 			</GroupBox>
