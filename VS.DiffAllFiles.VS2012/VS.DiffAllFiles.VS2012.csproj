@@ -39,6 +39,9 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DansCSharpLibrary">
+      <HintPath>..\packages\DansUtilityLibraries.CSharpLibrary.1.1.1.1\lib\net40-Client\DansCSharpLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.TeamFoundation.Client, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll</HintPath>

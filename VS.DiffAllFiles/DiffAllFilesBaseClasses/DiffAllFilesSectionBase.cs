@@ -31,6 +31,16 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				NotifyPropertyChanged("NextSetOfFilesCommandLabel");
 		}
 
+		/// <summary>
+		/// List of processes hosting any external diff tools that we launched and are still open.
+		/// </summary>
+		protected readonly List<System.Diagnostics.Process> ExternalDiffToolProcessesRunning = new List<System.Diagnostics.Process>();
+
+		/// <summary>
+		/// List of Visual Studio window captions of windows hosting any VS diff tools that we launched and are still open.
+		/// </summary>
+		protected readonly List<string> VsDiffToolTabCaptionsStillOpen = new List<string>();
+
 		#region IDiffAllFilesSection Properties
 		/// <summary>
 		/// Gets if the Compare All Files command should be enabled.
@@ -65,7 +75,6 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <summary>
 		/// Gets the number of files that have been compared already (that have been launched in the diff tool).
 		/// </summary>
-		/// <exception cref="System.NotImplementedException"></exception>
 		public int NumberOfFilesCompared
 		{
 			get { return _numberOfFilesCompared; }
@@ -74,11 +83,27 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		private int _numberOfFilesCompared = 0;
 
 		/// <summary>
+		/// Gets the number of file comparisons skipped due to the current settings configuration.
+		/// </summary>
+		public int NumberOfFilesSkipped
+		{
+			get { return _numberOfFilesSkipped; }
+			set { _numberOfFilesSkipped = value; NotifyPropertyChanged("NumberOfFilesSkipped"); NotifyPropertyChanged("FileComparisonProgressMessage"); }
+		}
+		private int _numberOfFilesSkipped = 0;
+
+		/// <summary>
 		/// Gets a user-friendly message describing how much progress has been made on comparing all of the files.
 		/// </summary>
 		public string FileComparisonProgressMessage
 		{
-			get { return string.Format("Compared {0} of {1} files.", NumberOfFilesCompared, NumberOfFilesToCompare); }
+			get
+			{
+				string message = string.Format("Compared {0} of {1} files.", NumberOfFilesCompared, NumberOfFilesToCompare);
+				if (NumberOfFilesSkipped > 0)
+					message += string.Format(" Skipping {0}.", NumberOfFilesSkipped);
+				return message;
+			}
 		}
 
 		/// <summary>
@@ -113,6 +138,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		/// <exception cref="System.NotImplementedException"></exception>
 		public abstract void CompareNextSetOfFiles();
+
+		/// <summary>
+		/// Closes any diff tool windows that are still open from the compare operations we launched.
+		/// </summary>
+		public abstract void CloseAllOpenCompareWindows();
 
 		#endregion
 	}

@@ -100,7 +100,7 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private void btnCloseAllOpenDiffTools_Click(object sender, RoutedEventArgs e)
 		{
-			
+			_pendingChangesViewModel.CloseAllOpenCompareWindows();
 		}
 	}
 }

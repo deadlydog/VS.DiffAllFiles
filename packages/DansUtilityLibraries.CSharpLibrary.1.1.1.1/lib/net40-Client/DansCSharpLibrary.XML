@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DansCSharpLibrary</name>
+    </assembly>
+    <members>
+        <member name="T:DansCSharpLibrary.Comparers.StringComparerIgnoreCase">
+            <summary>
+            Comparer used to check if strings are the same while ignoring case.
+            </summary>
+        </member>
+        <member name="T:DansCSharpLibrary.Events.DelayedEvent">
+            <summary>
+            Class used to prevent an event from firing multiple times within a specified timespan.
+            If the event is told to fire multiple times in a given timespan, it will only fire once when the timespan has elapsed.
+            </summary>
+        </member>
+        <member name="F:DansCSharpLibrary.Events.DelayedEvent.DefaultDelay">
+            <summary>
+            How long to wait after FireEvent() is called before actually firing the event.
+            <para>This value may be overridden directly when calling FireEvent().</para>
+            <para>Use TimeSpan.Zero to have the event fire immediately.</para>
+            </summary>
+        </member>
+        <member name="F:DansCSharpLibrary.Events.DelayedEvent._timer">
+            <summary>
+            Timer used to fire the event after the specified Delay of time has elapsed.
+            </summary>
+        </member>
+        <member name="F:DansCSharpLibrary.Events.DelayedEvent._sender">
+            <summary>
+            The last object that requested the event to fire.
+            </summary>
+        </member>
+        <member name="F:DansCSharpLibrary.Events.DelayedEvent._eventArgs">
+            <summary>
+            The arguments to pass the to the event handler.
+            </summary>
+        </member>
+        <member name="M:DansCSharpLibrary.Events.DelayedEvent.#ctor(System.TimeSpan,System.EventHandler[])">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="defaultDelay">How long to wait before firing the event.</param>
+            <param name="eventHandlers">The event handlers to add to the EventFired event.</param>
+        </member>
+        <member name="M:DansCSharpLibrary.Events.DelayedEvent._timer_Elapsed(System.Object)">
+            <summary>
+            The Timer callback that fires when the Timer's timespan has elapsed.
+            </summary>
+            <param name="state">I don't know what this does, but this is the Timer callback delegate signature that is required.</param>
+        </member>
+        <member name="M:DansCSharpLibrary.Events.DelayedEvent.FireEvent(System.Object,System.EventArgs,System.Nullable{System.TimeSpan})">
+            <summary>
+            Triggers the event to fire.
+            <para>The event will not fire until the Delay has elapsed since the last time this function was called (i.e. each time this function is called, the delay timer is reset).
+            Because of this, if FireEvent() is constantly called without the Delay timespan elapsing between calls, the event potentially may never fire.</para>
+            <para>If this is called multiple times within the Delay timespan, it will only fire once.</para>
+            <para>Only the Sender and EventArgs of the last call to this function will be passed to the event handlers.</para>
+            </summary>
+            <param name="sender">The object that triggered the event.</param>
+            <param name="eventArgs">The <see cref="T:System.EventArgs"/> instance containing the event data to pass to the event handlers.</param>
+            <param name="delayOverride">How long to wait before firing the event.
+            <para>Leave this null to use the DefaultDelay.</para>
+            <para>Use TimeSpan.Zero to have the event fire immediately.</para></param>
+        </member>
+        <member name="M:DansCSharpLibrary.Events.DelayedEvent.Dispose">
+            <summary>
+            Release the resources used by this class.
+            </summary>
+        </member>
+        <member name="E:DansCSharpLibrary.Events.DelayedEvent.EventFired">
+            <summary>
+            The event triggered when the FireEvent() function is called (after the specified Delay has elapsed).
+            </summary>
+        </member>
+        <member name="F:DansCSharpLibrary.Exceptions.ExceptionHelper.DEFAULT_INNER_EXCEPTION_MESSAGE_SEPARATOR">
+            <summary>
+            The default separator character(s) used to separate inner exception messages.
+            </summary>
+        </member>
+        <member name="M:DansCSharpLibrary.Exceptions.ExceptionHelper.GetExceptionMessagesBasedOnDebugging(System.Exception,System.Boolean,System.String)">
+            <summary>
+            Gets the exception error to return based on if a Debugger is attached or not.
+            <para>If a Debugger is attached, ex.ToString() is returned.
+            This typically contains more information that can be useful to tracking down where in code the exception was thrown from.</para>
+            <para>If a Debugger is not attached, GetExceptionMessages(ex, innerExceptionMessageSeparator) is returned. This is a more user-friendly error message.</para>
+            </summary>
+            <param name="ex">The exception to process.</param>
+            <param name="removeSeeInnerExceptionForDetailsStringsFromMessage">If true all occurrences of "See the inner exception for details." will be removed from the returned string.</param>
+            <param name="innerExceptionMessageSeparator">The separator to use to separate each inner exception's message in the returned string.</param>
+            <returns></returns>
+        </member>
+        <member name="M:DansCSharpLibrary.Exceptions.ExceptionHelper.GetExceptionMessages(System.Exception,System.Boolean,System.String)">
+            <summary>
+            Gets the exception's message, along with all inner exception messages. This is typically a more user-friendly error message than ex.ToString().
+            </summary>
+            <param name="ex">The exception to process.</param>
+            <param name="removeSeeInnerExceptionForDetailsStringsFromMessage">If true all occurrences of "See the inner exception for details." will be removed from the returned string.</param>
+            <param name="innerExceptionMessageSeparator">The separator to use to separate each inner exception's message in the returned string.</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

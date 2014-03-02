@@ -33,6 +33,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		int NumberOfFilesCompared { get; }
 
 		/// <summary>
+		/// Gets the number of file comparisons skipped due to the current settings configuration.
+		/// </summary>
+		int NumberOfFilesSkipped { get; }
+
+		/// <summary>
 		/// Gets a user-friendly message describing how much progress has been made on comparing all of the files.
 		/// </summary>
 		string FileComparisonProgressMessage { get; }
@@ -67,5 +72,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Launches the diff tool to compare the next set of files in the currently running compare files set.
 		/// </summary>
 		void CompareNextSetOfFiles();
+
+		/// <summary>
+		/// Closes any diff tool windows that are still open from the compare operations we launched.
+		/// </summary>
+		void CloseAllOpenCompareWindows();
 	}
 }
