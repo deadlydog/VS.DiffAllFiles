@@ -197,7 +197,7 @@ namespace VS_DiffAllFiles
 			NumberOfFilesSkipped = originalNumberOfFilesToCompare - NumberOfFilesToCompare;
 
 			// Create the lists to hold all of the diff tool windows launched in a single set of files.
-			var externalDiffToolProcessesRunningFromThisSet = new List<System.Diagnostics.Process>();
+			var externalDiffToolProcessIdsRunningFromThisSet = new List<int>();
 			var vsDiffToolTabCaptionsStillOpenFromThisSet = new List<string>();
 
 			// Loop through and diff each of the pending changes.
@@ -229,14 +229,30 @@ namespace VS_DiffAllFiles
 					diffToolProcess.Start();
 
 					// Add this process to our list of external diff tool processes currently running.
-					externalDiffToolProcessesRunningFromThisSet.Add(diffToolProcess);
-					ExternalDiffToolProcessesRunning.Add(diffToolProcess);
+					int diffToolProcessId = diffToolProcess.Id;
+					externalDiffToolProcessIdsRunningFromThisSet.Add(diffToolProcessId);
+					ExternalDiffToolProcessIdsRunning.Add(diffToolProcessId);
 
 					// Start a new Task to monitor for when this external diff tool window is closed, and remove it from our list of running processes.
 					Task.Run(() =>
 					{
-						while (!diffToolProcess.HasExited) System.Threading.Thread.Sleep(100);
-						ExternalDiffToolProcessesRunning.Remove(diffToolProcess);
+						int processId = diffToolProcessId;
+						System.Diagnostics.Process process = null;
+						try
+						{
+							// Loop until the diff tool window is closed.
+							do
+							{
+								System.Threading.Thread.Sleep(100);
+								process = System.Diagnostics.Process.GetProcessById(processId);
+							} while (!process.HasExited);
+						}
+						// Catch and eat the exception thrown if the process no longer exists.
+						catch (ArgumentException)
+						{ }
+
+						// Now that the diff tool window has been closed, remove it from our list of running diff tool windows.
+						ExternalDiffToolProcessIdsRunning.Remove(processId);
 					});
 				}
 				// Else this file type is not explicitly configured, so use the default built-in Visual Studio diff tool.
@@ -252,36 +268,36 @@ namespace VS_DiffAllFiles
 					{
 						vsDiffToolTabCaptionsStillOpenFromThisSet.Add(diffToolWindowCaption);
 						VsDiffToolTabCaptionsStillOpen.Add(diffToolWindowCaption);
-					}
 
-					// Start a new Task to monitor for when this VS diff tool tab is closed, and remove it from our list of open VS diff tool tabs.
-					Task.Run(() =>
-					{
-						string vsDiffToolWindowStillOpenCaption = diffToolWindowCaption;
-						bool windowIsStillOpen = true;
-
-						// Sleep this thread until the user has closed all of the VS Diff Tool tabs. 
-						while (windowIsStillOpen)
+						// Start a new Task to monitor for when this VS diff tool tab is closed, and remove it from our list of open VS diff tool tabs.
+						Task.Run(() =>
 						{
-							// Sleep the thread for a bit before checking to see if the VS Diff Tabs are all closed or not.
-							System.Threading.Thread.Sleep(100);
+							string vsDiffToolWindowStillOpenCaption = diffToolWindowCaption;
+							bool windowIsStillOpen = true;
 
-							// Get the list of open Windows in Visual Studio right now.
-							var openWindowsInVS = dte2.Windows;
-
-							try
+							// Keep looping until the VS diff tool tab window is closed.
+							do
 							{
-								// Loop through all of the open windows in Visual Studio and see if this VS Diff Tool Tab is still open or not.
-								windowIsStillOpen = openWindowsInVS.Cast<Window>().Any(window => window.Caption.Equals(vsDiffToolWindowStillOpenCaption, StringComparison.InvariantCulture));
-							}
-								// Sometimes a Window is already disposed when we try and access it here, so just eat those exceptions.
-							catch
-							{}
-						}
+								// Sleep the thread for a bit before checking to see if the VS Diff Tabs are all closed or not.
+								System.Threading.Thread.Sleep(100);
 
-						// Now that the diff tool tab window has been closed, remove it from our list.
-						VsDiffToolTabCaptionsStillOpen.Remove(vsDiffToolWindowStillOpenCaption);
-					});
+								// Get the list of open Windows in Visual Studio right now.
+								var openWindowsInVS = dte2.Windows;
+
+								try
+								{
+									// Loop through all of the open windows in Visual Studio and see if this VS Diff Tool Tab is still open or not.
+									windowIsStillOpen = openWindowsInVS.Cast<Window>().Any(window => window.Caption.Equals(vsDiffToolWindowStillOpenCaption, StringComparison.InvariantCulture));
+								}
+								// Sometimes a Window is already disposed when we try and access it here, so just eat those exceptions.
+								catch
+								{ }
+							} while (windowIsStillOpen);
+
+							// Now that the diff tool tab window has been closed, remove it from our list.
+							VsDiffToolTabCaptionsStillOpen.Remove(vsDiffToolWindowStillOpenCaption);
+						});
+					}
 				}
 
 				// If we have reached the maximum number of diff too instances to launch for this set, and there are still more to launch.
@@ -291,10 +307,22 @@ namespace VS_DiffAllFiles
 					var cancellationToken = _compareTasksCancellationTokenSource.Token;
 
 					// Get the Tasks to wait for all of the external diff tool processes to be closed.
-					var waitForAllExternalDiffToolProcessFromThisSetToCloseTasks = externalDiffToolProcessesRunningFromThisSet.Select(process => Task.Run(() =>
+					var waitForAllExternalDiffToolProcessFromThisSetToCloseTasks = externalDiffToolProcessIdsRunningFromThisSet.Select(id => Task.Run(() =>
 					{
-						while (!cancellationToken.IsCancellationRequested && !process.HasExited)
-							System.Threading.Thread.Sleep(100);
+						int processId = id;
+						System.Diagnostics.Process process = null;
+						try
+						{
+							// Loop until the diff tool window is closed.
+							do
+							{
+								System.Threading.Thread.Sleep(100);
+								process = System.Diagnostics.Process.GetProcessById(processId);
+							} while (!cancellationToken.IsCancellationRequested && !process.HasExited);
+						}
+						// Catch and eat the exception thrown if the process no longer exists.
+						catch (ArgumentException)
+						{ }
 					}, cancellationToken));
 
 					// Get the Task to wait for all of the VS diff tool tabs to closed.
@@ -340,7 +368,7 @@ namespace VS_DiffAllFiles
 					// Get the Task to wait for the Next Set Of Files or Cancel buttons to be clicked.
 					var waitForNextSetOfFilesOrCancelCommandsToBeExecutedTask = Task.Run(() =>
 					{
-						// Just sleep this thread until the user wants to compare the next set of files, or cancel the compare operations.
+						// Just sleep this thread until the user wants to compare the next set of files, or cancels the compare operations.
 						while (!cancellationToken.IsCancellationRequested && !_compareNextSetOfFiles && !_cancelComparingFiles)
 							System.Threading.Thread.Sleep(100);
 					});
@@ -357,7 +385,7 @@ namespace VS_DiffAllFiles
 					_compareTasksCancellationTokenSource = new CancellationTokenSource();
 
 					// Now that we are done with this set of compares, clear the list of diff tool windows still open from this set.
-					externalDiffToolProcessesRunningFromThisSet.Clear();
+					externalDiffToolProcessIdsRunningFromThisSet.Clear();
 					vsDiffToolTabCaptionsStillOpenFromThisSet.Clear();
 
 					// We are done comparing this set of files, so reset the flag to start comparing the next set of files.
@@ -481,13 +509,36 @@ namespace VS_DiffAllFiles
 		public override void CloseAllOpenCompareWindows()
 		{
 			// Kill all processes hosting the external diff tools we launched.
-			foreach (System.Diagnostics.Process process in ExternalDiffToolProcessesRunning)
-				process.Kill();
+			// Loop through the list backwards as it may be modified by another task while we loop through it.
+			for (int processIndex = (ExternalDiffToolProcessIdsRunning.Count - 1); processIndex >= 0; processIndex--)
+			{
+				int processId = ExternalDiffToolProcessIdsRunning[processIndex];
+				try
+				{
+					// Get a handle to the TF.exe process.
+					var tfProcess = System.Diagnostics.Process.GetProcessById(processId);
+					if (!tfProcess.HasExited)
+					{
+						// Get a handle to the diff tool process created by the TF.exe process and close it.
+						foreach (var diffToolProcess in DiffAllFilesHelper.GetChildProcesses(tfProcess))
+							diffToolProcess.Kill();
+					}
+				}
+				// Catch any exceptions thrown when the process does not exist.
+				catch (ArgumentException)
+				{
+					// Since the process is already closed, remove it from our list.
+					ExternalDiffToolProcessIdsRunning.Remove(processId);
+				}
+			}
 
 			// Close all windows that we opened using the built-in VS diff tool and are still open.
-			var dte2 = PackageHelper.DTE2;
-			foreach (EnvDTE.Window window in dte2.Windows)
+			// Loop through the list backwards as it may be modified by another task while we loop through it.
+			// The windows list index starts at 1, not 0.
+			var windows = PackageHelper.DTE2.Windows;
+			for (int windowIndex = windows.Count; windowIndex > 0; windowIndex--)
 			{
+				var window = windows.Item(windowIndex);
 				if (VsDiffToolTabCaptionsStillOpen.Contains(window.Caption, new DansCSharpLibrary.Comparers.StringComparerIgnoreCase()))
 					window.Close();
 			}

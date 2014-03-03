@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -68,6 +70,20 @@ namespace VS_DiffAllFiles
 						yield return childOfChild;
 					}
 				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the child processes of the given parent process.
+		/// </summary>
+		/// <param name="process">The parent process.</param>
+		public static IEnumerable<Process> GetChildProcesses(Process process)
+		{
+			ManagementObjectSearcher managementObjectSearcher = new ManagementObjectSearcher(String.Format("Select * From Win32_Process Where ParentProcessID={0}", process.Id));
+
+			foreach (ManagementObject mo in managementObjectSearcher.Get())
+			{
+				yield return Process.GetProcessById(Convert.ToInt32(mo["ProcessID"]));
 			}
 		}
 	}

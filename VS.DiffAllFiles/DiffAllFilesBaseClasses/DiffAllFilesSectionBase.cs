@@ -12,7 +12,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <summary>
 		/// List of processes hosting any external diff tools that we launched and are still open.
 		/// </summary>
-		protected readonly ObservableCollection<System.Diagnostics.Process> ExternalDiffToolProcessesRunning = new ObservableCollection<System.Diagnostics.Process>();
+		protected readonly ObservableCollection<int> ExternalDiffToolProcessIdsRunning = new ObservableCollection<int>();
 
 		/// <summary>
 		/// List of Visual Studio window captions of windows hosting any VS diff tools that we launched and are still open.
@@ -29,7 +29,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			DiffAllFilesSettings_CurrentSettingsChanged(null, System.EventArgs.Empty);
 
 			// Listen for when we launch new diff tool windows, and when the user closes them.
-			ExternalDiffToolProcessesRunning.CollectionChanged += ExternalDiffToolProcessesRunning_CollectionChanged;
+			ExternalDiffToolProcessIdsRunning.CollectionChanged += ExternalDiffToolProcessIdsRunning_CollectionChanged;
 			VsDiffToolTabCaptionsStillOpen.CollectionChanged += VsDiffToolTabCaptionsStillOpen_CollectionChanged;
 		}
 
@@ -50,7 +50,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-		void ExternalDiffToolProcessesRunning_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		void ExternalDiffToolProcessIdsRunning_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
 			NotifyPropertyChanged("NumberOfCompareWindowsStillOpen");
 		}
@@ -204,7 +204,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		public int NumberOfCompareWindowsStillOpen
 		{
-			get { return ExternalDiffToolProcessesRunning.Count + VsDiffToolTabCaptionsStillOpen.Count; }
+			get { return ExternalDiffToolProcessIdsRunning.Count + VsDiffToolTabCaptionsStillOpen.Count; }
 		}
 
 		#endregion
