@@ -22,12 +22,12 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <summary>
 		/// List of process IDs hosting any external diff tools that we launched in the last set of compares and are still open.
 		/// </summary>
-		protected readonly List<int> ExternalDiffToolProcessIdsRunningFromThisSet = new List<int>();
-
+		protected readonly List<int> ExternalDiffToolProcessIdsRunningInThisSet = new List<int>();
+		
 		/// <summary>
 		/// List of Visual Studio window captions of windows hosting any VS diff tools that we launched in the last set of compares and are still open.
 		/// </summary>
-		protected readonly List<string> VsDiffToolTabCaptionsStillOpenFromThisSet = new List<string>();
+		protected readonly List<string> VsDiffToolTabCaptionsStillOpenInThisSet = new List<string>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DiffAllFilesSectionBase"/> class.
