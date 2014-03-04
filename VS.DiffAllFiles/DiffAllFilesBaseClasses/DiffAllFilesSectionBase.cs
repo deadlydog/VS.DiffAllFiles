@@ -10,7 +10,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 	public abstract class DiffAllFilesSectionBase : TeamExplorerBaseSection, IDiffAllFilesSection
 	{
 		/// <summary>
-		/// List of processes hosting any external diff tools that we launched and are still open.
+		/// List of process IDs hosting any external diff tools that we launched and are still open.
 		/// </summary>
 		protected readonly ObservableCollection<int> ExternalDiffToolProcessIdsRunning = new ObservableCollection<int>();
 
@@ -18,6 +18,16 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// List of Visual Studio window captions of windows hosting any VS diff tools that we launched and are still open.
 		/// </summary>
 		protected readonly ObservableCollection<string> VsDiffToolTabCaptionsStillOpen = new ObservableCollection<string>();
+
+		/// <summary>
+		/// List of process IDs hosting any external diff tools that we launched in the last set of compares and are still open.
+		/// </summary>
+		protected readonly List<int> ExternalDiffToolProcessIdsRunningFromThisSet = new List<int>();
+
+		/// <summary>
+		/// List of Visual Studio window captions of windows hosting any VS diff tools that we launched in the last set of compares and are still open.
+		/// </summary>
+		protected readonly List<string> VsDiffToolTabCaptionsStillOpenFromThisSet = new List<string>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DiffAllFilesSectionBase"/> class.
@@ -198,6 +208,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Closes any diff tool windows that are still open from the compare operations we launched.
 		/// </summary>
 		public abstract void CloseAllOpenCompareWindows();
+
+		/// <summary>
+		/// Closes any diff tool windows that are still open from the last set of compare operations we launched.
+		/// </summary>
+		public abstract void CloseAllOpenCompareWindowsInThisSet();
 
 		/// <summary>
 		/// Gets the number of diff tool windows that we launched and are still open.
