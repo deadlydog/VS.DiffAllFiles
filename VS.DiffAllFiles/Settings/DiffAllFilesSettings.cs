@@ -49,6 +49,7 @@ namespace VS_DiffAllFiles.Settings
 
 			// Initialize Per-Window Settings.
 			PendingChangesCompareVersionValue = CompareVersion.WorkspaceVersion.Value;
+			ChangesetDetailsCompareVersionValue = CompareVersion.PreviousVersion.Value;
 		}
 
 		#region Global Extension Settings
@@ -148,8 +149,21 @@ namespace VS_DiffAllFiles.Settings
 			set { PendingChangesCompareVersionValue = value.Value; SaveSettingsToStorage(); }
 		}
 
-		
+		/// <summary>
+		/// The version to compare against when in the Changeset Details window.
+		/// </summary>
+		public CompareVersion.Values ChangesetDetailsCompareVersionValue
+		{
+			get { return _changesetDetailsCompareVersionValue; }
+			set { _changesetDetailsCompareVersionValue = value; NotifyPropertyChanged("ChangesetDetailsCompareVersionValue"); NotifyPropertyChanged("ChangesetDetailsCompareVersion"); }
+		}
+		private CompareVersion.Values _changesetDetailsCompareVersionValue = CompareVersion.Values.PreviousVersion;
 
+		public CompareVersion ChangesetDetailsCompareVersion
+		{
+			get { return CompareVersion.GetCompareVersionFromValue(ChangesetDetailsCompareVersionValue); }
+			set { ChangesetDetailsCompareVersionValue = value.Value; SaveSettingsToStorage(); }
+		}
 
 		#endregion
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using VS_DiffAllFiles.Settings;
 
 namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
@@ -48,6 +49,12 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		string NextSetOfFilesCommandLabel { get; }
 
 		/// <summary>
+		/// Asynchronously launch the diff tools to compare the files.
+		/// </summary>
+		/// <param name="itemStatusTypesToCompare">The files that should be compared.</param>
+		Task ComparePendingChanges(ItemStatusTypesToCompare itemStatusTypesToCompare);
+
+		/// <summary>
 		/// The possible file versions to compare against.
 		/// </summary>
 		IEnumerable<CompareVersion> CompareVersions { get; }
@@ -67,6 +74,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Stop launching any more compare operations.
 		/// </summary>
 		void Cancel();
+
+		/// <summary>
+		/// Refresh the section contents.
+		/// </summary>
+		void Refresh();
 
 		/// <summary>
 		/// Launches the diff tool to compare the next set of files in the currently running compare files set.

@@ -18,18 +18,18 @@ using VS_DiffAllFiles.TeamExplorerBaseClasses;
 namespace VS_DiffAllFiles
 {
 	/// <summary>
-	/// Interaction logic for PendingChangesDiffAllControl.xaml
+	/// Interaction logic for ChangesetDetailsSectionControl.xaml
 	/// </summary>
-	public partial class PendingChangesSectionControl : UserControl
+	public partial class ChangesetDetailsSectionControl : UserControl
 	{
-		private PendingChangesSection _viewModel = null;
+		private ChangesetDetailsSection _viewModel = null;
 
-		public PendingChangesSectionControl(PendingChangesSection pendingChangesSection)
+		public ChangesetDetailsSectionControl(ChangesetDetailsSection parentSection)
 		{
 			InitializeComponent();
 
 			// Get a handle to the View Model to use and set it up as the default binding data context.
-			_viewModel = pendingChangesSection;
+			_viewModel = parentSection;
 			this.DataContext = _viewModel;
 		}
 
@@ -51,26 +51,6 @@ namespace VS_DiffAllFiles
 		private async void btnDiffSelectedFiles_Click(object sender, RoutedEventArgs e)
 		{
 			await _viewModel.ComparePendingChanges(ItemStatusTypesToCompare.Selected);
-		}
-
-		/// <summary>
-		/// Handles the Click event of the btnDiffIncludedFiles control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-		private async void btnDiffIncludedFiles_Click(object sender, RoutedEventArgs e)
-		{
-			await _viewModel.ComparePendingChanges(ItemStatusTypesToCompare.Included);
-		}
-
-		/// <summary>
-		/// Handles the Click event of the btnDiffExcludedFiles control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-		private async void btnDiffExcludedFiles_Click(object sender, RoutedEventArgs e)
-		{
-			await _viewModel.ComparePendingChanges(ItemStatusTypesToCompare.Excluded);
 		}
 
 		/// <summary>

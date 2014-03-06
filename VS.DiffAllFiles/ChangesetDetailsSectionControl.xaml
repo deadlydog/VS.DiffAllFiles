@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="VS_DiffAllFiles.ChangesetDetailsSectionControl"
+						 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:QC="clr-namespace:QuickConverter;assembly=QuickConverter"
+						 mc:Ignorable="d" 
+						 d:DesignHeight="300" d:DesignWidth="300">
+	<UserControl.Resources>
+		<Style TargetType="{x:Type Button}">
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+			<Setter Property="Padding" Value="5,2,5,2" />
+			<Setter Property="Margin" Value="0,2,5,2" />
+		</Style>
+		<Style TargetType="{x:Type ComboBox}">
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+			<Setter Property="Margin" Value="0,2,5,2" />
+		</Style>
+		<Style TargetType="{x:Type TextBlock}">
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+			<Setter Property="Margin" Value="0,2,5,2" />
+		</Style>
+	</UserControl.Resources>
+	<Grid>
+		<WrapPanel Orientation="Horizontal">
+			<!-- Not Comparing Files View -->
+			<WrapPanel Orientation="Horizontal" Visibility="{QC:Binding '$P ? Visibility.Collapsed : Visibility.Visible', P={Binding Path=IsRunningCompareFilesCommand}}">
+				<Button Content="All Files" IsEnabled="{Binding Path=IsCompareAllFilesEnabled}" Click="btnDiffAllFiles_Click" ToolTip="Compare all files." />
+				<Button Content="Selected" IsEnabled="{Binding Path=IsCompareSelectedFilesEnabled}" Click="btnDiffSelectedFiles_Click" ToolTip="Compare only selected files." />
+				<ComboBox ItemsSource="{Binding Path=CompareVersions}" SelectedItem="{Binding Path=Settings.ChangesetDetailsCompareVersion}" Width="130" ToolTip="The file version to compare the local changes against." />
+			</WrapPanel>
+
+			<!-- Currently Comparing Files View -->
+			<WrapPanel Orientation="Horizontal" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsRunningCompareFilesCommand}}">
+				<Button Content="{Binding Path=NextSetOfFilesCommandLabel, FallbackValue=Next Set Of Files}" Click="btnNextSetOfFiles_Click" ToolTip="Launch the next set of file compares." />
+				<Button Content="Cancel" Click="btnCancelComparingFiles_Click" ToolTip="Do not compare any more files." />
+				<Button Content="Close All In This Set" Click="btnCloseAllOpenDiffToolsInThisSet_Click" ToolTip="Closes all diff tool windows that were opened in this set of file compares and are still open." />
+				<TextBlock Text="{Binding Path=FileComparisonProgressMessage, FallbackValue=File comparisons in progress}" VerticalAlignment="Center">
+					<TextBlock.ToolTip>
+						<TextBlock>
+							How many file comparisons have been launched so far.<LineBreak />
+							Files may be skipped due to the settings configuration.
+						</TextBlock>
+					</TextBlock.ToolTip>
+				</TextBlock>
+			</WrapPanel>
+			
+			<Button Content="Close All" IsEnabled="{QC:Binding '$P > 0', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Visibility="{QC:MultiBinding '($P1 > 0) || ($P2) ? Visibility.Visible : Visibility.Collapsed', P1={Binding Path=NumberOfCompareWindowsStillOpen}, P2={Binding Path=IsRunningCompareFilesCommand}}" Height="22" VerticalAlignment="Top" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." />
+		</WrapPanel>
+	</Grid>
+</UserControl>

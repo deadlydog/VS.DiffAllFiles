@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using VS_DiffAllFiles.Settings;
 using VS_DiffAllFiles.TeamExplorerBaseClasses;
 
@@ -181,6 +182,12 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		}
 
 		/// <summary>
+		/// Asynchronously launch the diff tools to compare the files.
+		/// </summary>
+		/// <param name="itemStatusTypesToCompare">The files that should be compared.</param>
+		public abstract System.Threading.Tasks.Task ComparePendingChanges(ItemStatusTypesToCompare itemStatusTypesToCompare);
+
+		/// <summary>
 		/// The possible file versions to compare against.
 		/// </summary>
 		public abstract IEnumerable<CompareVersion> CompareVersions { get; }
@@ -189,7 +196,12 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Gets if the Version Control provider is available or not.
 		/// <para>Commands should be disabled when version control is not available, as it is needed in order to compare files.</para>
 		/// </summary>
-		public abstract bool IsVersionControlServiceAvailable { get; set; }
+		public bool IsVersionControlServiceAvailable
+		{
+			get { return _isVersionControlAvailable; }
+			set { _isVersionControlAvailable = value; NotifyPropertyChanged("IsVersionControlServiceAvailable"); }
+		}
+		private bool _isVersionControlAvailable = false;
 
 		/// <summary>
 		/// Gets the Settings to use.
@@ -197,6 +209,17 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		public DiffAllFilesSettings Settings
 		{
 			get { return DiffAllFilesSettings.CurrentSettings; }
+		}
+
+		/// <summary>
+		/// Refresh the section contents.
+		/// </summary>
+		public override void Refresh()
+		{
+			base.Refresh();
+			NotifyPropertyChanged("IsVersionControlServiceAvailable");
+			NotifyPropertyChanged("IsCompareAllFilesEnabled");
+			NotifyPropertyChanged("IsCompareSelectedFilesEnabled");
 		}
 
 		/// <summary>

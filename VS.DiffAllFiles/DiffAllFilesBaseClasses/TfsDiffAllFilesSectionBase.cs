@@ -15,10 +15,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		public async override void Refresh()
 		{
-			base.Refresh();
-
-			// Make sure we can still connect to the version control.
+			// Make sure we can still connect to the version control before refreshing any other child controls.
 			IsVersionControlServiceAvailable = await GetIfVersionControlServiceIsAvailable();
+
+			base.Refresh();
 		}
 
 		private async Task<bool> GetIfVersionControlServiceIsAvailable()

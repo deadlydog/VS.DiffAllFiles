@@ -19,7 +19,7 @@ using Microsoft.TeamFoundation.VersionControl.Controls.Extensibility;
 namespace VS_DiffAllFiles
 {
 	/// <summary>
-	/// Selected file info section.
+	/// Diff All Files section in the Pending Changes window.
 	/// </summary>
 	[TeamExplorerSection(PendingChangesSection.SectionId, TeamExplorerPageIds.PendingChanges, 35)]
 	public class PendingChangesSection : TfsDiffAllFilesSectionBase
@@ -104,7 +104,7 @@ namespace VS_DiffAllFiles
 
 		private CancellationTokenSource _compareTasksCancellationTokenSource = new CancellationTokenSource();
 
-		public async Task ComparePendingChanges(ItemStatusTypesToCompare itemStatusTypesToCompare)
+		public override async Task ComparePendingChanges(ItemStatusTypesToCompare itemStatusTypesToCompare)
 		{
 			// Set the Busy flag while we work.
 			this.IsBusy = true;
@@ -463,25 +463,6 @@ namespace VS_DiffAllFiles
 		private readonly List<CompareVersion> _compareVersions = new List<CompareVersion> { CompareVersion.WorkspaceVersion, CompareVersion.LatestVersion };
 
 		/// <summary>
-		/// Gets if the Version Control provider is available or not.
-		/// <para>Commands should be disabled when version control is not available, as it is needed in order to compare files.</para>
-		/// </summary>
-		public override bool IsVersionControlServiceAvailable
-		{
-			get { return _isVersionControlAvailable; }
-			set
-			{
-				_isVersionControlAvailable = value;
-				NotifyPropertyChanged("IsVersionControlServiceAvailable");
-				NotifyPropertyChanged("IsCompareAllFilesEnabled");
-				NotifyPropertyChanged("IsCompareSelectedFilesEnabled");
-				NotifyPropertyChanged("IsCompareIncludedFilesEnabled");
-				NotifyPropertyChanged("IsCompareExcludedFilesEnabled");
-			}
-		}
-		private bool _isVersionControlAvailable = false;
-
-		/// <summary>
 		/// Cancel any running operations.
 		/// </summary>
 		public override void Cancel()
@@ -489,6 +470,16 @@ namespace VS_DiffAllFiles
 			_cancelComparingFiles = true;
 		}
 		private bool _cancelComparingFiles = false;
+
+		/// <summary>
+		/// Refresh the section contents.
+		/// </summary>
+		public override async void Refresh()
+		{
+			base.Refresh();
+			NotifyPropertyChanged("IsCompareIncludedFilesEnabled");
+			NotifyPropertyChanged("IsCompareExcludedFilesEnabled");
+		}
 
 		/// <summary>
 		/// Launches the diff tool to compare the next set of files in the currently running compare files set.

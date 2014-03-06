@@ -164,6 +164,13 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\VS.DiffAllFiles\ChangesetDetailsSection.cs">
+      <Link>ChangesetDetailsSection.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\ChangesetDetailsSectionControl.xaml.cs">
+      <Link>ChangesetDetailsSectionControl.xaml.cs</Link>
+      <DependentUpon>ChangesetDetailsSectionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\CompareVersion.cs">
       <Link>FilesFromShared\DiffAllFilesBaseClasses\CompareVersion.cs</Link>
     </Compile>
@@ -267,6 +274,11 @@
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Controls.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="..\VS.DiffAllFiles\ChangesetDetailsSectionControl.xaml">
+      <Link>ChangesetDetailsSectionControl.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="..\VS.DiffAllFiles\PendingChangesSectionControl.xaml">
       <Link>FilesFromShared\PendingChangesSectionControl.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
