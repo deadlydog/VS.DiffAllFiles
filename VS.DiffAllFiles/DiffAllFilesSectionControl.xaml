@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="VS_DiffAllFiles.PendingChangesSectionControl"
+﻿<UserControl x:Class="VS_DiffAllFiles.DiffAllFilesSectionControl"
 						 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -27,9 +27,9 @@
 			<WrapPanel Orientation="Horizontal" Visibility="{QC:Binding '$P ? Visibility.Collapsed : Visibility.Visible', P={Binding Path=IsRunningCompareFilesCommand}}">
 				<Button Content="All Files" IsEnabled="{Binding Path=IsCompareAllFilesEnabled}" Click="btnDiffAllFiles_Click" ToolTip="Compare all files." />
 				<Button Content="Selected" IsEnabled="{Binding Path=IsCompareSelectedFilesEnabled}" Click="btnDiffSelectedFiles_Click" ToolTip="Compare only selected files." />
-				<Button Content="Included" IsEnabled="{Binding Path=IsCompareIncludedFilesEnabled}" Click="btnDiffIncludedFiles_Click" ToolTip="Compare only included files." />
-				<Button Content="Excluded" IsEnabled="{Binding Path=IsCompareExcludedFilesEnabled}" Click="btnDiffExcludedFiles_Click" ToolTip="Compare only excluded files." />
-				<ComboBox ItemsSource="{Binding Path=CompareVersions}" SelectedItem="{Binding Path=Settings.PendingChangesCompareVersion}" Width="130" ToolTip="The file version to compare the local changes against." />
+				<Button Content="Included" IsEnabled="{Binding Path=IsCompareIncludedFilesEnabled}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsCompareIncludedFilesAvailable}}" Click="btnDiffIncludedFiles_Click" ToolTip="Compare only included files." />
+				<Button Content="Excluded" IsEnabled="{Binding Path=IsCompareExcludedFilesEnabled}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsCompareExcludedFilesAvailable}}" Click="btnDiffExcludedFiles_Click" ToolTip="Compare only excluded files." />
+				<ComboBox ItemsSource="{Binding Path=CompareVersions}" SelectedItem="{Binding Path=Settings.PendingChangesCompareVersion}" Width="140" ToolTip="The file version to compare the local changes against." />
 			</WrapPanel>
 
 			<!-- Currently Comparing Files View -->

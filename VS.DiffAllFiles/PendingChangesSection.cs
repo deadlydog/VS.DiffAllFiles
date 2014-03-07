@@ -42,7 +42,7 @@ namespace VS_DiffAllFiles
 			this.Title = "Diff All Files";
 			this.IsExpanded = true;
 			this.IsBusy = false;
-			this.SectionContent = new PendingChangesSectionControl(this);
+			this.SectionContent = new DiffAllFilesSectionControl(this);
 		}
 
 		/// <summary>
@@ -441,17 +441,33 @@ namespace VS_DiffAllFiles
 				((_pendingChangesService.SelectedIncludedItems.Length + _pendingChangesService.SelectedExcludedItems.Length) > 0); }
 		}
 
-		public bool IsCompareIncludedFilesEnabled
+		/// <summary>
+		/// Gets if the Compare Included Files command should be enabled.
+		/// </summary>
+		public override bool IsCompareIncludedFilesEnabled
 		{
 			get { return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable && 
 				((_pendingChangesService.IncludedChanges.Length + _pendingChangesService.FilteredIncludedChanges.Length) > 0); }
 		}
 
-		public bool IsCompareExcludedFilesEnabled
+		/// <summary>
+		/// Gets if the Compare Excluded Files command should be enabled.
+		/// </summary>
+		public override bool IsCompareExcludedFilesEnabled
 		{
 			get { return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable && 
 				((_pendingChangesService.ExcludedChanges.Length + _pendingChangesService.FilteredExcludedChanges.Length) > 0); }
 		}
+
+		/// <summary>
+		/// Gets if the Compare Included Files command should be an option for the user to use.
+		/// </summary>
+		public override bool IsCompareIncludedFilesAvailable { get { return true; } }
+
+		/// <summary>
+		/// Gets if the Compare Excluded Files command should be an option for the user to use.
+		/// </summary>
+		public override bool IsCompareExcludedFilesAvailable { get { return true; } }
 
 		/// <summary>
 		/// The possible file versions to compare against.

@@ -107,6 +107,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ShelvesetDetailsSection.cs" />
+    <Compile Include="GitChangesSection.cs" />
+    <Compile Include="GitCommitDetailsSection.cs" />
     <Compile Include="ChangesetDetailsSection.cs" />
     <Compile Include="DiffAllFilesBaseClasses\CompareVersion.cs" />
     <Compile Include="DiffAllFilesBaseClasses\DiffAllFilesSectionBase.cs" />
@@ -116,11 +119,8 @@
     <Compile Include="DiffAllFilesHelper.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="PackageHelper.cs" />
-    <Compile Include="ChangesetDetailsSectionControl.xaml.cs">
-      <DependentUpon>ChangesetDetailsSectionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PendingChangesSectionControl.xaml.cs">
-      <DependentUpon>PendingChangesSectionControl.xaml</DependentUpon>
+    <Compile Include="DiffAllFilesSectionControl.xaml.cs">
+      <DependentUpon>DiffAllFilesSectionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="PendingChangesSection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -138,11 +138,7 @@
     <Compile Include="VS.DiffAllFilesPackage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="ChangesetDetailsSectionControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="PendingChangesSectionControl.xaml">
+    <Page Include="DiffAllFilesSectionControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

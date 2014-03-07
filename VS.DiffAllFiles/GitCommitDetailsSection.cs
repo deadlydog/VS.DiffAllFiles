@@ -13,13 +13,13 @@ namespace VS_DiffAllFiles
 	/// <summary>
 	/// Diff All Files section in the Changeset Details window.
 	/// </summary>
-	[TeamExplorerSection(ChangesetDetailsSection.SectionId, TeamExplorerPageIds.ChangesetDetails, 35)]
-	public class ChangesetDetailsSection : TfsDiffAllFilesSectionBase
+	[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 35)]
+	public class GitCommitDetailsSection : TfsDiffAllFilesSectionBase
 	{
 		/// <summary>
 		/// The unique ID of this section.
 		/// </summary>
-		public const string SectionId = "FB6A1BD4-0247-40A4-B476-7C8708AC0CDE";
+		public const string SectionId = "027EE930-003B-127D-927E-1760BA9BC3B5";
 
 		/// <summary>
 		/// Handle to the Pending Changes Extensibility service.
@@ -29,7 +29,7 @@ namespace VS_DiffAllFiles
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PendingChangesSection"/> class.
 		/// </summary>
-		public ChangesetDetailsSection() : base()
+		public GitCommitDetailsSection() : base()
 		{
 			this.Title = "Diff All Files";
 			this.IsExpanded = true;

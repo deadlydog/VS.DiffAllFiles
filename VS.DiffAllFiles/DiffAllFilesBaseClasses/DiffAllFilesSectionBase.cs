@@ -107,6 +107,38 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		public abstract bool IsCompareSelectedFilesEnabled { get; }
 
 		/// <summary>
+		/// Gets if the Compare Included Files command should be enabled.
+		/// </summary>
+		public virtual bool IsCompareIncludedFilesEnabled
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// Gets if the Compare Included Files command should be an option for the user to use.
+		/// </summary>
+		public virtual bool IsCompareIncludedFilesAvailable
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// Gets if the Compare Excluded Files command should be enabled.
+		/// </summary>
+		public virtual bool IsCompareExcludedFilesEnabled
+		{
+			get { return false; }
+		}
+
+		/// <summary>
+		/// Gets if the Compare Excluded Files command should be an option for the user to use.
+		/// </summary>
+		public virtual bool IsCompareExcludedFilesAvailable
+		{
+			get { return false; }
+		}
+
+		/// <summary>
 		/// Gets if one of the commands to compare files is currently running.
 		/// </summary>
 		public bool IsRunningCompareFilesCommand

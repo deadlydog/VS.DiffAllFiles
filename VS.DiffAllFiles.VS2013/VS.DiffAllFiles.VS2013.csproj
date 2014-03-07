@@ -165,11 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\VS.DiffAllFiles\ChangesetDetailsSection.cs">
-      <Link>ChangesetDetailsSection.cs</Link>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\ChangesetDetailsSectionControl.xaml.cs">
-      <Link>ChangesetDetailsSectionControl.xaml.cs</Link>
-      <DependentUpon>ChangesetDetailsSectionControl.xaml</DependentUpon>
+      <Link>FilesFromShared\ChangesetDetailsSection.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\CompareVersion.cs">
       <Link>FilesFromShared\DiffAllFilesBaseClasses\CompareVersion.cs</Link>
@@ -189,6 +185,16 @@
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesHelper.cs">
       <Link>FilesFromShared\DiffAllFilesHelper.cs</Link>
     </Compile>
+    <Compile Include="..\VS.DiffAllFiles\DiffAllFilesSectionControl.xaml.cs">
+      <Link>FilesFromShared\DiffAllFilesSectionControl.xaml.cs</Link>
+      <DependentUpon>DiffAllFilesSectionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\GitChangesSection.cs">
+      <Link>FilesFromShared\GitChangesSection.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\GitCommitDetailsSection.cs">
+      <Link>FilesFromShared\GitCommitDetailsSection.cs</Link>
+    </Compile>
     <Compile Include="..\VS.DiffAllFiles\Guids.cs">
       <Link>FilesFromShared\Guids.cs</Link>
     </Compile>
@@ -198,10 +204,6 @@
     <Compile Include="..\VS.DiffAllFiles\PendingChangesSection.cs">
       <Link>FilesFromShared\PendingChangesSection.cs</Link>
     </Compile>
-    <Compile Include="..\VS.DiffAllFiles\PendingChangesSectionControl.xaml.cs">
-      <Link>FilesFromShared\PendingChangesSectionControl.xaml.cs</Link>
-      <DependentUpon>PendingChangesSectionControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="..\VS.DiffAllFiles\Settings\DiffAllFilesSettings.cs">
       <Link>FilesFromShared\Settings\DiffAllFilesSettings.cs</Link>
       <SubType>Component</SubType>
@@ -209,6 +211,9 @@
     <Compile Include="..\VS.DiffAllFiles\Settings\DiffAllFilesSettingsPageControl.xaml.cs">
       <Link>FilesFromShared\Settings\DiffAllFilesSettingsPageControl.xaml.cs</Link>
       <DependentUpon>DiffAllFilesSettingsPageControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\ShelvesetDetailsSection.cs">
+      <Link>FilesFromShared\ShelvesetDetailsSection.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\TeamExplorerBaseClasses\TeamExplorerBase.cs">
       <Link>FilesFromShared\TeamExplorerBaseClasses\TeamExplorerBase.cs</Link>
@@ -249,6 +254,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\VS.DiffAllFiles\packages.config">
+      <Link>FilesFromShared\packages.config</Link>
+    </None>
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
@@ -274,13 +282,8 @@
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Controls.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="..\VS.DiffAllFiles\ChangesetDetailsSectionControl.xaml">
-      <Link>ChangesetDetailsSectionControl.xaml</Link>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="..\VS.DiffAllFiles\PendingChangesSectionControl.xaml">
-      <Link>FilesFromShared\PendingChangesSectionControl.xaml</Link>
+    <Page Include="..\VS.DiffAllFiles\DiffAllFilesSectionControl.xaml">
+      <Link>FilesFromShared\DiffAllFilesSectionControl.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
