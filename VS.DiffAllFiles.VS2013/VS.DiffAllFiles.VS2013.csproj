@@ -25,7 +25,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;VS2013</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -49,6 +49,9 @@
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Controls, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>VersionSpecificReferences\Microsoft.TeamFoundation.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.TeamFoundation.Git.Controls, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>VersionSpecificReferences\Microsoft.TeamFoundation.Git.Controls.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Client.dll</HintPath>
@@ -195,6 +198,9 @@
     <Compile Include="..\VS.DiffAllFiles\GitCommitDetailsSection.cs">
       <Link>FilesFromShared\GitCommitDetailsSection.cs</Link>
     </Compile>
+    <Compile Include="..\VS.DiffAllFiles\GitDiffAllFilesSectionBase.cs">
+      <Link>FilesFromShared\GitDiffAllFilesSectionBase.cs</Link>
+    </Compile>
     <Compile Include="..\VS.DiffAllFiles\Guids.cs">
       <Link>FilesFromShared\Guids.cs</Link>
     </Compile>
@@ -277,6 +283,7 @@
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.dll" />
     <Resource Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.xml" />
+    <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Git.Controls.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Client.dll" />
     <Resource Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Client.xml" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Controls.dll" />

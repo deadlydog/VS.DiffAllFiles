@@ -22,11 +22,13 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 		public enum Values
 		{
-			PreviousVersion = 1,
-			WorkspaceVersion = 2,
-			LatestVersion = 3
+			UnmodifiedVersion = 1,
+			PreviousVersion = 2,
+			WorkspaceVersion = 3,
+			LatestVersion = 4
 		}
 
+		public static readonly CompareVersion UnmodifiedVersion = new CompareVersion(Values.UnmodifiedVersion, "Unmodified Version");
 		public static readonly CompareVersion PreviousVersion = new CompareVersion(Values.PreviousVersion, "Previous Version");
 		public static readonly CompareVersion WorkspaceVersion = new CompareVersion(Values.WorkspaceVersion, "Workspace Version");
 		public static readonly CompareVersion LatestVersion = new CompareVersion(Values.LatestVersion, "Latest Version");
@@ -40,6 +42,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			CompareVersion version = null;
 			switch (value)
 			{
+				case CompareVersion.Values.UnmodifiedVersion:
+					version = CompareVersion.UnmodifiedVersion;
+					break;
+
 				case CompareVersion.Values.PreviousVersion:
 					version = CompareVersion.PreviousVersion;
 					break;

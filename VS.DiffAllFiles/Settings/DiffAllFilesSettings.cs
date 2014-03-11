@@ -50,6 +50,9 @@ namespace VS_DiffAllFiles.Settings
 			// Initialize Per-Window Settings.
 			PendingChangesCompareVersionValue = CompareVersion.WorkspaceVersion.Value;
 			ChangesetDetailsCompareVersionValue = CompareVersion.PreviousVersion.Value;
+			ShelvesetDetailsCompareVersionValue = CompareVersion.UnmodifiedVersion.Value;
+			GitChangesCompareVersionValue = CompareVersion.UnmodifiedVersion.Value;
+			GitCommitDetailsCompareVersionValue = CompareVersion.UnmodifiedVersion.Value;
 		}
 
 		#region Global Extension Settings
@@ -141,7 +144,7 @@ namespace VS_DiffAllFiles.Settings
 			get { return _pendingChangesCompareVersionValue; }
 			set { _pendingChangesCompareVersionValue = value; NotifyPropertyChanged("PendingChangesCompareVersionValue"); NotifyPropertyChanged("PendingChangesCompareVersion"); }
 		}
-		private CompareVersion.Values _pendingChangesCompareVersionValue = CompareVersion.Values.PreviousVersion;
+		private CompareVersion.Values _pendingChangesCompareVersionValue = CompareVersion.Values.WorkspaceVersion;
 		
 		public CompareVersion PendingChangesCompareVersion
 		{
@@ -163,6 +166,54 @@ namespace VS_DiffAllFiles.Settings
 		{
 			get { return CompareVersion.GetCompareVersionFromValue(ChangesetDetailsCompareVersionValue); }
 			set { ChangesetDetailsCompareVersionValue = value.Value; SaveSettingsToStorage(); }
+		}
+
+		/// <summary>
+		/// The version to compare against when in the Shelveset Details window.
+		/// </summary>
+		public CompareVersion.Values ShelvesetDetailsCompareVersionValue
+		{
+			get { return _shelvesetDetailsCompareVersionValue; }
+			set { _shelvesetDetailsCompareVersionValue = value; NotifyPropertyChanged("ShelvesetDetailsCompareVersionValue"); NotifyPropertyChanged("ShelvesetDetailsCompareVersion"); }
+		}
+		private CompareVersion.Values _shelvesetDetailsCompareVersionValue = CompareVersion.Values.UnmodifiedVersion;
+
+		public CompareVersion ShelvesetDetailsCompareVersion
+		{
+			get { return CompareVersion.GetCompareVersionFromValue(ShelvesetDetailsCompareVersionValue); }
+			set { ShelvesetDetailsCompareVersionValue = value.Value; SaveSettingsToStorage(); }
+		}
+
+		/// <summary>
+		/// The version to compare against when in the Git Changes window.
+		/// </summary>
+		public CompareVersion.Values GitChangesCompareVersionValue
+		{
+			get { return _gitChangesCompareVersionValue; }
+			set { _gitChangesCompareVersionValue = value; NotifyPropertyChanged("GitChangesCompareVersionValue"); NotifyPropertyChanged("GitChangesCompareVersion"); }
+		}
+		private CompareVersion.Values _gitChangesCompareVersionValue = CompareVersion.Values.UnmodifiedVersion;
+
+		public CompareVersion GitChangesCompareVersion
+		{
+			get { return CompareVersion.GetCompareVersionFromValue(GitChangesCompareVersionValue); }
+			set { GitChangesCompareVersionValue = value.Value; SaveSettingsToStorage(); }
+		}
+
+		/// <summary>
+		/// The version to compare against when in the Git Commit Details window.
+		/// </summary>
+		public CompareVersion.Values GitCommitDetailsCompareVersionValue
+		{
+			get { return _gitCommitDetailsCompareVersionValue; }
+			set { _gitCommitDetailsCompareVersionValue = value; NotifyPropertyChanged("GitCommitDetailsCompareVersionValue"); NotifyPropertyChanged("GitCommitDetailsCompareVersion"); }
+		}
+		private CompareVersion.Values _gitCommitDetailsCompareVersionValue = CompareVersion.Values.UnmodifiedVersion;
+
+		public CompareVersion GitCommitDetailsCompareVersion
+		{
+			get { return CompareVersion.GetCompareVersionFromValue(GitCommitDetailsCompareVersionValue); }
+			set { GitCommitDetailsCompareVersionValue = value.Value; SaveSettingsToStorage(); }
 		}
 
 		#endregion

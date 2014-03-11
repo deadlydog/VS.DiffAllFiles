@@ -29,7 +29,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;VS2012</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -192,6 +192,9 @@
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesSectionControl.xaml.cs">
       <Link>FilesFromShared\DiffAllFilesSectionControl.xaml.cs</Link>
       <DependentUpon>DiffAllFilesSectionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\GitDiffAllFilesSectionBase.cs">
+      <Link>FilesFromShared\GitDiffAllFilesSectionBase.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\Guids.cs">
       <Link>FilesFromShared\Guids.cs</Link>

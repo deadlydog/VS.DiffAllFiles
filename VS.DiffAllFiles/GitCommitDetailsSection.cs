@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.TeamFoundation.Controls;
-using Microsoft.TeamFoundation.VersionControl.Controls.Extensibility;
+using Microsoft.TeamFoundation.Git.Controls.Extensibility;
 using VS_DiffAllFiles.DiffAllFilesBaseClasses;
 
 namespace VS_DiffAllFiles
@@ -13,8 +13,8 @@ namespace VS_DiffAllFiles
 	/// <summary>
 	/// Diff All Files section in the Changeset Details window.
 	/// </summary>
-	[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 35)]
-	public class GitCommitDetailsSection : TfsDiffAllFilesSectionBase
+	[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 25)]
+	public class GitCommitDetailsSection : GitDiffAllFilesSectionBase
 	{
 		/// <summary>
 		/// The unique ID of this section.
@@ -22,10 +22,10 @@ namespace VS_DiffAllFiles
 		public const string SectionId = "027EE930-003B-127D-927E-1760BA9BC3B5";
 
 		/// <summary>
-		/// Handle to the Pending Changes Extensibility service.
+		/// Handle to the Commit Details Extensibility service.
 		/// </summary>
-		private IPendingChangesExt _pendingChangesService = null;
-
+		private ICommitDetailsExt _commitDetailsService = null;
+		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PendingChangesSection"/> class.
 		/// </summary>
@@ -45,11 +45,11 @@ namespace VS_DiffAllFiles
 			base.Initialize(sender, e);
 
 			// Find the Pending Changes extensibility service and save a handle to it.
-			_pendingChangesService = this.GetService<IPendingChangesExt>();
+			_commitDetailsService = this.GetService<ICommitDetailsExt>();
 
 			// Register for property change notifications on the Pending Changes window.
-			if (_pendingChangesService != null)
-				_pendingChangesService.PropertyChanged += pendingChangesService_PropertyChanged;
+			if (_commitDetailsService != null)
+				_commitDetailsService.PropertyChanged += pendingChangesService_PropertyChanged;
 
 			// Make sure the Version Control is available on load.
 			Refresh();
@@ -60,9 +60,9 @@ namespace VS_DiffAllFiles
 		/// </summary>
 		public override void Dispose()
 		{
-			if (_pendingChangesService != null)
-				_pendingChangesService.PropertyChanged -= pendingChangesService_PropertyChanged;
-			_pendingChangesService = null;
+			if (_commitDetailsService != null)
+				_commitDetailsService.PropertyChanged -= pendingChangesService_PropertyChanged;
+			_commitDetailsService = null;
 
 			base.Dispose();
 		}
@@ -79,8 +79,7 @@ namespace VS_DiffAllFiles
 					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
 
-				case "SelectedExcludedItems":
-				case "SelectedIncludedItems":
+				case "SelectedChanges":
 					NotifyPropertyChanged("IsCompareSelectedFilesEnabled");
 					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
@@ -89,7 +88,7 @@ namespace VS_DiffAllFiles
 
 		public override async Task ComparePendingChanges(ItemStatusTypesToCompare itemStatusTypesToCompare)
 		{
-			var a = _pendingChangesService;
+			var a = _commitDetailsService;
 			var b = a;
 		}
 
@@ -109,7 +108,7 @@ namespace VS_DiffAllFiles
 			get
 			{
 				return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable &&
-					((_pendingChangesService.SelectedIncludedItems.Length + _pendingChangesService.SelectedExcludedItems.Length) > 0);
+					(_commitDetailsService.SelectedChanges.Count > 0);
 			}
 		}
 

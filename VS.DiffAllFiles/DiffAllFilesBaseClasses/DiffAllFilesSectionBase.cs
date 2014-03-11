@@ -78,7 +78,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			if (Settings != null)
 			{
 				Settings.PropertyChanged += Settings_PropertyChanged;
+
+				// Notify all of the properties to refresh, since the Settings source was refreshed.
 				NotifyPropertyChanged("NextSetOfFilesCommandLabel");
+				NotifyPropertyChanged("CompareVersionToUse");
 			}
 		}
 
@@ -87,10 +90,20 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
-		void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals("NumberOfFilesToCompareAtATime"))
-				NotifyPropertyChanged("NextSetOfFilesCommandLabel");
+			switch (e.PropertyName)
+			{
+				case "NumberOfFilesToCompareAtATime": NotifyPropertyChanged("NextSetOfFilesCommandLabel"); break;
+
+				case "PendingChangesCompareVersion":
+				case "ChangesetDetailsCompareVersion":
+				case "ShelvesetDetailsCompareVersion":
+				case "GitChangesCompareVersion":
+				case "GitCommitDetailsCompareVersion":
+					NotifyPropertyChanged("CompareVersionToUse"); 
+					break;
+			}
 		}
 
 		#endregion
@@ -225,6 +238,39 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		public abstract IEnumerable<CompareVersion> CompareVersions { get; }
 
 		/// <summary>
+		/// The file version to compare against.
+		/// </summary>
+		public CompareVersion CompareVersionToUse
+		{
+			get
+			{
+				CompareVersion compareVersionToUse = CompareVersion.UnmodifiedVersion;
+				if (this is PendingChangesSection) compareVersionToUse = Settings.PendingChangesCompareVersion;
+				else if (this is ChangesetDetailsSection) compareVersionToUse = Settings.ChangesetDetailsCompareVersion;
+				else if (this is ShelvesetDetailsSection) compareVersionToUse = Settings.ShelvesetDetailsCompareVersion;
+// VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013.
+#if (!VS2012)
+				else if (this is GitChangesSection) compareVersionToUse = Settings.GitChangesCompareVersion;
+				else if (this is GitCommitDetailsSection) compareVersionToUse = Settings.GitCommitDetailsCompareVersion;
+#endif
+				return compareVersionToUse;
+			}
+
+			set
+			{
+				CompareVersion compareVersionToUse = value;
+				if (this is PendingChangesSection) Settings.PendingChangesCompareVersion = compareVersionToUse;
+				else if (this is ChangesetDetailsSection) Settings.ChangesetDetailsCompareVersion = compareVersionToUse;
+				else if (this is ShelvesetDetailsSection) Settings.ShelvesetDetailsCompareVersion = compareVersionToUse;
+// VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013.
+#if (!VS2012)
+				else if (this is GitChangesSection) Settings.GitChangesCompareVersion = compareVersionToUse;
+				else if (this is GitCommitDetailsSection) Settings.GitCommitDetailsCompareVersion = compareVersionToUse;
+#endif
+			}
+		}
+
+		/// <summary>
 		/// Gets if the Version Control provider is available or not.
 		/// <para>Commands should be disabled when version control is not available, as it is needed in order to compare files.</para>
 		/// </summary>
@@ -246,13 +292,22 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <summary>
 		/// Refresh the section contents.
 		/// </summary>
-		public override void Refresh()
+		public override async void Refresh()
 		{
 			base.Refresh();
-			NotifyPropertyChanged("IsVersionControlServiceAvailable");
+
+			// Make sure we can still connect to the version control before refreshing any other child controls.
+			IsVersionControlServiceAvailable = await GetIfVersionControlServiceIsAvailable();
+
+			// Refresh the commands common to all sections.
 			NotifyPropertyChanged("IsCompareAllFilesEnabled");
 			NotifyPropertyChanged("IsCompareSelectedFilesEnabled");
 		}
+
+		/// <summary>
+		/// Gets if the version control service is available or not.
+		/// </summary>
+		protected abstract Task<bool> GetIfVersionControlServiceIsAvailable();
 
 		/// <summary>
 		/// Launches the diff tool to compare the next set of files in the currently running compare files set.
