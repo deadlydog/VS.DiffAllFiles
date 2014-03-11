@@ -182,6 +182,9 @@
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\ItemStatusTypesToCompare.cs">
       <Link>FilesFromShared\DiffAllFilesBaseClasses\ItemStatusTypesToCompare.cs</Link>
     </Compile>
+    <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\SectionTypes.cs">
+      <Link>FilesFromShared\DiffAllFilesBaseClasses\SectionTypes.cs</Link>
+    </Compile>
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\TfsDiffAllFilesSectionBase.cs">
       <Link>FilesFromShared\DiffAllFilesBaseClasses\TfsDiffAllFilesSectionBase.cs</Link>
     </Compile>

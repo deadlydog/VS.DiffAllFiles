@@ -110,6 +110,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DiffAllFilesBaseClasses\SectionTypes.cs" />
     <Compile Include="GitDiffAllFilesSectionBase.cs" />
     <Compile Include="ShelvesetDetailsSection.cs" />
     <Compile Include="GitChangesSection.cs" />

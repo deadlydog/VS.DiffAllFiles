@@ -211,8 +211,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			// Get the version to compare the files against.
 			CompareVersion compareVersion = CompareVersionToUse;
 
-			// Get if this change is in a Shelveset or not.
-			bool isInShelveset = this is ShelvesetDetailsSection;
+			// Get if these changes are in a Shelveset or not.
+			bool isInShelveset = (SectionType == SectionTypes.ShelvesetDetails);
 
 			// Loop through and diff each of the pending changes.
 			foreach (var pendingChange in itemsToCompare)
@@ -237,7 +237,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 							break;
 
 						case CompareVersion.Values.WorkspaceVersion:
-							versionSpecToCompareAgainst = string.Format("W\"{0}\";\"{1}\"", _pendingChangesService.Workspace.Name, _pendingChangesService.Workspace.OwnerName);
+							// Pending Changes defaults to comparing against the workspace version, so we don't need to explicitly set it when in Pending Changes as it will change the label that shows on the diff tool.
+							if (SectionType != SectionTypes.PendingChanges)
+								versionSpecToCompareAgainst = string.Format("W\"{0}\";\"{1}\"", _pendingChangesService.Workspace.Name, _pendingChangesService.Workspace.OwnerName);
 							break;
 
 						case CompareVersion.Values.LatestVersion:
@@ -246,19 +248,23 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					}
 
 					// Build the arguments to pass to TF.exe.
-					string diffTooProcessArguments = string.Empty;
+					string diffToolProcessArguments = string.Empty;
 					if (isInShelveset)
-						diffTooProcessArguments = string.Format("diff /shelveset:\"{0}\";\"{1}\" {2}", pendingChange.PendingSetName, pendingChange.PendingSetOwner, pendingChange.LocalOrServerItem);
+						diffToolProcessArguments = string.Format("diff /shelveset:\"{0}\";\"{1}\" \"{2}\"", pendingChange.PendingSetName, pendingChange.PendingSetOwner, pendingChange.LocalOrServerItem);
 					else
-						diffTooProcessArguments = string.Format("diff \"{0}\" /version:{1}", pendingChange.LocalOrServerItem, versionSpecToCompareAgainst);
-					
+					{
+						diffToolProcessArguments = string.Format("diff \"{0}\"", pendingChange.LocalOrServerItem);
+						if (!string.IsNullOrWhiteSpace(versionSpecToCompareAgainst))
+							diffToolProcessArguments = string.Format("{0} /version:{1}", diffToolProcessArguments, versionSpecToCompareAgainst);
+					}
+
 					// Launch the configured diff tool to diff this file.
 					var diffToolProcess = new System.Diagnostics.Process
 					{
 						StartInfo =
 						{
 							FileName = tfFilePath,
-							Arguments = diffTooProcessArguments,
+							Arguments = diffToolProcessArguments,
 							CreateNoWindow = true,
 							UseShellExecute = false
 						}

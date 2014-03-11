@@ -43,6 +43,18 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			// Listen for when we launch new diff tool windows, and when the user closes them.
 			ExternalDiffToolProcessIdsRunning.CollectionChanged += ExternalDiffToolProcessIdsRunning_CollectionChanged;
 			VsDiffToolTabCaptionsStillOpen.CollectionChanged += VsDiffToolTabCaptionsStillOpen_CollectionChanged;
+
+			// Set the type of section that this is.
+			var sectionType = SectionTypes.None;
+			if (this is PendingChangesSection) sectionType = SectionTypes.PendingChanges;
+			else if (this is ChangesetDetailsSection) sectionType = SectionTypes.ChangesetDetails;
+			else if (this is ShelvesetDetailsSection) sectionType = SectionTypes.ShelvesetDetails;
+// VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013.
+#if (!VS2012)
+			else if (this is GitChangesSection) sectionType = SectionTypes.GitChanges;
+			else if (this is GitCommitDetailsSection) sectionType = SectionTypes.GitCommitDetails;
+#endif
+			SectionType = sectionType;
 		}
 
 		#region Event Handlers
@@ -245,13 +257,13 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			get
 			{
 				CompareVersion compareVersionToUse = CompareVersion.UnmodifiedVersion;
-				if (this is PendingChangesSection) compareVersionToUse = Settings.PendingChangesCompareVersion;
-				else if (this is ChangesetDetailsSection) compareVersionToUse = Settings.ChangesetDetailsCompareVersion;
-				else if (this is ShelvesetDetailsSection) compareVersionToUse = Settings.ShelvesetDetailsCompareVersion;
+				if (SectionType == SectionTypes.PendingChanges) compareVersionToUse = Settings.PendingChangesCompareVersion;
+				else if (SectionType == SectionTypes.ChangesetDetails) compareVersionToUse = Settings.ChangesetDetailsCompareVersion;
+				else if (SectionType == SectionTypes.ShelvesetDetails) compareVersionToUse = Settings.ShelvesetDetailsCompareVersion;
 // VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013.
 #if (!VS2012)
-				else if (this is GitChangesSection) compareVersionToUse = Settings.GitChangesCompareVersion;
-				else if (this is GitCommitDetailsSection) compareVersionToUse = Settings.GitCommitDetailsCompareVersion;
+				else if (SectionType == SectionTypes.GitChanges) compareVersionToUse = Settings.GitChangesCompareVersion;
+				else if (SectionType == SectionTypes.GitCommitDetails) compareVersionToUse = Settings.GitCommitDetailsCompareVersion;
 #endif
 				return compareVersionToUse;
 			}
@@ -259,13 +271,13 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			set
 			{
 				CompareVersion compareVersionToUse = value;
-				if (this is PendingChangesSection) Settings.PendingChangesCompareVersion = compareVersionToUse;
-				else if (this is ChangesetDetailsSection) Settings.ChangesetDetailsCompareVersion = compareVersionToUse;
-				else if (this is ShelvesetDetailsSection) Settings.ShelvesetDetailsCompareVersion = compareVersionToUse;
+				if (SectionType == SectionTypes.PendingChanges) Settings.PendingChangesCompareVersion = compareVersionToUse;
+				else if (SectionType == SectionTypes.ChangesetDetails) Settings.ChangesetDetailsCompareVersion = compareVersionToUse;
+				else if (SectionType == SectionTypes.ShelvesetDetails) Settings.ShelvesetDetailsCompareVersion = compareVersionToUse;
 // VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013.
 #if (!VS2012)
-				else if (this is GitChangesSection) Settings.GitChangesCompareVersion = compareVersionToUse;
-				else if (this is GitCommitDetailsSection) Settings.GitCommitDetailsCompareVersion = compareVersionToUse;
+				else if (SectionType == SectionTypes.GitChanges) Settings.GitChangesCompareVersion = compareVersionToUse;
+				else if (SectionType == SectionTypes.GitCommitDetails) Settings.GitCommitDetailsCompareVersion = compareVersionToUse;
 #endif
 			}
 		}
@@ -378,6 +390,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		{
 			get { return ExternalDiffToolProcessIdsRunning.Count + VsDiffToolTabCaptionsStillOpen.Count; }
 		}
+
+		/// <summary>
+		/// Returns the type of section this class is.
+		/// </summary>
+		protected SectionTypes SectionType { get; private set; }
 
 		#endregion
 	}
