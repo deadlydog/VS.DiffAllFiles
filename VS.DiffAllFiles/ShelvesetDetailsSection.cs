@@ -13,7 +13,7 @@ namespace VS_DiffAllFiles
 	/// <summary>
 	/// Diff All Files section in the Changeset Details window.
 	/// </summary>
-	[TeamExplorerSection(ShelvesetDetailsSection.SectionId, TeamExplorerPageIds.ShelvesetDetails, 35)]
+	//[TeamExplorerSection(ShelvesetDetailsSection.SectionId, TeamExplorerPageIds.ShelvesetDetails, 35)]
 	public class ShelvesetDetailsSection : TfsDiffAllFilesSectionBase
 	{
 		/// <summary>

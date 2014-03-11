@@ -13,7 +13,7 @@ namespace VS_DiffAllFiles
 	/// <summary>
 	/// Diff All Files section in the Changeset Details window.
 	/// </summary>
-	[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 25)]
+	//[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 25)]
 	public class GitCommitDetailsSection : GitDiffAllFilesSectionBase
 	{
 		/// <summary>
