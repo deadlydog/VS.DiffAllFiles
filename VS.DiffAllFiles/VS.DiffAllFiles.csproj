@@ -184,6 +184,7 @@
   <ItemGroup>
     <Content Include="Resources\PackageIcon.png" />
     <Content Include="Resources\PackageIcon_Small.ico" />
+    <Content Include="Resources\PreviewImage.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

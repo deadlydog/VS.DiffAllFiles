@@ -278,6 +278,11 @@
     <Content Include="..\VS.DiffAllFiles\Resources\PackageIcon_Small.ico">
       <Link>FilesFromShared\Resources\PackageIcon_Small.ico</Link>
     </Content>
+    <Content Include="..\VS.DiffAllFiles\Resources\PreviewImage.png">
+      <Link>FilesFromShared\Resources\PreviewImage.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.dll" />
     <Resource Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.xml" />

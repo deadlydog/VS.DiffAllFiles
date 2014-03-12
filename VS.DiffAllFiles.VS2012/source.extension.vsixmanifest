@@ -5,6 +5,7 @@
 		<DisplayName>Diff All Files for VS2012</DisplayName>
 		<Description xml:space="preserve">Quickly and easily compare all files with pending changes, in a shelveset, or in a changeset to see what has changed. Supports both TFS and Git.</Description>
 		<Icon>FilesFromShared\Resources\PackageIcon.png</Icon>
+		<PreviewImage>FilesFromShared\Resources\PreviewImage.png</PreviewImage>
 		<Tags>Diff, Compare, All, Many, Multiple, Files, Items, TFS, TF, Team Foundation, TFVC, Git, Changes, Shelveset, Changeset, Commit</Tags>
 	</Metadata>
 	<Installation InstalledByMsi="false">
