@@ -27,7 +27,7 @@
 				<StackPanel Orientation="Vertical">
 					<CheckBox Content="Compare new files" IsChecked="{Binding Path=CompareNewFiles}" ToolTip="If files being added to source control should be compared." />
 					<CheckBox Content="Compare deleted files" IsChecked="{Binding Path=CompareDeletedFiles}" ToolTip="If files being deleted from source control should be compared." />
-					<CheckBox Content="Compare files whose contents have not changed (TFS only)" IsChecked="{Binding Path=CompareFilesNotChanged}" ToolTip="If files that are checked out of TFS, but not actually changed should be compared." />
+					<!--<CheckBox Content="Compare files whose contents have not changed (TFS only)" IsChecked="{Binding Path=CompareFilesNotChanged}" ToolTip="If files that are checked out of TFS, but not actually changed should be compared." />-->
 
 					<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
 						<Label Content="Compare up to this many files at a time:">

@@ -182,11 +182,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 			// Filter out added files if they should be skipped.
 			if (!settings.CompareNewFiles)
-				itemsToCompare = itemsToCompare.Where(p => p.ChangeType != ChangeType.Add && p.ChangeType != ChangeType.Branch && p.ChangeType != ChangeType.Undelete).ToList();
+				itemsToCompare = itemsToCompare.Where(p => !p.IsAdd && !p.IsBranch && !p.IsUndelete).ToList();
 
 			// Filter out deleted files if they should be skipped.
 			if (!settings.CompareDeletedFiles)
-				itemsToCompare = itemsToCompare.Where(p => p.ChangeType != ChangeType.Delete && p.ChangeType != ChangeType.SourceRename).ToList();
+				itemsToCompare = itemsToCompare.Where(p => !p.IsDelete).ToList();
 
 			// Filter out files that are on the list of file extensions to ignore.
 			itemsToCompare = itemsToCompare.Where(p =>
@@ -473,7 +473,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					break;
 
 				case CompareVersion.Values.LatestVersion:
-					source = (IDiffItem)new DiffItemVersionedFile(pendingChange.VersionControlServer, pendingChange.ServerItem, VersionSpec.Latest);
+					if (pendingChange.IsAdd)
+						source = new DiffItemPendingChangeBase(pendingChange);
+					else
+						source = (IDiffItem)new DiffItemVersionedFile(pendingChange.VersionControlServer, pendingChange.LocalOrServerItem, VersionSpec.Latest);
 					break;
 			}
 
