@@ -76,6 +76,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
 
+				case "ExcludedChanges":
+				case "FilteredExcludedChanges":
+					NotifyPropertyChanged("IsCompareAllFilesEnabled");
+					break;
+
 				case "SelectedExcludedItems":
 				case "SelectedIncludedItems":
 					NotifyPropertyChanged("IsCompareSelectedFilesEnabled");

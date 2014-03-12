@@ -38,10 +38,14 @@ namespace VS_DiffAllFiles
 
 			switch (e.PropertyName)
 			{
+				case "IncludedChanges":
+				case "FilteredIncludedChanges":
+					NotifyPropertyChanged("IsCompareIncludedFilesEnabled");
+					break;
+
 				case "ExcludedChanges":
 				case "FilteredExcludedChanges":
 					NotifyPropertyChanged("IsCompareExcludedFilesEnabled");
-					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
 			}
 		}

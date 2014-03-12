@@ -11,13 +11,13 @@
 			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
 			<Setter Property="Padding" Value="5,2,5,2" />
 			<Setter Property="Margin" Value="0,2,5,2" />
-			<Setter Property="Height" Value="22" />
+			<Setter Property="Height" Value="25" />
 			<Setter Property="VerticalAlignment" Value="Center" />
 		</Style>
 		<Style TargetType="{x:Type ComboBox}">
 			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
 			<Setter Property="Margin" Value="0,2,5,2" />
-			<Setter Property="Height" Value="22" />
+			<Setter Property="Height" Value="25" />
 		</Style>
 		<Style TargetType="{x:Type TextBlock}">
 			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
