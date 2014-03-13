@@ -276,12 +276,10 @@
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\VS.DiffAllFiles\Resources\PackageIcon.png">
-      <Link>FilesFromShared\Resources\PackageIcon.png</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="..\VS.DiffAllFiles\Resources\PackageIcon_Small.ico">
       <Link>FilesFromShared\Resources\PackageIcon_Small.ico</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="..\VS.DiffAllFiles\Resources\PreviewImage.png">
       <Link>FilesFromShared\Resources\PreviewImage.png</Link>

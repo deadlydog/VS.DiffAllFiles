@@ -47,9 +47,9 @@
 				</StackPanel>
 			</GroupBox>
 			<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10,0,0">
-				<Button Content="Configure Diff Tool" HorizontalAlignment="Left" Click="btnConfigureDiffTool_Click" ToolTip="Select the tool to use for comparing different types of files." />
+				<Button Content="Configure Diff Tool..." HorizontalAlignment="Left" Click="btnConfigureDiffTool_Click" ToolTip="Select the tool to use for comparing different types of files." />
 				<TextBlock VerticalAlignment="Center" Margin="5,0,0,0">
-						<Hyperlink NavigateUri="http://blogs.msdn.com/b/jmanning/archive/2006/02/20/diff-merge-configuration-in-team-foundation-common-command-and-argument-values.aspx" RequestNavigate="Hyperlink_RequestNavigate">View common diff tool configurations</Hyperlink>
+						<Hyperlink NavigateUri="https://diffallfilesvisualstudioextension.codeplex.com/wikipage?title=Common%20Diff%20Tool%20Configurations%20For%20Visual%20Studio" RequestNavigate="Hyperlink_RequestNavigate">View common diff tool configurations</Hyperlink>
 				</TextBlock>
 			</StackPanel>
 		</StackPanel>
