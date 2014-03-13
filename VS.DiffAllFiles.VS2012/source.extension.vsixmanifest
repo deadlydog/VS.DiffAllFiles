@@ -6,7 +6,7 @@
 		<Description xml:space="preserve">Quickly and easily compare all files with pending changes in TFS.</Description>
 		<Icon>FilesFromShared\Resources\PackageIcon_Small.ico</Icon>
 		<PreviewImage>FilesFromShared\Resources\PreviewImage.png</PreviewImage>
-		<Tags>Diff, Compare, All, Many, Multiple, Files, Items, TFS, TF, Team Foundation, TFVC, Git, Changes, Shelveset, Changeset, Commit</Tags>
+		<Tags>Diff, Difference, Differences, Compare, Review, All, Many, Multiple, Files, Items, TF, TFS, Team Foundation, Team Foundation Server, TFVC, Pending Changes, Pending, Changes, Changeset, Shelveset</Tags>
 	</Metadata>
 	<Installation InstalledByMsi="false">
 		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[11.0]" />
