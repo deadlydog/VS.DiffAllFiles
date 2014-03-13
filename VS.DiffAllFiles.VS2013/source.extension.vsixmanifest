@@ -3,7 +3,7 @@
 	<Metadata>
 		<Identity Id="975F4DB4-B063-4247-A120-A13CD1556AF4" Version="1.0" Language="en-US" Publisher="DansKingdom" />
 		<DisplayName>Diff All Files for VS2013</DisplayName>
-		<Description xml:space="preserve">Quickly and easily compare all files with pending changes, in a shelveset, or in a changeset to see what has changed. Supports both TFS and Git.</Description>
+		<Description xml:space="preserve">Quickly and easily compare all files with pending changes in TFS.</Description>
 		<Icon>FilesFromShared\Resources\PackageIcon_Small.ico</Icon>
 		<PreviewImage>FilesFromShared\Resources\PreviewImage.png</PreviewImage>
 		<Tags>Diff, Compare, All, Many, Multiple, Files, Items, TFS, TF, Team Foundation, TFVC, Git, Changes, Shelveset, Changeset, Commit</Tags>
