@@ -22,9 +22,25 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 		public enum Values
 		{
+			/// <summary>
+			/// TFS - The Shelve File will compare the files with any pending changes to the corresponding files prior to the shelve being created.
+			/// </summary>
 			UnmodifiedVersion = 1,
+
+			/// <summary>
+			/// Compares the changeset file's code with the given file's previous changeset code.
+			/// </summary>
 			PreviousVersion = 2,
+
+			/// <summary>
+			/// Typically this will compare your current code running on your machine to the code at the time that you checked out the file.
+			/// Basically allowing you to see what changes you have made in the current checkout.
+			/// </summary>
 			WorkspaceVersion = 3,
+
+			/// <summary>
+			/// Compares your code to the most recent code that has been checked into TFS.
+			/// </summary>
 			LatestVersion = 4
 		}
 

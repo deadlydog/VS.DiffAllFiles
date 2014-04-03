@@ -238,13 +238,13 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 							break;
 
 						case CompareVersion.Values.PreviousVersion:
-							versionSpecToCompareAgainst = string.Format("C{0}", (pendingChange.Version - 1));
+							versionSpecToCompareAgainst = string.Format("C{0}~C{1}", (pendingChange.Version - 1), pendingChange.Version);
 							break;
 
 						case CompareVersion.Values.WorkspaceVersion:
 							// Pending Changes defaults to comparing against the workspace version, so we don't need to explicitly set it when in Pending Changes as it will change the label that shows on the diff tool.
 							if (SectionType != SectionTypes.PendingChanges)
-								versionSpecToCompareAgainst = string.Format("W\"{0}\";\"{1}\"", _pendingChangesService.Workspace.Name, _pendingChangesService.Workspace.OwnerName);
+								versionSpecToCompareAgainst = string.Format("C{0}~W\"{1}\";\"{2}\"", pendingChange.Version, _pendingChangesService.Workspace.Name, _pendingChangesService.Workspace.OwnerName);
 							break;
 
 						case CompareVersion.Values.LatestVersion:
@@ -263,6 +263,20 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 							diffToolProcessArguments = string.Format("{0} /version:{1}", diffToolProcessArguments, versionSpecToCompareAgainst);
 					}
 
+					// Get the working directory to launch the process from so that TF.exe is able to determine the workspace (we can't determine the workspace if we only have server paths).
+					string workingDirectory = string.Empty;
+					if (pendingChange.LocalOrServerItem.StartsWith("$/"))
+					{
+						WorkingFolder workingFolderObject = null;
+						if (pendingChange.LocalOrServerFolder.StartsWith("$/"))
+							workingFolderObject = _pendingChangesService.Workspace.TryGetWorkingFolderForServerItem(pendingChange.LocalOrServerFolder);
+						else
+							workingFolderObject = _pendingChangesService.Workspace.TryGetWorkingFolderForLocalItem(pendingChange.LocalOrServerFolder);
+
+						if (workingFolderObject != null)
+							workingDirectory = workingFolderObject.LocalItem;
+					}
+
 					// Launch the configured diff tool to diff this file.
 					var diffToolProcess = new System.Diagnostics.Process
 					{
@@ -271,10 +285,31 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 							FileName = tfFilePath,
 							Arguments = diffToolProcessArguments,
 							CreateNoWindow = true,
-							UseShellExecute = false
+							UseShellExecute = false,
+							WorkingDirectory = workingDirectory
 						}
 					};
 					diffToolProcess.Start();
+
+					////////////////////////////////
+					//// Debugging We Diff Tool Isn't Launched Code Start
+					//var diffToolProcess = new System.Diagnostics.Process
+					//{
+					//	StartInfo =
+					//	{
+					//		FileName = tfFilePath,
+					//		Arguments = diffToolProcessArguments,
+					//		CreateNoWindow = true,
+					//		UseShellExecute = false,
+					//		WorkingDirectory = workingDirectory,
+					//		RedirectStandardError = true
+					//	}
+					//};
+					//diffToolProcess.Start();
+					//string error = diffToolProcess.StandardError.ReadToEnd();
+					//diffToolProcess.WaitForExit();
+					//// Debugging We Diff Tool Isn't Launched Code Start
+					////////////////////////////////
 
 					// Add this process to our list of external diff tool processes currently running.
 					int diffToolProcessId = diffToolProcess.Id;
@@ -285,10 +320,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					Task.Run(() =>
 					{
 						int processId = diffToolProcessId;
-						System.Diagnostics.Process process = null;
 						try
 						{
 							// Loop until the diff tool window is closed.
+							System.Diagnostics.Process process = null;
 							do
 							{
 								System.Threading.Thread.Sleep(100);

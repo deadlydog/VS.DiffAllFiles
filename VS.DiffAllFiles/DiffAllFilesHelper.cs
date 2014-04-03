@@ -86,5 +86,33 @@ namespace VS_DiffAllFiles
 				yield return Process.GetProcessById(Convert.ToInt32(mo["ProcessID"]));
 			}
 		}
+
+		/// <summary>
+		/// Gets the deepest directory path that exists.
+		/// </summary>
+		/// <param name="path">The path to get the directory of.</param>
+		public static string GetDirectoryPathThatExists(string path)
+		{
+			if (string.IsNullOrWhiteSpace(path))
+				return string.Empty;
+
+			string directoryPath = string.Empty;
+
+			// If we were given a file path, get it's parent directory.
+			if (File.Exists(path))
+				path = Path.GetDirectoryName(path);
+
+			// Search the path until we find a directory that exists.
+			do
+			{
+				if (Directory.Exists(path))
+					directoryPath = path;
+				else
+					path = Directory.GetParent(path).FullName;
+
+			} while (string.IsNullOrWhiteSpace(directoryPath) && !string.IsNullOrWhiteSpace(path));
+
+			return directoryPath;
+		}
 	}
 }
