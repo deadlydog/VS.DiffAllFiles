@@ -110,8 +110,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Asynchronously launch the diff tools to compare the files.
 		/// </summary>
 		/// <param name="itemStatusTypesToCompare">The files that should be compared.</param>
-		public override async Task ComparePendingChanges(ItemStatusTypesToCompare itemStatusTypesToCompare)
+		public override async Task PerformItemDiffs(ItemStatusTypesToCompare itemStatusTypesToCompare)
 		{
+			// Set the Busy flag while we work.
+			this.IsBusy = true;
+
 			// Get the list of pending changes to compare.
 			List<PendingChange> itemsToCompare = null;
 			switch (itemStatusTypesToCompare)
@@ -140,16 +143,25 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					break;
 			}
 
-			await ComparePendingChanges(itemsToCompare);
+			try
+			{
+				await CompareItems(itemsToCompare);
+			}
+			catch (Exception ex)
+			{
+				var errors = DansCSharpLibrary.Exceptions.ExceptionHelper.GetExceptionMessagesBasedOnDebugging(ex);
+				ShowNotification(string.Format("Unexpected Error Occurred:\n{0}", errors), NotificationType.Error);
+			}
+
+			// Notify that we are done running one of the compare commands.
+			IsRunningCompareFilesCommand = false;
+			this.IsBusy = false;
 		}
 
 		private CancellationTokenSource _compareTasksCancellationTokenSource = new CancellationTokenSource();
 
-		private async Task ComparePendingChanges(List<PendingChange> itemsToCompare)
+		private async Task CompareItems(List<PendingChange> itemsToCompare)
 		{
-			// Set the Busy flag while we work.
-			this.IsBusy = true;
-
 			// Notify that we are running one of the compare commands.
 			IsRunningCompareFilesCommand = true;
 
@@ -233,8 +245,20 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				var targetFilePath = string.Empty;
 				var sourceFileLabel = string.Empty;
 				var targetFileLabel = string.Empty;
-				await Task.Run(() => GetDiffFilePathsAndLabels(pendingChange, compareVersion, out sourceFilePath, out targetFilePath, out sourceFileLabel, out targetFileLabel));
+				var tempDiffFilesDirectory = string.Empty;
+				try
+				{
+					await Task.Run(() => GetDiffFilePathsAndLabels(pendingChange, compareVersion, out sourceFilePath, out targetFilePath, out sourceFileLabel, out targetFileLabel, out tempDiffFilesDirectory));
+				}
+				// Catch any errors thrown when trying to get the files from source control.
+				catch (Exception ex)
+				{
+					var errors = DansCSharpLibrary.Exceptions.ExceptionHelper.GetExceptionMessagesBasedOnDebugging(ex);
+					ShowNotification(string.Format("Unexpected Error Occurred:\n{0}", errors), NotificationType.Error);
 
+					// Move on to the next item to compare.
+					continue;
+				}
 				// Get this files extension.
 				var fileExtension = Path.GetExtension(pendingChange.LocalOrServerItem);
 
@@ -268,8 +292,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					//{
 					//	StartInfo =
 					//	{
-					//		FileName = tfFilePath,
-					//		Arguments = diffToolProcessArguments,
+					//		FileName = diffToolConfiguration.ExecutableFilePath,
+					//		Arguments = diffToolArguments,
 					//		CreateNoWindow = true,
 					//		UseShellExecute = false,
 					//		RedirectStandardError = true
@@ -289,7 +313,6 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					// Start a new Task to monitor for when this external diff tool window is closed, and remove it from our list of running processes.
 					Task.Run(() =>
 					{
-						int processId = diffToolProcessId;
 						try
 						{
 							// Loop until the diff tool window is closed.
@@ -297,7 +320,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 							do
 							{
 								System.Threading.Thread.Sleep(100);
-								process = System.Diagnostics.Process.GetProcessById(processId);
+								process = System.Diagnostics.Process.GetProcessById(diffToolProcessId);
 							} while (!process.HasExited);
 						}
 						// Catch and eat the exception thrown if the process no longer exists.
@@ -305,14 +328,26 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						{ }
 
 						// Now that the diff tool window has been closed, remove it from our list of running diff tool windows.
-						ExternalDiffToolProcessIdsRunning.Remove(processId);
+						ExternalDiffToolProcessIdsRunning.Remove(diffToolProcessId);
+
+						// Delete the temp files if they still exist.
+						if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
+							Directory.Delete(tempDiffFilesDirectory, true);
 					});
 				}
 				// Else this file type is not explicitly configured, so use the default built-in Visual Studio diff tool.
 				else
 				{
+					// Get if the user should be able to edit the files to save changes back to them; only allow it if they are not temp files.
+					bool sourceIsTemp = sourceFilePath.StartsWith(tempDiffFilesDirectory);
+					bool targetIsTemp = targetFilePath.StartsWith(tempDiffFilesDirectory);
+
 					// Launch the VS diff tool to diff this file.
-					await Task.Run(() => RunVisualDiff(pendingChange, settings, dte2));
+					Difference.VisualDiffFiles(sourceFilePath, targetFilePath, "test source", "test target", sourceFileLabel, targetFileLabel, sourceIsTemp, targetIsTemp);
+
+					// We are likely opening several diff windows, so make sure they don't just replace one another in the Preview Tab.
+					if (PackageHelper.IsCommandAvailable("Window.KeepTabOpen"))
+						dte2.ExecuteCommand("Window.KeepTabOpen");
 
 					// If the diff tool successfully opened, add this VS diff tool's window name to our list of open VS diff tool tabs.
 					string diffToolWindowCaption = dte2.ActiveWindow.Caption;
@@ -348,24 +383,28 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 							// Now that the diff tool tab window has been closed, remove it from our list.
 							VsDiffToolTabCaptionsStillOpen.Remove(vsDiffToolWindowStillOpenCaption);
+
+							// Delete the temp files if they still exist.
+							if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
+								Directory.Delete(tempDiffFilesDirectory, true);
 						});
 					}
 				}
 
-				// If we have reached the maximum number of diff too instances to launch for this set, and there are still more to launch.
-				if (NumberOfFilesCompared % settings.NumberOfFilesToCompareAtATime == 0 && NumberOfFilesCompared < NumberOfFilesToCompare)
+				// If we have reached the maximum number of diff tool instances to launch for this set, and there are still more to launch.
+				if ((ExternalDiffToolProcessIdsRunningInThisSet.Count + VsDiffToolTabCaptionsStillOpenInThisSet.Count) % settings.NumberOfFilesToCompareAtATime == 0 && 
+					NumberOfFilesCompared < NumberOfFilesToCompare)
 				{
 					// Get the Cancellation Token to use for the tasks we create.
 					var cancellationToken = _compareTasksCancellationTokenSource.Token;
 
 					// Get the Tasks to wait for all of the external diff tool processes to be closed.
-					var waitForAllExternalDiffToolProcessFromThisSetToCloseTasks = ExternalDiffToolProcessIdsRunningInThisSet.Select(id => Task.Run(() =>
+					var waitForAllExternalDiffToolProcessFromThisSetToCloseTasks = ExternalDiffToolProcessIdsRunningInThisSet.Select(processId => Task.Run(() =>
 					{
-						int processId = id;
-						System.Diagnostics.Process process = null;
 						try
 						{
 							// Loop until the diff tool window is closed.
+							System.Diagnostics.Process process = null;
 							do
 							{
 								System.Threading.Thread.Sleep(100);
@@ -387,7 +426,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 							System.Threading.Thread.Sleep(100);
 
 							// Get the list of open Windows in Visual Studio right now.
-							var openWindowsInVS = dte2.Windows;
+							var openWindowsInVs = dte2.Windows;
 							
 							// Loop through all of the VS Diff Tool Tabs that we launched and remove from our list any that have been closed.
 							// We loop through the list backwards so that we can easily remove closed tabs from our list.
@@ -402,7 +441,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 								try
 								{
 									// Loop through all of the open windows in Visual Studio and see if this VS Diff Tool Tab is still open or not.
-									bool windowIsStillOpen = openWindowsInVS.Cast<Window>().Any(window => window.Caption.Equals(vsDiffToolWindowStillOpenCaption, StringComparison.InvariantCulture));
+									bool windowIsStillOpen = openWindowsInVs.Cast<Window>().Any(window => window.Caption.Equals(vsDiffToolWindowStillOpenCaption, StringComparison.InvariantCulture));
 
 									// If the VS Diff Tool Tab is no longer open, remove it from our list.
 									if (!windowIsStillOpen && diffWindowIndex < VsDiffToolTabCaptionsStillOpenInThisSet.Count)
@@ -453,34 +492,40 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					}
 				}
 			}
-
-			// Notify that we are done running one of the compare commands.
-			IsRunningCompareFilesCommand = false;
-			this.IsBusy = false;
 		}
 
-		private string GetDiffFilePathsAndLabels(PendingChange pendingChange, CompareVersion compareVersion, out string sourceFilePath, out string targetFilePath, out string sourceFileLabel, out string targetFileLabel)
+		/// <summary>
+		/// Downloads the files to diff and the labels that the diff tool should show.
+		/// </summary>
+		/// <param name="pendingChange">The pending change.</param>
+		/// <param name="compareVersion">The compare version.</param>
+		/// <param name="sourceFilePath">The source file path.</param>
+		/// <param name="targetFilePath">The target file path.</param>
+		/// <param name="sourceFileLabel">The source file label.</param>
+		/// <param name="targetFileLabel">The target file label.</param>
+		/// <param name="tempDiffFilesDirectory">The temporary difference files directory.</param>
+		private string GetDiffFilePathsAndLabels(PendingChange pendingChange, CompareVersion compareVersion, out string sourceFilePath, out string targetFilePath, out string sourceFileLabel, out string targetFileLabel, out string tempDiffFilesDirectory)
 		{
-			// Assume we will be downloading both the source and target files from version control, and generate the paths to download them to.
-			var diffFilesDirectory = Path.Combine(Path.GetTempPath(), "DiffAllFilesTemp", Path.GetRandomFileName());
-			Directory.CreateDirectory(diffFilesDirectory);
-			sourceFilePath = Path.Combine(diffFilesDirectory, string.Format("source_{0}", Path.GetFileName(pendingChange.LocalOrServerItem)));
-			targetFilePath = Path.Combine(diffFilesDirectory, string.Format("target_{0}", Path.GetFileName(pendingChange.LocalOrServerItem)));
-			sourceFileLabel = sourceFilePath;
-			targetFileLabel = targetFilePath;
+			// Assume we will be downloading both the source and target files from version control into a temp directory, and generate the paths to download them to.
+			tempDiffFilesDirectory = Path.Combine(Path.GetTempPath(), "DiffAllFilesTemp", Path.GetRandomFileName());
+			Directory.CreateDirectory(tempDiffFilesDirectory);
+			sourceFilePath = Path.Combine(tempDiffFilesDirectory, string.Format("source_{0}", Path.GetFileName(pendingChange.LocalOrServerItem)));
+			targetFilePath = Path.Combine(tempDiffFilesDirectory, string.Format("target_{0}", Path.GetFileName(pendingChange.LocalOrServerItem)));
+			sourceFileLabel = sourceFilePath;	// This value should never actually be used for the label, but set it in case something gets missed.
+			targetFileLabel = targetFilePath;	// This value should never actually be used for the label, but set it in case something gets missed.
 
-			const string NewFileLabel = "[File is being added to source control]";
-			const string DeleteFileLabel = "[File is being deleted from source control]";
+			// Create the files as blank files to make sure they exist.
+			File.WriteAllText(sourceFilePath, string.Empty);
+			File.WriteAllText(targetFilePath, string.Empty);
 
 			// Get the source and target files to use in the compare.
 			switch (this.SectionType)
 			{
 				case SectionTypes.PendingChanges:
-					// If this file is being added to source control, there is no "source" file to retrieve, so just create a blank file.
+					// If this file is being added to source control, there is no "source" file to retrieve, so set the label appropriately.
 					if (pendingChange.IsAdd)
 					{
-						File.WriteAllText(sourceFilePath, string.Empty);
-						sourceFileLabel = NewFileLabel;
+						sourceFileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_NEW_FILE_LABEL;
 					}
 					else
 					{
@@ -493,32 +538,30 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 								break;
 
 							case CompareVersion.Values.LatestVersion:
-								pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, VersionSpec.Latest, sourceFilePath);
-								sourceFileLabel = string.Format("Server: {0};T", pendingChange.ServerItem);
+								if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, VersionSpec.Latest, sourceFilePath, ref sourceFileLabel))
+									sourceFileLabel = string.Format("Server: {0};T", pendingChange.ServerItem);
 								break;
 						}
 					}
 
-					// If the file is being deleted, there is no "target" file to retrieve, so just create a blank file.
+					// If the file is being deleted, there is no "target" file to retrieve, so set the label appropriately.
 					if (pendingChange.IsDelete)
 					{
-						File.WriteAllText(targetFilePath, string.Empty);
-						targetFileLabel = DeleteFileLabel;
+						targetFileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_DELETED_FILE_LABEL;
 					}
 					else
 					{
 						// Get the file's local changes.
-						targetFilePath = pendingChange.LocalOrServerItem;
-						targetFileLabel = string.Format("Local: {0}", pendingChange.LocalOrServerItem);
+						targetFilePath = pendingChange.LocalItem;
+						targetFileLabel = string.Format("Local: {0}", pendingChange.LocalItem);
 					}
 					break;
 
 				case SectionTypes.ChangesetDetails:
-					// If this file is being added to source control, there is no "source" file to retrieve, so just create a blank file.
+					// If this file is being added to source control, there is no "source" file to retrieve, so set the label appropriately.
 					if (pendingChange.IsAdd)
 					{
-						File.WriteAllText(sourceFilePath, string.Empty);
-						sourceFileLabel = NewFileLabel;
+						sourceFileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_NEW_FILE_LABEL;
 					}
 					else
 					{
@@ -526,42 +569,40 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						switch (compareVersion.Value)
 						{
 							case CompareVersion.Values.PreviousVersion:
-								pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, new ChangesetVersionSpec(pendingChange.Version - 1), sourceFilePath);
-								sourceFileLabel = string.Format("Server: {0};C{1}", pendingChange.ServerItem, pendingChange.Version - 1);
+								if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, new ChangesetVersionSpec(pendingChange.Version - 1), sourceFilePath, ref sourceFileLabel))
+									sourceFileLabel = string.Format("Server: {0};C{1}", pendingChange.ServerItem, pendingChange.Version - 1);
 								break;
 
 							case CompareVersion.Values.WorkspaceVersion:
-								pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, new WorkspaceVersionSpec(_pendingChangesService.Workspace), sourceFilePath);
-								sourceFileLabel = string.Format("Server: {0};W{1}", pendingChange.ServerItem, _pendingChangesService.Workspace.DisplayName);
+								if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, new WorkspaceVersionSpec(_pendingChangesService.Workspace), sourceFilePath, ref sourceFileLabel))
+									sourceFileLabel = string.Format("Server: {0};W{1}", pendingChange.ServerItem, _pendingChangesService.Workspace.DisplayName);
 								break;
 
 							case CompareVersion.Values.LatestVersion:
-								pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, VersionSpec.Latest, sourceFilePath);
-								sourceFileLabel = string.Format("Server: {0};T", pendingChange.ServerItem);
+								if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, VersionSpec.Latest, sourceFilePath, ref sourceFileLabel))
+									sourceFileLabel = string.Format("Server: {0};T", pendingChange.ServerItem);
 								break;
 						}
 					}
 
-					// If the file is being deleted, there is no "target" file to retrieve, so just create a blank file.
+					// If the file is being deleted, there is no "target" file to retrieve, so set the label appropriately.
 					if (pendingChange.IsDelete)
 					{
-						File.WriteAllText(targetFilePath, string.Empty);
-						targetFileLabel = DeleteFileLabel;
+						targetFileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_DELETED_FILE_LABEL;
 					}
 					else
 					{
 						// Get the Changeset's version of the file.
-						pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, new ChangesetVersionSpec(pendingChange.Version), targetFilePath);
-						targetFileLabel = string.Format("Server: {0};C{1}", pendingChange.ServerItem, pendingChange.Version);
+						if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, new ChangesetVersionSpec(pendingChange.Version), targetFilePath, ref targetFileLabel))
+							targetFileLabel = string.Format("Server: {0};C{1}", pendingChange.ServerItem, pendingChange.Version);
 					}
 					break;
 
 				case SectionTypes.ShelvesetDetails:
-					// If this file is being added to source control, there is no "source" file to retrieve, so just create a blank file.
+					// If this file is being added to source control, there is no "source" file to retrieve, so set the label appropriately.
 					if (pendingChange.IsAdd)
 					{
-						File.WriteAllText(sourceFilePath, string.Empty);
-						sourceFileLabel = NewFileLabel;
+						sourceFileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_NEW_FILE_LABEL;
 					}
 					else
 					{
@@ -574,22 +615,21 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 								break;
 
 							case CompareVersion.Values.WorkspaceVersion:
-								pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, new WorkspaceVersionSpec(_pendingChangesService.Workspace), sourceFilePath);
-								sourceFileLabel = string.Format("Server: {0};W{1}", pendingChange.ServerItem, _pendingChangesService.Workspace.DisplayName);
+								if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, new WorkspaceVersionSpec(_pendingChangesService.Workspace), sourceFilePath, ref sourceFileLabel))
+									sourceFileLabel = string.Format("Server: {0};W{1}", pendingChange.ServerItem, _pendingChangesService.Workspace.DisplayName);
 								break;
 
 							case CompareVersion.Values.LatestVersion:
-								pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, VersionSpec.Latest, sourceFilePath);
-								sourceFileLabel = string.Format("Server: {0};T", pendingChange.ServerItem);
+								if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, VersionSpec.Latest, sourceFilePath, ref sourceFileLabel))
+									sourceFileLabel = string.Format("Server: {0};T", pendingChange.ServerItem);
 								break;
 						}
 					}
 
-					// If the file is being deleted, there is no "target" file to retrieve, so just create a blank file.
+					// If the file is being deleted, there is no "target" file to retrieve, so set the label appropriately.
 					if (pendingChange.IsDelete)
 					{
-						File.WriteAllText(targetFilePath, string.Empty);
-						targetFileLabel = DeleteFileLabel;
+						targetFileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_DELETED_FILE_LABEL;
 					}
 					else
 					{
@@ -603,45 +643,30 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		}
 
 		/// <summary>
-		/// Runs the built-in Visual Studio Diff Tool in the current instance of Visual Studio.
+		/// Downloads the specific version of a file if it exists in version control.
 		/// </summary>
 		/// <param name="pendingChange">The pending change.</param>
-		/// <param name="settings">The settings.</param>
-		/// <param name="dte2">The dte2.</param>
-		private void RunVisualDiff(PendingChange pendingChange, DiffAllFilesSettings settings, DTE2 dte2)
+		/// <param name="versionSpec">The version spec.</param>
+		/// <param name="filePathToDownloadTo">The file path to download to.</param>
+		/// <param name="fileLabel">If the file is not available to download from the server, this label will be updated to say so.</param>
+		private bool DownloadFileVersionIfItExistsInVersionControl(PendingChange pendingChange, VersionSpec versionSpec, string filePathToDownloadTo, ref string fileLabel)
 		{
-			// Get the Source version to compare the local changes against.
-			IDiffItem source = null;
-			switch (settings.PendingChangesCompareVersion.Value)
+			bool fileDownloaded = true;
+
+			// If the file exists, download it.
+			if (pendingChange.VersionControlServer.ServerItemExists(pendingChange.ServerItem, versionSpec, DeletedState.NonDeleted, ItemType.File))
 			{
-				case CompareVersion.Values.UnmodifiedVersion:
-					source = new DiffItemPendingChangeBase(pendingChange);
-					break;
-
-				case CompareVersion.Values.PreviousVersion:
-					//source = new DiffItemVersionedFile(pendingChange.VersionControlServer, pendingChange.ItemId, )
-					break;
-
-				case CompareVersion.Values.WorkspaceVersion:
-					source = new DiffItemPendingChangeBase(pendingChange);
-					break;
-
-				case CompareVersion.Values.LatestVersion:
-					if (pendingChange.IsAdd)
-						source = new DiffItemPendingChangeBase(pendingChange);
-					else
-						source = (IDiffItem)new DiffItemVersionedFile(pendingChange.VersionControlServer, pendingChange.LocalOrServerItem, VersionSpec.Latest);
-					break;
+				pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, pendingChange.DeletionId, versionSpec, filePathToDownloadTo);
+			}
+			// Else the file doesn't exist so update the file's label to specify that.
+			else
+			{
+				fileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL;
+				fileDownloaded = false;
 			}
 
-			// Perform the diff using the VS API method to ensure the diff window opens in this instance of VS.
-			Difference.VisualDiffItems(pendingChange.VersionControlServer,
-				source,
-				new DiffItemLocalFile(pendingChange.LocalItem, pendingChange.Encoding, pendingChange.CreationDate, false));
-
-			// We are likely opening several diff windows, so make sure they don't just replace one another in the Preview Tab.
-			if (PackageHelper.IsCommandAvailable("Window.KeepTabOpen"))
-				dte2.ExecuteCommand("Window.KeepTabOpen");
+			// Return if the file was downloaded or not.
+			return fileDownloaded;
 		}
 
 		/// <summary>

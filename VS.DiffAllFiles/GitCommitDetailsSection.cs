@@ -86,7 +86,7 @@ namespace VS_DiffAllFiles
 			}
 		}
 
-		public override async Task ComparePendingChanges(ItemStatusTypesToCompare itemStatusTypesToCompare)
+		public override async Task PerformItemDiffs(ItemStatusTypesToCompare itemStatusTypesToCompare)
 		{
 			var a = _commitDetailsService;
 			var b = a;

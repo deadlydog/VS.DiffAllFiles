@@ -40,7 +40,7 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffAllFiles_Click(object sender, RoutedEventArgs e)
 		{
-			await _viewModel.ComparePendingChanges(ItemStatusTypesToCompare.All);
+			await _viewModel.PerformItemDiffs(ItemStatusTypesToCompare.All);
 		}
 
 		/// <summary>
@@ -50,7 +50,7 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffSelectedFiles_Click(object sender, RoutedEventArgs e)
 		{
-			await _viewModel.ComparePendingChanges(ItemStatusTypesToCompare.Selected);
+			await _viewModel.PerformItemDiffs(ItemStatusTypesToCompare.Selected);
 		}
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffIncludedFiles_Click(object sender, RoutedEventArgs e)
 		{
-			await _viewModel.ComparePendingChanges(ItemStatusTypesToCompare.Included);
+			await _viewModel.PerformItemDiffs(ItemStatusTypesToCompare.Included);
 		}
 
 		/// <summary>
@@ -70,7 +70,7 @@ namespace VS_DiffAllFiles
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private async void btnDiffExcludedFiles_Click(object sender, RoutedEventArgs e)
 		{
-			await _viewModel.ComparePendingChanges(ItemStatusTypesToCompare.Excluded);
+			await _viewModel.PerformItemDiffs(ItemStatusTypesToCompare.Excluded);
 		}
 
 		/// <summary>

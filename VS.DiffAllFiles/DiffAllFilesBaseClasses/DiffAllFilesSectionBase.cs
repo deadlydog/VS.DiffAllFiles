@@ -242,7 +242,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Asynchronously launch the diff tools to compare the files.
 		/// </summary>
 		/// <param name="itemStatusTypesToCompare">The files that should be compared.</param>
-		public abstract System.Threading.Tasks.Task ComparePendingChanges(ItemStatusTypesToCompare itemStatusTypesToCompare);
+		public abstract Task PerformItemDiffs(ItemStatusTypesToCompare itemStatusTypesToCompare);
 
 		/// <summary>
 		/// The possible file versions to compare against.

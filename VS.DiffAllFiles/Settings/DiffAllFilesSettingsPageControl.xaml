@@ -16,6 +16,9 @@
 			<Setter Property="Margin" Value="0,5,0,0" />
 			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
 		</Style>
+		<Style TargetType="{x:Type TextBlock}">
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+		</Style>
 		<Style TargetType="{x:Type TextBox}">
 			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
 		</Style>

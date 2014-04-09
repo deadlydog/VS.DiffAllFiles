@@ -14,6 +14,10 @@ namespace VS_DiffAllFiles
 {
 	public static class DiffAllFilesHelper
 	{
+		public const string NO_FILE_TO_COMPARE_NEW_FILE_LABEL = "[No File To Compare: File is being added to source control]";
+		public const string NO_FILE_TO_COMPARE_DELETED_FILE_LABEL = "[No File To Compare: File is being deleted from source control]";
+		public const string NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL = "[No File To Compare: File version to compare does not exist in source control]";
+
 		/// <summary>
 		/// Gets the full path to TF.exe.
 		/// </summary>
