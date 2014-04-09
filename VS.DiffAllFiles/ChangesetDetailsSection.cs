@@ -49,6 +49,5 @@ namespace VS_DiffAllFiles
 			get { return _compareVersions; }
 		}
 		private readonly List<CompareVersion> _compareVersions = new List<CompareVersion> { CompareVersion.PreviousVersion, CompareVersion.WorkspaceVersion, CompareVersion.LatestVersion };
-
 	}
 }

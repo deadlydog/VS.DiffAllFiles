@@ -81,8 +81,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
 
-				case "SelectedExcludedItems":
 				case "SelectedIncludedItems":
+				case "SelectedExcludedItems":
 					NotifyPropertyChanged("IsCompareSelectedFilesEnabled");
 					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
@@ -176,8 +176,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				return;
 			}
 
-			// Get all of the file types that are configured to use an external diff tool.
-			var fileTypesConfiguredToUseExternalDiffTool = DiffAllFilesHelper.FileTypesWithExplicitDiffToolConfigured;
+			// Get all of the file types that are configured to use an external diff tool, and that diff tool's configuration.
+			var diffToolConfigurations = DiffAllFilesHelper.DiffToolsConfigured;
 
 			// Get a handle to the settings to use.
 			var settings = DiffAllFilesSettings.CurrentSettings;
@@ -220,73 +220,44 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			bool isInShelveset = (SectionType == SectionTypes.ShelvesetDetails);
 
 			// Loop through and diff each of the pending changes.
-			foreach (var pendingChange in itemsToCompare)
+			foreach (var change in itemsToCompare)
 			{
+				// Copy the pending change to local variable to avoid problems with using it inside of tasks.
+				PendingChange pendingChange = change;
+
 				// Increment the number of items that we have compared.
-				NumberOfFilesCompared++;
-				
+				NumberOfFilesCompared++;				
+
+				// Get the source and target files to compare, and the labels to use for each of them.
+				var sourceFilePath = string.Empty;
+				var targetFilePath = string.Empty;
+				var sourceFileLabel = string.Empty;
+				var targetFileLabel = string.Empty;
+				await Task.Run(() => GetDiffFilePathsAndLabels(pendingChange, compareVersion, out sourceFilePath, out targetFilePath, out sourceFileLabel, out targetFileLabel));
+
+				// Get this files extension.
+				var fileExtension = Path.GetExtension(pendingChange.LocalOrServerItem);
+
 				// If this file type is configured to use an external diff tool.
-				if (fileTypesConfiguredToUseExternalDiffTool.Contains(Path.GetExtension(pendingChange.LocalOrServerItem)) ||
-					fileTypesConfiguredToUseExternalDiffTool.Contains(".*"))
+				var diffToolConfiguration = diffToolConfigurations.FirstOrDefault(d => d.FileExtension.Equals(fileExtension) || d.FileExtension.Equals(".*"));
+				if (diffToolConfiguration != null)
 				{
-					// Get the string representation the TF.exe expects for the version to compare against.
-					string versionSpecToCompareAgainst = string.Empty;
-					switch (compareVersion.Value)
-					{
-						case CompareVersion.Values.UnmodifiedVersion:
-							versionSpecToCompareAgainst = string.Format("C{0}", pendingChange.Version);
-							break;
-
-						case CompareVersion.Values.PreviousVersion:
-							versionSpecToCompareAgainst = string.Format("C{0}~C{1}", (pendingChange.Version - 1), pendingChange.Version);
-							break;
-
-						case CompareVersion.Values.WorkspaceVersion:
-							// Pending Changes defaults to comparing against the workspace version, so we don't need to explicitly set it when in Pending Changes as it will change the label that shows on the diff tool.
-							if (SectionType != SectionTypes.PendingChanges)
-								versionSpecToCompareAgainst = string.Format("C{0}~W\"{1}\";\"{2}\"", pendingChange.Version, _pendingChangesService.Workspace.Name, _pendingChangesService.Workspace.OwnerName);
-							break;
-
-						case CompareVersion.Values.LatestVersion:
-							versionSpecToCompareAgainst = "T";
-							break;
-					}
-
-					// Build the arguments to pass to TF.exe.
-					string diffToolProcessArguments = string.Empty;
-					if (isInShelveset)
-						diffToolProcessArguments = string.Format("diff /shelveset:\"{0}\";\"{1}\" \"{2}\"", pendingChange.PendingSetName, pendingChange.PendingSetOwner, pendingChange.LocalOrServerItem);
-					else
-					{
-						diffToolProcessArguments = string.Format("diff \"{0}\"", pendingChange.LocalOrServerItem);
-						if (!string.IsNullOrWhiteSpace(versionSpecToCompareAgainst))
-							diffToolProcessArguments = string.Format("{0} /version:{1}", diffToolProcessArguments, versionSpecToCompareAgainst);
-					}
-
-					// Get the working directory to launch the process from so that TF.exe is able to determine the workspace (we can't determine the workspace if we only have server paths).
-					string workingDirectory = string.Empty;
-					if (pendingChange.LocalOrServerItem.StartsWith("$/"))
-					{
-						WorkingFolder workingFolderObject = null;
-						if (pendingChange.LocalOrServerFolder.StartsWith("$/"))
-							workingFolderObject = _pendingChangesService.Workspace.TryGetWorkingFolderForServerItem(pendingChange.LocalOrServerFolder);
-						else
-							workingFolderObject = _pendingChangesService.Workspace.TryGetWorkingFolderForLocalItem(pendingChange.LocalOrServerFolder);
-
-						if (workingFolderObject != null)
-							workingDirectory = workingFolderObject.LocalItem;
-					}
+					// Build the arguments to pass to the diff tool's executable.
+					string diffToolArguments = diffToolConfiguration.ExecutableArgumentFormat;
+					diffToolArguments = diffToolArguments.Replace("%1", string.Format("\"{0}\"", sourceFilePath));
+					diffToolArguments = diffToolArguments.Replace("%2", string.Format("\"{0}\"", targetFilePath));
+					diffToolArguments = diffToolArguments.Replace("%6", string.Format("\"{0}\"", sourceFileLabel));
+					diffToolArguments = diffToolArguments.Replace("%7", string.Format("\"{0}\"", targetFileLabel));
 
 					// Launch the configured diff tool to diff this file.
 					var diffToolProcess = new System.Diagnostics.Process
 					{
 						StartInfo =
 						{
-							FileName = tfFilePath,
-							Arguments = diffToolProcessArguments,
+							FileName = diffToolConfiguration.ExecutableFilePath,
+							Arguments = diffToolArguments,
 							CreateNoWindow = true,
-							UseShellExecute = false,
-							WorkingDirectory = workingDirectory
+							UseShellExecute = false
 						}
 					};
 					diffToolProcess.Start();
@@ -301,7 +272,6 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					//		Arguments = diffToolProcessArguments,
 					//		CreateNoWindow = true,
 					//		UseShellExecute = false,
-					//		WorkingDirectory = workingDirectory,
 					//		RedirectStandardError = true
 					//	}
 					//};
@@ -342,8 +312,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				else
 				{
 					// Launch the VS diff tool to diff this file.
-					var change = pendingChange;
-					await Task.Run(() => RunVisualDiff(change, settings, dte2));
+					await Task.Run(() => RunVisualDiff(pendingChange, settings, dte2));
 
 					// If the diff tool successfully opened, add this VS diff tool's window name to our list of open VS diff tool tabs.
 					string diffToolWindowCaption = dte2.ActiveWindow.Caption;
@@ -461,7 +430,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					waitForAllDiffToolWindowsFromThisSetToCloseTasks.Add(waitForAllVsDiffToolTabsFromThisSetToCloseTask);
 
 					// Wait for all of the diff windows from this set to be closed, or the "Next Set Of Files" or Cancel button to be pressed.
+					this.IsBusy = false;
 					await Task.WhenAny(Task.WhenAll(waitForAllDiffToolWindowsFromThisSetToCloseTasks), waitForNextSetOfFilesOrCancelCommandsToBeExecutedTask);
+					this.IsBusy = true;
 
 					// Now that we are done waiting for this set, cancel any Tasks that are still running and refresh the Cancellation Token Source to use for the next set of Tasks we create.
 					_compareTasksCancellationTokenSource.Cancel();
@@ -486,6 +457,149 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			// Notify that we are done running one of the compare commands.
 			IsRunningCompareFilesCommand = false;
 			this.IsBusy = false;
+		}
+
+		private string GetDiffFilePathsAndLabels(PendingChange pendingChange, CompareVersion compareVersion, out string sourceFilePath, out string targetFilePath, out string sourceFileLabel, out string targetFileLabel)
+		{
+			// Assume we will be downloading both the source and target files from version control, and generate the paths to download them to.
+			var diffFilesDirectory = Path.Combine(Path.GetTempPath(), "DiffAllFilesTemp", Path.GetRandomFileName());
+			Directory.CreateDirectory(diffFilesDirectory);
+			sourceFilePath = Path.Combine(diffFilesDirectory, string.Format("source_{0}", Path.GetFileName(pendingChange.LocalOrServerItem)));
+			targetFilePath = Path.Combine(diffFilesDirectory, string.Format("target_{0}", Path.GetFileName(pendingChange.LocalOrServerItem)));
+			sourceFileLabel = sourceFilePath;
+			targetFileLabel = targetFilePath;
+
+			const string NewFileLabel = "[File is being added to source control]";
+			const string DeleteFileLabel = "[File is being deleted from source control]";
+
+			// Get the source and target files to use in the compare.
+			switch (this.SectionType)
+			{
+				case SectionTypes.PendingChanges:
+					// If this file is being added to source control, there is no "source" file to retrieve, so just create a blank file.
+					if (pendingChange.IsAdd)
+					{
+						File.WriteAllText(sourceFilePath, string.Empty);
+						sourceFileLabel = NewFileLabel;
+					}
+					else
+					{
+						// Get the source to compare against the file's local changes.
+						switch (compareVersion.Value)
+						{
+							case CompareVersion.Values.WorkspaceVersion:
+								pendingChange.DownloadBaseFile(sourceFilePath);
+								sourceFileLabel = string.Format("Server: {0};C{1}", pendingChange.ServerItem, pendingChange.Version);
+								break;
+
+							case CompareVersion.Values.LatestVersion:
+								pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, VersionSpec.Latest, sourceFilePath);
+								sourceFileLabel = string.Format("Server: {0};T", pendingChange.ServerItem);
+								break;
+						}
+					}
+
+					// If the file is being deleted, there is no "target" file to retrieve, so just create a blank file.
+					if (pendingChange.IsDelete)
+					{
+						File.WriteAllText(targetFilePath, string.Empty);
+						targetFileLabel = DeleteFileLabel;
+					}
+					else
+					{
+						// Get the file's local changes.
+						targetFilePath = pendingChange.LocalOrServerItem;
+						targetFileLabel = string.Format("Local: {0}", pendingChange.LocalOrServerItem);
+					}
+					break;
+
+				case SectionTypes.ChangesetDetails:
+					// If this file is being added to source control, there is no "source" file to retrieve, so just create a blank file.
+					if (pendingChange.IsAdd)
+					{
+						File.WriteAllText(sourceFilePath, string.Empty);
+						sourceFileLabel = NewFileLabel;
+					}
+					else
+					{
+						// Get the source to compare against the Changeset's version.
+						switch (compareVersion.Value)
+						{
+							case CompareVersion.Values.PreviousVersion:
+								pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, new ChangesetVersionSpec(pendingChange.Version - 1), sourceFilePath);
+								sourceFileLabel = string.Format("Server: {0};C{1}", pendingChange.ServerItem, pendingChange.Version - 1);
+								break;
+
+							case CompareVersion.Values.WorkspaceVersion:
+								pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, new WorkspaceVersionSpec(_pendingChangesService.Workspace), sourceFilePath);
+								sourceFileLabel = string.Format("Server: {0};W{1}", pendingChange.ServerItem, _pendingChangesService.Workspace.DisplayName);
+								break;
+
+							case CompareVersion.Values.LatestVersion:
+								pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, VersionSpec.Latest, sourceFilePath);
+								sourceFileLabel = string.Format("Server: {0};T", pendingChange.ServerItem);
+								break;
+						}
+					}
+
+					// If the file is being deleted, there is no "target" file to retrieve, so just create a blank file.
+					if (pendingChange.IsDelete)
+					{
+						File.WriteAllText(targetFilePath, string.Empty);
+						targetFileLabel = DeleteFileLabel;
+					}
+					else
+					{
+						// Get the Changeset's version of the file.
+						pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, new ChangesetVersionSpec(pendingChange.Version), targetFilePath);
+						targetFileLabel = string.Format("Server: {0};C{1}", pendingChange.ServerItem, pendingChange.Version);
+					}
+					break;
+
+				case SectionTypes.ShelvesetDetails:
+					// If this file is being added to source control, there is no "source" file to retrieve, so just create a blank file.
+					if (pendingChange.IsAdd)
+					{
+						File.WriteAllText(sourceFilePath, string.Empty);
+						sourceFileLabel = NewFileLabel;
+					}
+					else
+					{
+						// Get the source to compare against the Shelveset's version.
+						switch (compareVersion.Value)
+						{
+							case CompareVersion.Values.UnmodifiedVersion:
+								pendingChange.DownloadBaseFile(sourceFilePath);
+								sourceFileLabel = string.Format("Server: {0};C{1}", pendingChange.ServerItem, pendingChange.Version);
+								break;
+
+							case CompareVersion.Values.WorkspaceVersion:
+								pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, new WorkspaceVersionSpec(_pendingChangesService.Workspace), sourceFilePath);
+								sourceFileLabel = string.Format("Server: {0};W{1}", pendingChange.ServerItem, _pendingChangesService.Workspace.DisplayName);
+								break;
+
+							case CompareVersion.Values.LatestVersion:
+								pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, 0, VersionSpec.Latest, sourceFilePath);
+								sourceFileLabel = string.Format("Server: {0};T", pendingChange.ServerItem);
+								break;
+						}
+					}
+
+					// If the file is being deleted, there is no "target" file to retrieve, so just create a blank file.
+					if (pendingChange.IsDelete)
+					{
+						File.WriteAllText(targetFilePath, string.Empty);
+						targetFileLabel = DeleteFileLabel;
+					}
+					else
+					{
+						// Get the Shelveset's version of the file.
+						pendingChange.DownloadShelvedFile(targetFilePath);
+						targetFileLabel = string.Format("Shelved Change: {0};{1}", pendingChange.ServerItem, pendingChange.PendingSetName);
+					}
+					break;
+			}
+			return sourceFilePath;
 		}
 
 		/// <summary>

@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiffAllFilesBaseClasses\SectionTypes.cs" />
+    <Compile Include="FileExtensionDiffToolConfiguration.cs" />
     <Compile Include="GitDiffAllFilesSectionBase.cs" />
     <Compile Include="ShelvesetDetailsSection.cs" />
     <Compile Include="GitChangesSection.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="Settings\DiffAllFilesSettingsPageControl.xaml.cs">
       <DependentUpon>DiffAllFilesSettingsPageControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SupportsIncludedAndExcludedChangesTfsSectionBase.cs" />
     <Compile Include="TeamExplorerBaseClasses\TeamExplorerBase.cs" />
     <Compile Include="TeamExplorerBaseClasses\TeamExplorerBaseNavigationItem.cs" />
     <Compile Include="TeamExplorerBaseClasses\TeamExplorerBaseNavigationLink.cs" />

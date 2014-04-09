@@ -23,13 +23,14 @@ namespace VS_DiffAllFiles
 		}
 
 		/// <summary>
-		/// Gets all of the file types that are explicitly configured to use a diff tool (i.e. to not use the built-in Visual Studio diff tool).
+		/// Gets all of the diff tool configurations that are specified in the registry.
+		/// <para>If a file extension does not have a configured diff tool, it should be handled by the built-in Visual Studio diff tool.</para>
 		/// </summary>
-		public static List<string> FileTypesWithExplicitDiffToolConfigured
+		public static List<FileExtensionDiffToolConfiguration> DiffToolsConfigured
 		{
 			get
 			{
-				var fileTypes = new List<string>();
+				var diffToolsConfigured = new List<FileExtensionDiffToolConfiguration>();
 
 				// Get the current Visual Studio version.
 				var visualStudioRegistryRoot = PackageHelper.DTE2.RegistryRoot;
@@ -38,13 +39,39 @@ namespace VS_DiffAllFiles
 				// File type and diff tool paths are stored in HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\[Version]\TeamFoundation\SourceControl\DiffTools.
 				using (var diffToolsKey = Registry.CurrentUser.OpenSubKey(string.Format(@"{0}\TeamFoundation\SourceControl\DiffTools", visualStudioRegistryRoot)))
 				{
-					// Get all of the file extensions that have an explicit diff tool configured.
-					if (diffToolsKey == null) return fileTypes;
-					fileTypes = diffToolsKey.GetSubKeyNames().ToList();
+					// If we couldn't find the configured diff tools, just return an empty array.
+					if (diffToolsKey == null) return diffToolsConfigured;
+
+					// Loop through each file extension that has an explicit diff tool configured.
+					foreach (var fileExtension in diffToolsKey.GetSubKeyNames())
+					{
+						// If the extension subkey does not have a "Compare" subkey for us to grab values from, just move on to the next extension subkey.
+						var extensionSubKey = diffToolsKey.OpenSubKey(fileExtension);
+						if (!extensionSubKey.GetSubKeyNames().Contains("Compare")) continue;
+						
+						// If the Compare subkey does not have a "Command" value and "Arguments" value, just move on to the next extension subkey.
+						var compareSubKey = extensionSubKey.OpenSubKey("Compare");
+						if (!compareSubKey.GetValueNames().Contains("Command") || !compareSubKey.GetValueNames().Contains("Arguments")) continue;
+
+						// Get the executable to use for this file extension and the format its arguments should be provided in.
+						string executableFilePath = (string)compareSubKey.GetValue("Command");
+						string executableArgumentsFormat = (string)compareSubKey.GetValue("Arguments");
+
+						// Add this file extension's configuration to our list.
+						diffToolsConfigured.Add(new FileExtensionDiffToolConfiguration(fileExtension, executableFilePath, executableArgumentsFormat));
+					}
 				}
 
-				// Return the file types.
-				return fileTypes;
+				// If the list contains a catch-all file extension, make sure it is at the end of the list.
+				var catchAllDiffToolConfiguration = diffToolsConfigured.FirstOrDefault(d => d.FileExtension.Equals(".*"));
+				if (catchAllDiffToolConfiguration != null)
+				{
+					diffToolsConfigured.Remove(catchAllDiffToolConfiguration);
+					diffToolsConfigured.Add(catchAllDiffToolConfiguration);
+				}
+
+				// Return the configured diff tools.
+				return diffToolsConfigured;
 			}
 		}
 
@@ -88,7 +115,7 @@ namespace VS_DiffAllFiles
 		}
 
 		/// <summary>
-		/// Gets the deepest directory path that exists.
+		/// Gets the deepest directory path that exists in the given path.
 		/// </summary>
 		/// <param name="path">The path to get the directory of.</param>
 		public static string GetDirectoryPathThatExists(string path)

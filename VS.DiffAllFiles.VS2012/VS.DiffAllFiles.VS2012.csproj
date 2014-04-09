@@ -196,6 +196,9 @@
       <Link>FilesFromShared\DiffAllFilesSectionControl.xaml.cs</Link>
       <DependentUpon>DiffAllFilesSectionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="..\VS.DiffAllFiles\FileExtensionDiffToolConfiguration.cs">
+      <Link>FilesFromShared\FileExtensionDiffToolConfiguration.cs</Link>
+    </Compile>
     <Compile Include="..\VS.DiffAllFiles\GitDiffAllFilesSectionBase.cs">
       <Link>FilesFromShared\GitDiffAllFilesSectionBase.cs</Link>
     </Compile>
@@ -218,6 +221,9 @@
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\ShelvesetDetailsSection.cs">
       <Link>FilesFromShared\ShelvesetDetailsSection.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\SupportsIncludedAndExcludedChangesTfsSectionBase.cs">
+      <Link>FilesFromShared\SupportsIncludedAndExcludedChangesTfsSectionBase.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\TeamExplorerBaseClasses\TeamExplorerBase.cs">
       <Link>FilesFromShared\TeamExplorerBaseClasses\TeamExplorerBase.cs</Link>

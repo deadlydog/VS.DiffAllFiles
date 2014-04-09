@@ -355,13 +355,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				int processId = externalDiffToolProcessIdsRunning[processIndex];
 				try
 				{
-					// Get a handle to the parent TF.exe process.
-					var tfProcess = System.Diagnostics.Process.GetProcessById(processId);
-
-					// Get a handle to the diff tool process created by the TF.exe process and close it.
-					// Once the child diff tool process closes the parent TF.exe process will close as well.
-					foreach (var diffToolProcess in DiffAllFilesHelper.GetChildProcesses(tfProcess))
-						diffToolProcess.CloseMainWindow();	// Use CloseMainWindow() instead of Kill() to give user a chance to save any changes before it closes.
+					// Get a handle to the diff tool process.
+					var diffToolProcess = System.Diagnostics.Process.GetProcessById(processId);
+					diffToolProcess.CloseMainWindow();	// Use CloseMainWindow() instead of Kill() to give user a chance to save any changes before it closes.
 				}
 				// Catch any exceptions thrown when the process does not exist.
 				catch (ArgumentException)
