@@ -12,6 +12,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 	public abstract class DiffAllFilesSectionBase : TeamExplorerBaseSection, IDiffAllFilesSection
 	{
 		/// <summary>
+		/// The default length of time to sleep a thread, in milliseconds.
+		/// </summary>
+		protected const int DEFAULT_THREAD_SLEEP_TIME = 100;
+
+		/// <summary>
 		/// List of process IDs hosting any external diff tools that we launched and are still open.
 		/// </summary>
 		protected readonly ObservableCollection<int> ExternalDiffToolProcessIdsRunning = new ObservableCollection<int>();

@@ -325,7 +325,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 							System.Diagnostics.Process process = null;
 							do
 							{
-								System.Threading.Thread.Sleep(100);
+								System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
 								process = System.Diagnostics.Process.GetProcessById(diffToolProcessId);
 							} while (!process.HasExited);
 						}
@@ -382,7 +382,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 							do
 							{
 								// Sleep the thread for a bit before checking to see if the VS Diff Tabs are all closed or not.
-								System.Threading.Thread.Sleep(100);
+								System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
 
 								// Get the list of open Windows in Visual Studio right now.
 								var openWindowsInVS = dte2.Windows;
@@ -429,7 +429,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 							System.Diagnostics.Process process = null;
 							do
 							{
-								System.Threading.Thread.Sleep(100);
+								System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
 								process = System.Diagnostics.Process.GetProcessById(processId);
 							} while (!cancellationToken.IsCancellationRequested && !process.HasExited);
 						}
@@ -445,7 +445,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						while (!cancellationToken.IsCancellationRequested && VsDiffToolTabCaptionsStillOpenInThisSet.Count > 0)
 						{
 							// Sleep the thread for a bit before checking to see if the VS Diff Tabs are all closed or not.
-							System.Threading.Thread.Sleep(100);
+							System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
 
 							// Get the list of open Windows in Visual Studio right now.
 							var openWindowsInVs = dte2.Windows;
@@ -483,7 +483,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					{
 						// Just sleep this thread until the user wants to compare the next set of files, or cancels the compare operations.
 						while (!cancellationToken.IsCancellationRequested && !_compareNextSetOfFiles && !_cancelComparingFiles)
-							System.Threading.Thread.Sleep(100);
+							System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
 					});
 
 					// Merge the list of tasks waiting for the external diff tool windows and the VS diff tool tabs to be closed.
