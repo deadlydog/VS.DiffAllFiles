@@ -15,21 +15,23 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// List of process IDs hosting any external diff tools that we launched and are still open.
 		/// </summary>
 		protected readonly ObservableCollection<int> ExternalDiffToolProcessIdsRunning = new ObservableCollection<int>();
+		protected static readonly Object ExternalDiffToolProcessIdsRunningLock = new Object();
 
 		/// <summary>
 		/// List of Visual Studio window captions of windows hosting any VS diff tools that we launched and are still open.
 		/// </summary>
 		protected readonly ObservableCollection<string> VsDiffToolTabCaptionsStillOpen = new ObservableCollection<string>();
+		protected static readonly Object VsDiffToolTabCaptionsStillOpenLock = new Object();
 
 		/// <summary>
 		/// List of process IDs hosting any external diff tools that we launched in the last set of compares and are still open.
 		/// </summary>
-		protected readonly List<int> ExternalDiffToolProcessIdsRunningInThisSet = new List<int>();
-		
+		protected readonly ObservableCollection<int> ExternalDiffToolProcessIdsRunningInThisSet = new ObservableCollection<int>();
+
 		/// <summary>
 		/// List of Visual Studio window captions of windows hosting any VS diff tools that we launched in the last set of compares and are still open.
 		/// </summary>
-		protected readonly List<string> VsDiffToolTabCaptionsStillOpenInThisSet = new List<string>();
+		protected readonly ObservableCollection<string> VsDiffToolTabCaptionsStillOpenInThisSet = new ObservableCollection<string>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DiffAllFilesSectionBase"/> class.
@@ -41,8 +43,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			DiffAllFilesSettings_CurrentSettingsChanged(null, System.EventArgs.Empty);
 
 			// Listen for when we launch new diff tool windows, and when the user closes them.
-			ExternalDiffToolProcessIdsRunning.CollectionChanged += ExternalDiffToolProcessIdsRunning_CollectionChanged;
-			VsDiffToolTabCaptionsStillOpen.CollectionChanged += VsDiffToolTabCaptionsStillOpen_CollectionChanged;
+			ExternalDiffToolProcessIdsRunning.CollectionChanged += DiffToolWindows_CollectionChanged;
+			ExternalDiffToolProcessIdsRunningInThisSet.CollectionChanged += DiffToolWindows_CollectionChanged;
+			VsDiffToolTabCaptionsStillOpen.CollectionChanged += DiffToolWindows_CollectionChanged;
+			VsDiffToolTabCaptionsStillOpenInThisSet.CollectionChanged += DiffToolWindows_CollectionChanged;
 
 			// Set the type of section that this is.
 			var sectionType = SectionTypes.None;
@@ -57,26 +61,43 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			SectionType = sectionType;
 		}
 
+		/// <summary>
+		/// Dispose.
+		/// </summary>
+		public override void Dispose()
+		{
+			if (ExternalDiffToolProcessIdsRunning != null)
+				ExternalDiffToolProcessIdsRunning.CollectionChanged -= DiffToolWindows_CollectionChanged;
+			if (ExternalDiffToolProcessIdsRunningInThisSet != null)
+				ExternalDiffToolProcessIdsRunningInThisSet.CollectionChanged -= DiffToolWindows_CollectionChanged;
+			if (VsDiffToolTabCaptionsStillOpen != null)
+				VsDiffToolTabCaptionsStillOpen.CollectionChanged -= DiffToolWindows_CollectionChanged;
+			if (VsDiffToolTabCaptionsStillOpenInThisSet != null)
+				VsDiffToolTabCaptionsStillOpenInThisSet.CollectionChanged -= DiffToolWindows_CollectionChanged;
+
+			base.Dispose();
+		}
+
 		#region Event Handlers
 
 		/// <summary>
-		/// Handles the CollectionChanged event of the VsDiffToolTabCaptionsStillOpen control.
+		/// Handles the CollectionChanged event of one of the DiffToolWindows lists.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-		void VsDiffToolTabCaptionsStillOpen_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		void DiffToolWindows_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
-			NotifyPropertyChanged("NumberOfCompareWindowsStillOpen");
+			NotifyThatDiffToolWindowCollectionsHaveChanged();
 		}
 
 		/// <summary>
-		/// Handles the CollectionChanged event of the ExternalDiffToolProcessesRunning control.
+		/// Update the UI whenever one of the Diff Tool Window collections have changed.
 		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.Collections.Specialized.NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-		void ExternalDiffToolProcessIdsRunning_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		private void NotifyThatDiffToolWindowCollectionsHaveChanged()
 		{
 			NotifyPropertyChanged("NumberOfCompareWindowsStillOpen");
+			NotifyPropertyChanged("CompareWindowsFromMultipleSetsOfFilesAreOpen");
+			NotifyPropertyChanged("CloseLastSetOfFilesCommandLabel");
 		}
 
 		/// <summary>
@@ -210,6 +231,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		{
 			NotifyPropertyChanged("FileComparisonProgressMessage");
 			NotifyPropertyChanged("NextSetOfFilesCommandLabel");
+			NotifyPropertyChanged("CloseLastSetOfFilesCommandLabel");
 		}
 
 		/// <summary>
@@ -233,8 +255,20 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		{
 			get
 			{
-				int numberOfFilesToCompareNextSet = System.Math.Min(Settings.NumberOfFilesToCompareAtATime, (NumberOfFilesToCompare - NumberOfFilesCompared));
+				int numberOfFilesToCompareNextSet = Math.Min(Settings.NumberOfFilesToCompareAtATime, (NumberOfFilesToCompare - NumberOfFilesCompared));
 				return (Settings != null && numberOfFilesToCompareNextSet > 1) ? string.Format("Next {0} Files", numberOfFilesToCompareNextSet) : "Next File"; 
+			}
+		}
+
+		/// <summary>
+		/// Gets a user-friendly label to use for the command used to close the last set of files.
+		/// </summary>
+		public string CloseLastSetOfFilesCommandLabel
+		{
+			get
+			{
+				int numberOfFilesStillOpenFromLastSet = ExternalDiffToolProcessIdsRunningInThisSet.Count + VsDiffToolTabCaptionsStillOpenInThisSet.Count;
+				return (numberOfFilesStillOpenFromLastSet > 1) ? string.Format("Close Last {0} Files", numberOfFilesStillOpenFromLastSet) : "Close Last File";
 			}
 		}
 
@@ -343,28 +377,26 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			CloseAllOpenWindows(ExternalDiffToolProcessIdsRunningInThisSet, VsDiffToolTabCaptionsStillOpenInThisSet);
 		}
 
-		private void CloseAllOpenWindows(IList<int> externalDiffToolProcessIdsRunning, IList<string> vsDiffToolTabCaptionsStillOpen)
+		private void CloseAllOpenWindows(IList<int> externalDiffToolProcessIds, IList<string> vsDiffToolTabCaptionsStillOpen)
 		{
 			// Close any open compare windows in the given lists. 
 			// We don't need to remove the windows from the given lists here, as they will remove themselves from the list when they are closed.
 
 			// Kill all processes hosting the external diff tools we launched.
-			// Loop through the list backwards as it may be modified by another task while we loop through it.
-			for (int processIndex = (externalDiffToolProcessIdsRunning.Count - 1); processIndex >= 0; processIndex--)
+			// Loop through a copy of the list, as the list will be modified as we close processes.
+			var processes = externalDiffToolProcessIds.ToList();
+			for (int processIndex = (processes.Count - 1); processIndex >= 0; processIndex--)
 			{
-				int processId = externalDiffToolProcessIdsRunning[processIndex];
+				int processId = processes[processIndex];
 				try
 				{
 					// Get a handle to the diff tool process.
 					var diffToolProcess = System.Diagnostics.Process.GetProcessById(processId);
 					diffToolProcess.CloseMainWindow();	// Use CloseMainWindow() instead of Kill() to give user a chance to save any changes before it closes.
 				}
-				// Catch any exceptions thrown when the process does not exist.
+				// Eat any exceptions thrown when the process does not exist.
 				catch (ArgumentException)
-				{
-					// Since the process is already closed, remove it from our list.
-					externalDiffToolProcessIdsRunning.Remove(processId);
-				}
+				{ }
 			}
 
 			// Close all windows that we opened using the built-in VS diff tool and are still open.
@@ -374,7 +406,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			for (int windowIndex = windows.Count; windowIndex > 0; windowIndex--)
 			{
 				var window = windows.Item(windowIndex);
-				if (vsDiffToolTabCaptionsStillOpen.Contains(window.Caption, new DansCSharpLibrary.Comparers.StringComparerIgnoreCase()))
+				if (vsDiffToolTabCaptionsStillOpen.Contains(window.Caption))
 					window.Close();
 			}
 		}
@@ -385,6 +417,19 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		public int NumberOfCompareWindowsStillOpen
 		{
 			get { return ExternalDiffToolProcessIdsRunning.Count + VsDiffToolTabCaptionsStillOpen.Count; }
+		}
+
+		/// <summary>
+		/// Gets if there are diff tool windows from multiple file sets currently open.
+		/// </summary>
+		public bool CompareWindowsFromMultipleSetsOfFilesAreOpen
+		{
+			get
+			{
+				return (ExternalDiffToolProcessIdsRunningInThisSet.Count + VsDiffToolTabCaptionsStillOpenInThisSet.Count > 0) && 
+					(ExternalDiffToolProcessIdsRunning.Count != ExternalDiffToolProcessIdsRunningInThisSet.Count ||
+					VsDiffToolTabCaptionsStillOpen.Count != VsDiffToolTabCaptionsStillOpenInThisSet.Count);
+			}
 		}
 
 		/// <summary>

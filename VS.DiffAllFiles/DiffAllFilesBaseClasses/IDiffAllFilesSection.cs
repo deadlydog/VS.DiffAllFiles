@@ -69,6 +69,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		string NextSetOfFilesCommandLabel { get; }
 
 		/// <summary>
+		/// Gets a user-friendly label to use for the command used to close the last set of files.
+		/// </summary>
+		string CloseLastSetOfFilesCommandLabel { get; }
+
+		/// <summary>
 		/// Asynchronously launch the diff tools to compare the files.
 		/// </summary>
 		/// <param name="itemStatusTypesToCompare">The files that should be compared.</param>
@@ -119,5 +124,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Gets the number of diff tool windows that we launched and are still open.
 		/// </summary>
 		int NumberOfCompareWindowsStillOpen { get; }
+
+		/// <summary>
+		/// Gets if there are diff tool windows from multiple file sets currently open.
+		/// </summary>
+		bool CompareWindowsFromMultipleSetsOfFilesAreOpen { get; }
 	}
 }

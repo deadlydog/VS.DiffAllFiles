@@ -16,7 +16,12 @@ namespace VS_DiffAllFiles
 	{
 		public const string NO_FILE_TO_COMPARE_NEW_FILE_LABEL = "[No File To Compare: File is being added to source control]";
 		public const string NO_FILE_TO_COMPARE_DELETED_FILE_LABEL = "[No File To Compare: File is being deleted from source control]";
-		public const string NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL = "[No File To Compare: File version to compare does not exist in source control]";
+		private const string _NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL = "[No File To Compare: File version does not exist in source control]";
+
+		public static string NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(string filePath, string version)
+		{
+			return string.Format("{0}: {1};{2}", _NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL, filePath, version);
+		}
 
 		/// <summary>
 		/// Gets the full path to TF.exe.
@@ -104,46 +109,6 @@ namespace VS_DiffAllFiles
 			}
 		}
 
-		/// <summary>
-		/// Gets the child processes of the given parent process.
-		/// </summary>
-		/// <param name="process">The parent process.</param>
-		public static IEnumerable<Process> GetChildProcesses(Process process)
-		{
-			ManagementObjectSearcher managementObjectSearcher = new ManagementObjectSearcher(String.Format("Select * From Win32_Process Where ParentProcessID={0}", process.Id));
 
-			foreach (ManagementObject mo in managementObjectSearcher.Get())
-			{
-				yield return Process.GetProcessById(Convert.ToInt32(mo["ProcessID"]));
-			}
-		}
-
-		/// <summary>
-		/// Gets the deepest directory path that exists in the given path.
-		/// </summary>
-		/// <param name="path">The path to get the directory of.</param>
-		public static string GetDirectoryPathThatExists(string path)
-		{
-			if (string.IsNullOrWhiteSpace(path))
-				return string.Empty;
-
-			string directoryPath = string.Empty;
-
-			// If we were given a file path, get it's parent directory.
-			if (File.Exists(path))
-				path = Path.GetDirectoryName(path);
-
-			// Search the path until we find a directory that exists.
-			do
-			{
-				if (Directory.Exists(path))
-					directoryPath = path;
-				else
-					path = Directory.GetParent(path).FullName;
-
-			} while (string.IsNullOrWhiteSpace(directoryPath) && !string.IsNullOrWhiteSpace(path));
-
-			return directoryPath;
-		}
 	}
 }

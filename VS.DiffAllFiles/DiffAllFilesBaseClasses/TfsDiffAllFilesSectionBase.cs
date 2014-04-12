@@ -228,8 +228,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			// Get the version to compare the files against.
 			CompareVersion compareVersion = CompareVersionToUse;
 
-			// Get if these changes are in a Shelveset or not.
-			bool isInShelveset = (SectionType == SectionTypes.ShelvesetDetails);
+			// Clear out any diff tool windows from a previous file Set that are still open, as we will be starting a new Set now.
+			lock (ExternalDiffToolProcessIdsRunningLock)
+			{	ExternalDiffToolProcessIdsRunningInThisSet.Clear();}
+			lock (VsDiffToolTabCaptionsStillOpenLock)
+			{	VsDiffToolTabCaptionsStillOpenInThisSet.Clear();}
 
 			// Loop through and diff each of the pending changes.
 			foreach (var change in itemsToCompare)
@@ -307,8 +310,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 					// Add this process to our list of external diff tool processes currently running.
 					int diffToolProcessId = diffToolProcess.Id;
-					ExternalDiffToolProcessIdsRunningInThisSet.Add(diffToolProcessId);
-					ExternalDiffToolProcessIdsRunning.Add(diffToolProcessId);
+					lock (ExternalDiffToolProcessIdsRunningLock)
+					{
+						ExternalDiffToolProcessIdsRunning.Add(diffToolProcessId);
+						ExternalDiffToolProcessIdsRunningInThisSet.Add(diffToolProcessId);
+					}
 
 					// Start a new Task to monitor for when this external diff tool window is closed, and remove it from our list of running processes.
 					Task.Run(() =>
@@ -327,8 +333,14 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						catch (ArgumentException)
 						{ }
 
-						// Now that the diff tool window has been closed, remove it from our list of running diff tool windows.
-						ExternalDiffToolProcessIdsRunning.Remove(diffToolProcessId);
+						// Now that the diff tool window has been closed, remove it from our lists of running diff tool processes.
+						lock (ExternalDiffToolProcessIdsRunningLock)
+						{
+							if (ExternalDiffToolProcessIdsRunning.Contains(diffToolProcessId))
+								ExternalDiffToolProcessIdsRunning.Remove(diffToolProcessId);
+							if (ExternalDiffToolProcessIdsRunningInThisSet.Contains(diffToolProcessId))
+								ExternalDiffToolProcessIdsRunningInThisSet.Remove(diffToolProcessId);
+						}
 
 						// Delete the temp files if they still exist.
 						if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
@@ -353,13 +365,17 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					string diffToolWindowCaption = dte2.ActiveWindow.Caption;
 					if (diffToolWindowCaption.Contains(pendingChange.FileName))
 					{
-						VsDiffToolTabCaptionsStillOpenInThisSet.Add(diffToolWindowCaption);
-						VsDiffToolTabCaptionsStillOpen.Add(diffToolWindowCaption);
+						lock (VsDiffToolTabCaptionsStillOpenLock)
+						{
+							VsDiffToolTabCaptionsStillOpen.Add(diffToolWindowCaption);
+							VsDiffToolTabCaptionsStillOpenInThisSet.Add(diffToolWindowCaption);
+						}
 
 						// Start a new Task to monitor for when this VS diff tool tab is closed, and remove it from our list of open VS diff tool tabs.
 						Task.Run(() =>
 						{
 							string vsDiffToolWindowStillOpenCaption = diffToolWindowCaption;
+							var tempDirectory = tempDiffFilesDirectory;
 							bool windowIsStillOpen = true;
 
 							// Keep looping until the VS diff tool tab window is closed.
@@ -374,19 +390,25 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 								try
 								{
 									// Loop through all of the open windows in Visual Studio and see if this VS Diff Tool Tab is still open or not.
-									windowIsStillOpen = openWindowsInVS.Cast<Window>().Any(window => window.Caption.Equals(vsDiffToolWindowStillOpenCaption, StringComparison.InvariantCulture));
+									windowIsStillOpen = openWindowsInVS.Cast<Window>().Any(window => window.Caption.Equals(vsDiffToolWindowStillOpenCaption));
 								}
 								// Sometimes a Window is already disposed when we try and access it here, so just eat those exceptions.
 								catch
 								{ }
 							} while (windowIsStillOpen);
 
-							// Now that the diff tool tab window has been closed, remove it from our list.
-							VsDiffToolTabCaptionsStillOpen.Remove(vsDiffToolWindowStillOpenCaption);
+							// Now that the diff tool tab window has been closed, remove it from our lists.
+							lock (VsDiffToolTabCaptionsStillOpenLock)
+							{
+								if (VsDiffToolTabCaptionsStillOpen.Contains(vsDiffToolWindowStillOpenCaption))
+									VsDiffToolTabCaptionsStillOpen.Remove(vsDiffToolWindowStillOpenCaption);
+								if (VsDiffToolTabCaptionsStillOpenInThisSet.Contains(vsDiffToolWindowStillOpenCaption))
+									VsDiffToolTabCaptionsStillOpenInThisSet.Remove(vsDiffToolWindowStillOpenCaption);
+							}
 
 							// Delete the temp files if they still exist.
-							if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
-								Directory.Delete(tempDiffFilesDirectory, true);
+							if (!string.IsNullOrWhiteSpace(tempDirectory) && Directory.Exists(tempDirectory))
+								Directory.Delete(tempDirectory, true);
 						});
 					}
 				}
@@ -477,10 +499,6 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					_compareTasksCancellationTokenSource.Cancel();
 					_compareTasksCancellationTokenSource = new CancellationTokenSource();
 
-					// Now that we are done with this set of compares, clear the list of diff tool windows still open from this set.
-					ExternalDiffToolProcessIdsRunningInThisSet.Clear();
-					VsDiffToolTabCaptionsStillOpenInThisSet.Clear();
-
 					// We are done comparing this set of files, so reset the flag to start comparing the next set of files.
 					_compareNextSetOfFiles = false;
 
@@ -490,6 +508,12 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						_cancelComparingFiles = false;
 						break;
 					}
+
+					// Now that we are done with this set of compares, clear the list of diff tool windows still open from this set.
+					lock (ExternalDiffToolProcessIdsRunningLock)
+					{ ExternalDiffToolProcessIdsRunningInThisSet.Clear(); }
+					lock (VsDiffToolTabCaptionsStillOpenLock)
+					{ VsDiffToolTabCaptionsStillOpenInThisSet.Clear(); }
 				}
 			}
 		}
@@ -656,12 +680,20 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			// If the file exists, download it.
 			if (pendingChange.VersionControlServer.ServerItemExists(pendingChange.ServerItem, versionSpec, DeletedState.NonDeleted, ItemType.File))
 			{
-				pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, pendingChange.DeletionId, versionSpec, filePathToDownloadTo);
+				try
+				{
+					pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, pendingChange.DeletionId, versionSpec, filePathToDownloadTo);
+				}
+				catch (Microsoft.TeamFoundation.VersionControl.Client.VersionControlException ex)
+				{
+					fileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString);
+					fileDownloaded = false;
+				}
 			}
 			// Else the file doesn't exist so update the file's label to specify that.
 			else
 			{
-				fileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL;
+				fileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString);
 				fileDownloaded = false;
 			}
 

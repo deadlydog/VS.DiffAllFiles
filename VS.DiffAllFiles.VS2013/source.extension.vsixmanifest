@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="975F4DB4-B063-4247-A120-A13CD1556AF4" Version="1.0" Language="en-US" Publisher="DansKingdom" />
+		<Identity Id="975F4DB4-B063-4247-A120-A13CD1556AF4" Version="2.0" Language="en-US" Publisher="DansKingdom" />
 		<DisplayName>Diff All Files for VS2013</DisplayName>
 		<Description xml:space="preserve">Quickly and easily compare all files with pending changes in TFS.</Description>
 		<Icon>FilesFromShared\Resources\PackageIcon_Small.ico</Icon>

@@ -34,17 +34,18 @@
 				<Button Content="Excluded" IsEnabled="{Binding Path=IsCompareExcludedFilesEnabled}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsCompareExcludedFilesAvailable}}" Click="btnDiffExcludedFiles_Click" ToolTip="Compare only excluded files." />
 				<ComboBox ItemsSource="{Binding Path=CompareVersions}" SelectedItem="{Binding Path=CompareVersionToUse}" Width="140" ToolTip="The file version to compare the local changes against." />
 
-				<!-- This button is duplicated in both the Comparing and Not Comparing Files Views so that we can put it in a nice spot on both views, so be sure to update both places. -->
-				<Button Content="Close All" IsEnabled="{QC:Binding '$P > 0', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Visibility="{QC:Binding '($P > 0) ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." />
+				<!-- These 2 Close buttons are duplicated in both the Comparing and Not Comparing Files Views so that we can put it in a nice spot on both views, so be sure to update both places. -->
+				<Button Content="{Binding Path=CloseLastSetOfFilesCommandLabel, FallbackValue=Close All In Last Set}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=CompareWindowsFromMultipleSetsOfFilesAreOpen}}" Click="btnCloseAllOpenDiffToolsInThisSet_Click" ToolTip="Closes all diff tool windows that are still open from the last set of file compares performed." />
+				<Button Content="Close All" Visibility="{QC:Binding '($P > 0) ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." />
 			</WrapPanel>
 
 			<!-- Currently Comparing Files View -->
 			<WrapPanel Orientation="Horizontal" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsRunningCompareFilesCommand}}">
 				<Button Content="{Binding Path=NextSetOfFilesCommandLabel, FallbackValue=Next Set Of Files}" Click="btnNextSetOfFiles_Click" ToolTip="Launch the next set of file compares." />
-				<Button Content="Close All In This Set" Click="btnCloseAllOpenDiffToolsInThisSet_Click" ToolTip="Closes all diff tool windows that were opened in this set of file compares and are still open." />
-				
-				<!-- This button is duplicated in both the Comparing and Not Comparing Files Views so that we can put it in a nice spot on both views, so be sure to update both places. -->
-				<Button Content="Close All" IsEnabled="{QC:Binding '$P > 0', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Visibility="{QC:Binding '($P > 0) ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." />
+
+				<!-- These 2 Close buttons are duplicated in both the Comparing and Not Comparing Files Views so that we can put it in a nice spot on both views, so be sure to update both places. -->
+				<Button Content="{Binding Path=CloseLastSetOfFilesCommandLabel, FallbackValue=Close All In Last Set}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=CompareWindowsFromMultipleSetsOfFilesAreOpen}}" Click="btnCloseAllOpenDiffToolsInThisSet_Click" ToolTip="Closes all diff tool windows that are still open from the last set of file compares performed." />
+				<Button Content="Close All" Visibility="{QC:Binding '($P > 0) ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." />
 
 				<Button Content="Cancel" Click="btnCancelComparingFiles_Click" ToolTip="Do not compare any more files." />
 				<TextBlock Text="{Binding Path=FileComparisonProgressMessage, FallbackValue=File comparisons in progress}" VerticalAlignment="Center">
