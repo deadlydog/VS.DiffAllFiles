@@ -6,7 +6,7 @@
 						 xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 						 xmlns:QC="clr-namespace:QuickConverter;assembly=QuickConverter"
 						 mc:Ignorable="d" 
-						 d:DesignHeight="300" d:DesignWidth="400" LostKeyboardFocus="UserControl_LostKeyboardFocus">
+						 d:DesignHeight="350" d:DesignWidth="400" LostKeyboardFocus="UserControl_LostKeyboardFocus">
 	<UserControl.Resources>
 		<Style TargetType="{x:Type Button}">
 			<Setter Property="Padding" Value="5" />
@@ -14,6 +14,7 @@
 		</Style>
 		<Style TargetType="{x:Type CheckBox}">
 			<Setter Property="Margin" Value="0,5,0,0" />
+			<Setter Property="VerticalAlignment" Value="Center" />
 			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
 		</Style>
 		<Style TargetType="{x:Type TextBlock}">
@@ -22,18 +23,30 @@
 		<Style TargetType="{x:Type TextBox}">
 			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
 		</Style>
+		<Style TargetType="{x:Type GroupBox}">
+			<Setter Property="Padding" Value="2" />
+		</Style>
 	</UserControl.Resources>
 
 	<Grid>
-		<StackPanel Orientation="Vertical">
-			<GroupBox Header="Diff All Files Settings" Padding="2">
+		<StackPanel Orientation="Vertical" Margin="0">
+			
+			<GroupBox Header="General Settings">
 				<StackPanel Orientation="Vertical">
 					<CheckBox Content="Compare new files" IsChecked="{Binding Path=CompareNewFiles}" ToolTip="If files being added to source control should be compared." />
 					<CheckBox Content="Compare deleted files" IsChecked="{Binding Path=CompareDeletedFiles}" ToolTip="If files being deleted from source control should be compared." />
 					<!--<CheckBox Content="Compare files whose contents have not changed (TFS only)" IsChecked="{Binding Path=CompareFilesNotChanged}" ToolTip="If files that are checked out of TFS, but not actually changed should be compared." />-->
-
-					<StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-						<Label Content="Compare up to this many files at a time:">
+					<Label Content="File Extensions To Ignore (e.g. exe, bmp, png)" Margin="0,5,0,0" />
+					<TextBox Text="{Binding Path=FileExtensionsToIgnore}" HorizontalAlignment="Stretch" ToolTip="File types to not compare." />
+				</StackPanel>
+			</GroupBox>
+			
+			<GroupBox Header="How To Compare Files" Margin="0,10,0,0">
+				<StackPanel Orientation="Vertical">
+					<RadioButton GroupName="HowToCompareFiles" Content="Compare each file independently" IsChecked="{QC:Binding '$P == CompareModes.IndividualFiles', P={Binding Path=CompareModesAvailable, Mode=OneTime}}" Checked="radioCompareMode_Independent_Checked" ToolTip="If selected, each file will be compared independently in its own window." />
+					<StackPanel Orientation="Horizontal" Margin="30,2,0,0">
+						<xctk:IntegerUpDown Minimum="1" Maximum="99" Increment="1"  Value="{Binding Path=NumberOfFilesToCompareAtATime}" Width="50" />
+						<Label Content="Maximum number of files to compare at a time">
 							<Label.ToolTip>
 								<TextBlock>
 									The number of diff tool instances to launch at a time, allowing multiple files to be compared at the same time.<LineBreak />
@@ -41,20 +54,25 @@
 								</TextBlock>
 							</Label.ToolTip>
 						</Label>
-						<xctk:IntegerUpDown Minimum="1" Maximum="99" Increment="1"  Value="{Binding Path=NumberOfFilesToCompareAtATime}" Width="50" Margin="5,0,0,0" />
 					</StackPanel>
 					
-					<Label Content="File Extensions To Ignore (e.g. exe, bmp, png)" Margin="0,10,0,0" />
-					<TextBox Text="{Binding Path=FileExtensionsToIgnore}" HorizontalAlignment="Stretch" ToolTip="File types to not compare." />
-					<Button Content="Restore Default Settings" HorizontalAlignment="Right" Margin="0,5,0,0" Click="btnRestoreDefaultSettings_Click" />
+					<RadioButton GroupName="HowToCompareFiles" Content="Compare all files together in a single window" IsChecked="{QC:Binding '$P == CompareModes.CombinedIntoSingleFile', P={Binding Path=CompareModesAvailable, Mode=OneTime}}" Checked="radioCompareMode_Combined_Checked" ToolTip="If selected, all files will be combined and compared in a single window." Margin="0,10,0,0" />
+					<StackPanel Orientation="Horizontal" Margin="30,0,0,0">
+						<CheckBox Content="Place differences at file headers" IsChecked="{Binding Path=PlaceDifferencesAtFileHeaders}" ToolTip="If checked, differences will be placed at each file's title, making it easier to move from one file to the next in the compare tool." />
+					</StackPanel>
+					
+					<RadioButton GroupName="HowToCompareFiles" Content="Allow me to decide by showing a checkbox on the UI" IsChecked="{QC:Binding '$P == CompareModes.AllowUserToChoose', P={Binding Path=CompareModesAvailable, Mode=OneTime}}" Checked="radioCompareMode_LetUserDecide_Checked" ToolTip="If selected, a checkout will be shown on the UI allowing you to specify which compare mode to use." Margin="0,10,0,0" />
 				</StackPanel>
 			</GroupBox>
+			
 			<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,10,0,0">
 				<Button Content="Configure Diff Tool..." HorizontalAlignment="Left" Click="btnConfigureDiffTool_Click" ToolTip="Select the tool to use for comparing different types of files." />
 				<TextBlock VerticalAlignment="Center" Margin="5,0,0,0">
 						<Hyperlink NavigateUri="https://diffallfilesvisualstudioextension.codeplex.com/wikipage?title=Common%20Diff%20Tool%20Configurations%20For%20Visual%20Studio" RequestNavigate="Hyperlink_RequestNavigate">View common diff tool configurations</Hyperlink>
 				</TextBlock>
 			</StackPanel>
+			
+			<Button Content="Restore Default Settings" HorizontalAlignment="Right" Margin="0,10,0,0" Click="btnRestoreDefaultSettings_Click" />
 		</StackPanel>
 	</Grid>
 </UserControl>

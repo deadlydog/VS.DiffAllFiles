@@ -44,6 +44,8 @@ namespace VS_DiffAllFiles
 			QuickConverter.EquationTokenizer.AddNamespace(typeof(object));
 			// Add the System.Windows namespace so we can use Visibility.Collapsed, etc.
 			QuickConverter.EquationTokenizer.AddNamespace(typeof(System.Windows.Visibility));
+			// Add the Diff All Files Base Classes so we can use our custom enums.
+	        QuickConverter.EquationTokenizer.AddNamespace(typeof(VS_DiffAllFiles.DiffAllFilesBaseClasses.CompareModes));
         }
 
         /////////////////////////////////////////////////////////////////////////////

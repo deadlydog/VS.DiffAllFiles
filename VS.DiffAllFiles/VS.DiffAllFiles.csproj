@@ -116,6 +116,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DiffAllFilesBaseClasses\CompareModes.cs" />
     <Compile Include="DiffAllFilesBaseClasses\SectionTypes.cs" />
     <Compile Include="FileExtensionDiffToolConfiguration.cs" />
     <Compile Include="GitDiffAllFilesSectionBase.cs" />

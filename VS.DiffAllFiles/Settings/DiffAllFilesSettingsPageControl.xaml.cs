@@ -75,5 +75,20 @@ namespace VS_DiffAllFiles.Settings
 				if (bindingExpression != null) bindingExpression.UpdateSource();
 			}
 		}
+
+		private void radioCompareMode_LetUserDecide_Checked(object sender, RoutedEventArgs e)
+		{
+			_settings.CompareModesAvailable = DiffAllFilesBaseClasses.CompareModes.AllowUserToChoose;
+		}
+
+		private void radioCompareMode_Independent_Checked(object sender, RoutedEventArgs e)
+		{
+			_settings.CompareModesAvailable = DiffAllFilesBaseClasses.CompareModes.IndividualFiles;
+		}
+
+		private void radioCompareMode_Combined_Checked(object sender, RoutedEventArgs e)
+		{
+			_settings.CompareModesAvailable = DiffAllFilesBaseClasses.CompareModes.CombinedIntoSingleFile;
+		}
 	}
 }

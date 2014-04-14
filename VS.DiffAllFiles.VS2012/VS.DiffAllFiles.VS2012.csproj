@@ -170,6 +170,9 @@
       <SubType>
       </SubType>
     </Compile>
+    <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\CompareModes.cs">
+      <Link>FilesFromShared\DiffAllFilesBaseClasses\CompareModes.cs</Link>
+    </Compile>
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\CompareVersion.cs">
       <Link>FilesFromShared\DiffAllFilesBaseClasses\CompareVersion.cs</Link>
     </Compile>

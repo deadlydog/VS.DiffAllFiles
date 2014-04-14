@@ -19,6 +19,10 @@
 			<Setter Property="Margin" Value="0,2,5,2" />
 			<Setter Property="Height" Value="25" />
 		</Style>
+		<Style TargetType="{x:Type CheckBox}">
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
 		<Style TargetType="{x:Type TextBlock}">
 			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
 			<Setter Property="Margin" Value="0,2,5,2" />
@@ -33,6 +37,7 @@
 				<Button Content="Included" IsEnabled="{Binding Path=IsCompareIncludedFilesEnabled}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsCompareIncludedFilesAvailable}}" Click="btnDiffIncludedFiles_Click" ToolTip="Compare only included files." />
 				<Button Content="Excluded" IsEnabled="{Binding Path=IsCompareExcludedFilesEnabled}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsCompareExcludedFilesAvailable}}" Click="btnDiffExcludedFiles_Click" ToolTip="Compare only excluded files." />
 				<ComboBox ItemsSource="{Binding Path=CompareVersions}" SelectedItem="{Binding Path=CompareVersionToUse}" Width="140" ToolTip="The file version to compare the local changes against." />
+				<CheckBox Content="Combine" IsChecked="{Binding Path=UseCombinedCompareMode}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=AllowUserToChooseWhichCompareModeToUse}}" ToolTip="If checked all files will be combined and compared in a single window, else each file will be compared independently in its own window." />
 
 				<!-- These 2 Close buttons are duplicated in both the Comparing and Not Comparing Files Views so that we can put it in a nice spot on both views, so be sure to update both places. -->
 				<Button Content="{Binding Path=CloseLastSetOfFilesCommandLabel, FallbackValue=Close All In Last Set}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=CompareWindowsFromMultipleSetsOfFilesAreOpen}}" Click="btnCloseAllOpenDiffToolsInThisSet_Click" ToolTip="Closes all diff tool windows that are still open from the last set of file compares performed." />

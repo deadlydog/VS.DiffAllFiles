@@ -68,6 +68,9 @@ namespace VS_DiffAllFiles.Settings
 			CompareNewFiles = true;
 			CompareDeletedFiles = true;
 			NumberOfFilesToCompareAtATime = 1;
+			CompareModesAvailable = CompareModes.AllowUserToChoose;
+			CompareModeToUse = CompareModes.IndividualFiles;
+			PlaceDifferencesAtFileHeaders = false;
 		}
 
 		/// <summary>
@@ -126,6 +129,33 @@ namespace VS_DiffAllFiles.Settings
 				FileExtensionsToIgnoreList.RemoveAll(string.IsNullOrWhiteSpace);
 			}
 		}
+
+		/// <summary>
+		/// Get / Set the available Compare Modes that may be used compare files.
+		/// <para>This should not be used to decide which compare mode to use; instead use the CompareModeToUse property.</para>
+		/// </summary>
+		public CompareModes CompareModesAvailable { get { return _compareModesAvailable; } set { _compareModesAvailable = value; NotifyPropertyChanged("CompareModesAvailable"); } }
+		private CompareModes _compareModesAvailable = CompareModes.AllowUserToChoose;
+
+		/// <summary>
+		/// Get / Set the Compare Mode to use to compare files, based on which ones are Available and which one was used last time.
+		/// </summary>
+		public CompareModes CompareModeToUse
+		{
+			get
+			{
+				if (CompareModesAvailable == CompareModes.AllowUserToChoose) return _compareModeToUse;
+				else return CompareModesAvailable;
+			}
+			set { _compareModeToUse = value; NotifyPropertyChanged("CompareModeToUse"); }
+		}
+		private CompareModes _compareModeToUse = CompareModes.IndividualFiles;
+
+		/// <summary>
+		/// If true, differences will be placed in each file's header when in the CombinedIntoSingleFile Compare Mode.
+		/// </summary>
+		public bool PlaceDifferencesAtFileHeaders { get { return _placeDifferencesAtFileHeaders; } set { _placeDifferencesAtFileHeaders = value; NotifyPropertyChanged("PlaceDifferencesAtFileHeaders"); } }
+		private bool _placeDifferencesAtFileHeaders = false;
 
 		#endregion
 

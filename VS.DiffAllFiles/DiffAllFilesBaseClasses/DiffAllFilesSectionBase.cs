@@ -120,6 +120,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				// Notify all of the properties to refresh, since the Settings source was refreshed.
 				NotifyPropertyChanged("NextSetOfFilesCommandLabel");
 				NotifyPropertyChanged("CompareVersionToUse");
+				NotifyPropertyChanged("AllowUserToChooseWhichCompareModeToUse");
+				NotifyPropertyChanged("UseCombinedCompareMode");
 			}
 		}
 
@@ -140,6 +142,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				case "GitChangesCompareVersion":
 				case "GitCommitDetailsCompareVersion":
 					NotifyPropertyChanged("CompareVersionToUse"); 
+					break;
+
+				case "CompareModesAvailable": 
+					NotifyPropertyChanged("AllowUserToChooseWhichCompareModeToUse"); 
+					NotifyPropertyChanged("UseCombinedCompareMode"); 
 					break;
 			}
 		}
@@ -441,6 +448,20 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Returns the type of section this class is.
 		/// </summary>
 		protected SectionTypes SectionType { get; private set; }
+
+		/// <summary>
+		/// Get if the user should be able to choose which Compare Mode to use from the UI or not.
+		/// </summary>
+		public bool AllowUserToChooseWhichCompareModeToUse { get { return Settings.CompareModesAvailable == CompareModes.AllowUserToChoose; } }
+
+		/// <summary>
+		/// Gets or sets if the Combined Into Single File Compare Mode should be used or not.
+		/// </summary>
+		public bool UseCombinedCompareMode
+		{
+			get { return Settings.CompareModeToUse == CompareModes.CombinedIntoSingleFile; }
+			set { Settings.CompareModeToUse = (value ? CompareModes.CombinedIntoSingleFile : CompareModes.IndividualFiles); }
+		}
 
 		#endregion
 	}
