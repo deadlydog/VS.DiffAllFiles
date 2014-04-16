@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using VS_DiffAllFiles.Settings;
+using VS_DiffAllFiles.StructuresAndEnums;
 
 namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 {

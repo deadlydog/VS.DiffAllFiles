@@ -165,46 +165,23 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\VS.DiffAllFiles\ChangesetDetailsSection.cs">
-      <Link>FilesFromShared\ChangesetDetailsSection.cs</Link>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\CompareModes.cs">
-      <Link>FilesFromShared\DiffAllFilesBaseClasses\CompareModes.cs</Link>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\CompareVersion.cs">
-      <Link>FilesFromShared\DiffAllFilesBaseClasses\CompareVersion.cs</Link>
-    </Compile>
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\DiffAllFilesSectionBase.cs">
       <Link>FilesFromShared\DiffAllFilesBaseClasses\DiffAllFilesSectionBase.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\GitDiffAllFilesSectionBase.cs">
+      <Link>FilesFromShared\DiffAllFilesBaseClasses\GitDiffAllFilesSectionBase.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\IDiffAllFilesSection.cs">
       <Link>FilesFromShared\DiffAllFilesBaseClasses\IDiffAllFilesSection.cs</Link>
     </Compile>
-    <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\ItemStatusTypesToCompare.cs">
-      <Link>FilesFromShared\DiffAllFilesBaseClasses\ItemStatusTypesToCompare.cs</Link>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\SectionTypes.cs">
-      <Link>FilesFromShared\DiffAllFilesBaseClasses\SectionTypes.cs</Link>
+    <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\SupportsIncludedAndExcludedChangesTfsSectionBase.cs">
+      <Link>FilesFromShared\DiffAllFilesBaseClasses\SupportsIncludedAndExcludedChangesTfsSectionBase.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\TfsDiffAllFilesSectionBase.cs">
       <Link>FilesFromShared\DiffAllFilesBaseClasses\TfsDiffAllFilesSectionBase.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesHelper.cs">
       <Link>FilesFromShared\DiffAllFilesHelper.cs</Link>
-      <SubType>
-      </SubType>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\DiffAllFilesSectionControl.xaml.cs">
-      <Link>FilesFromShared\DiffAllFilesSectionControl.xaml.cs</Link>
-      <DependentUpon>DiffAllFilesSectionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\FileExtensionDiffToolConfiguration.cs">
-      <Link>FilesFromShared\FileExtensionDiffToolConfiguration.cs</Link>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\GitDiffAllFilesSectionBase.cs">
-      <Link>FilesFromShared\GitDiffAllFilesSectionBase.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\Guids.cs">
       <Link>FilesFromShared\Guids.cs</Link>
@@ -212,8 +189,18 @@
     <Compile Include="..\VS.DiffAllFiles\PackageHelper.cs">
       <Link>FilesFromShared\PackageHelper.cs</Link>
     </Compile>
-    <Compile Include="..\VS.DiffAllFiles\PendingChangesSection.cs">
-      <Link>FilesFromShared\PendingChangesSection.cs</Link>
+    <Compile Include="..\VS.DiffAllFiles\Sections\ChangesetDetailsSection.cs">
+      <Link>FilesFromShared\Sections\ChangesetDetailsSection.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Sections\DiffAllFilesSectionControl.xaml.cs">
+      <Link>FilesFromShared\Sections\DiffAllFilesSectionControl.xaml.cs</Link>
+      <DependentUpon>DiffAllFilesSectionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Sections\PendingChangesSection.cs">
+      <Link>FilesFromShared\Sections\PendingChangesSection.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Sections\ShelvesetDetailsSection.cs">
+      <Link>FilesFromShared\Sections\ShelvesetDetailsSection.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\Settings\DiffAllFilesSettings.cs">
       <Link>FilesFromShared\Settings\DiffAllFilesSettings.cs</Link>
@@ -223,11 +210,26 @@
       <Link>FilesFromShared\Settings\DiffAllFilesSettingsPageControl.xaml.cs</Link>
       <DependentUpon>DiffAllFilesSettingsPageControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="..\VS.DiffAllFiles\ShelvesetDetailsSection.cs">
-      <Link>FilesFromShared\ShelvesetDetailsSection.cs</Link>
+    <Compile Include="..\VS.DiffAllFiles\StructuresAndEnums\CompareModes.cs">
+      <Link>FilesFromShared\StructuresAndEnums\CompareModes.cs</Link>
     </Compile>
-    <Compile Include="..\VS.DiffAllFiles\SupportsIncludedAndExcludedChangesTfsSectionBase.cs">
-      <Link>FilesFromShared\SupportsIncludedAndExcludedChangesTfsSectionBase.cs</Link>
+    <Compile Include="..\VS.DiffAllFiles\StructuresAndEnums\CompareVersion.cs">
+      <Link>FilesFromShared\StructuresAndEnums\CompareVersion.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\StructuresAndEnums\DiffToolConfiguration.cs">
+      <Link>FilesFromShared\StructuresAndEnums\DiffToolConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\StructuresAndEnums\FileExtensionDiffToolConfiguration.cs">
+      <Link>FilesFromShared\StructuresAndEnums\FileExtensionDiffToolConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\StructuresAndEnums\ItemStatusTypesToCompare.cs">
+      <Link>FilesFromShared\StructuresAndEnums\ItemStatusTypesToCompare.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\StructuresAndEnums\SectionTypes.cs">
+      <Link>FilesFromShared\StructuresAndEnums\SectionTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\StructuresAndEnums\SourceAndTargetFilePathsAndLabels.cs">
+      <Link>FilesFromShared\StructuresAndEnums\SourceAndTargetFilePathsAndLabels.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\TeamExplorerBaseClasses\TeamExplorerBase.cs">
       <Link>FilesFromShared\TeamExplorerBaseClasses\TeamExplorerBase.cs</Link>
@@ -269,9 +271,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\VS.DiffAllFiles\packages.config">
-      <Link>FilesFromShared\packages.config</Link>
-    </None>
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
@@ -281,16 +280,12 @@
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\VS.DiffAllFiles\Resources\PackageIcon_Small.ico">
+    <Resource Include="..\VS.DiffAllFiles\Resources\PackageIcon_Small.ico">
       <Link>FilesFromShared\Resources\PackageIcon_Small.ico</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="..\VS.DiffAllFiles\Resources\PreviewImage.png">
+    </Resource>
+    <Resource Include="..\VS.DiffAllFiles\Resources\PreviewImage.png">
       <Link>FilesFromShared\Resources\PreviewImage.png</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
+    </Resource>
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.dll" />
     <Resource Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.xml" />
@@ -298,19 +293,21 @@
     <Resource Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Client.xml" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Controls.dll" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Page Include="..\VS.DiffAllFiles\DiffAllFilesSectionControl.xaml">
-      <Link>FilesFromShared\DiffAllFilesSectionControl.xaml</Link>
+    <Page Include="..\VS.DiffAllFiles\Sections\DiffAllFilesSectionControl.xaml">
+      <Link>FilesFromShared\Sections\DiffAllFilesSectionControl.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Include="..\VS.DiffAllFiles\Settings\DiffAllFilesSettingsPageControl.xaml">
       <Link>FilesFromShared\Settings\DiffAllFilesSettingsPageControl.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

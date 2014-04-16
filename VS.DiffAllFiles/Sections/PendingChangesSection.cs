@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using VS_DiffAllFiles.DiffAllFilesBaseClasses;
 using Microsoft.TeamFoundation.Controls;
-using Microsoft.TeamFoundation.VersionControl.Client;
-using Microsoft.TeamFoundation.VersionControl.Controls.Extensibility;
+using VS_DiffAllFiles.StructuresAndEnums;
 
-namespace VS_DiffAllFiles
+namespace VS_DiffAllFiles.Sections
 {
 	/// <summary>
 	/// Diff All Files section in the Pending Changes window.

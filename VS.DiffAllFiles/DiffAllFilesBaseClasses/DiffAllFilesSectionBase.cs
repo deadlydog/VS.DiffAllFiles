@@ -4,7 +4,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using VS_DiffAllFiles.Sections;
 using VS_DiffAllFiles.Settings;
+using VS_DiffAllFiles.StructuresAndEnums;
 using VS_DiffAllFiles.TeamExplorerBaseClasses;
 
 namespace VS_DiffAllFiles.DiffAllFilesBaseClasses

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using VS_DiffAllFiles.DiffAllFilesBaseClasses;
 using Microsoft.VisualStudio.Shell;
+using VS_DiffAllFiles.StructuresAndEnums;
 
 namespace VS_DiffAllFiles.Settings
 {
@@ -70,7 +71,7 @@ namespace VS_DiffAllFiles.Settings
 			NumberOfFilesToCompareAtATime = 1;
 			CompareModesAvailable = CompareModes.AllowUserToChoose;
 			CompareModeToUse = CompareModes.IndividualFiles;
-			PlaceDifferencesAtFileHeaders = false;
+			UseSameHeaderForBothFiles = false;
 		}
 
 		/// <summary>
@@ -152,10 +153,10 @@ namespace VS_DiffAllFiles.Settings
 		private CompareModes _compareModeToUse = CompareModes.IndividualFiles;
 
 		/// <summary>
-		/// If true, differences will be placed in each file's header when in the CombinedIntoSingleFile Compare Mode.
+		/// If true, the file headers placed in the Combined files will be the same when in the CombinedIntoSingleFile Compare Mode.
 		/// </summary>
-		public bool PlaceDifferencesAtFileHeaders { get { return _placeDifferencesAtFileHeaders; } set { _placeDifferencesAtFileHeaders = value; NotifyPropertyChanged("PlaceDifferencesAtFileHeaders"); } }
-		private bool _placeDifferencesAtFileHeaders = false;
+		public bool UseSameHeaderForBothFiles { get { return _useSameHeaderForBothFiles; } set { _useSameHeaderForBothFiles = value; NotifyPropertyChanged("UseSameHeaderForBothFiles"); } }
+		private bool _useSameHeaderForBothFiles = false;
 
 		#endregion
 

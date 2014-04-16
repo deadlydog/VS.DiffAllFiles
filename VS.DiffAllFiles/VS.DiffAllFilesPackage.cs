@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using VS_DiffAllFiles.Settings;
 using Microsoft.VisualStudio.Shell;
+using VS_DiffAllFiles.StructuresAndEnums;
 
 namespace VS_DiffAllFiles
 {
@@ -45,7 +46,7 @@ namespace VS_DiffAllFiles
 			// Add the System.Windows namespace so we can use Visibility.Collapsed, etc.
 			QuickConverter.EquationTokenizer.AddNamespace(typeof(System.Windows.Visibility));
 			// Add the Diff All Files Base Classes so we can use our custom enums.
-	        QuickConverter.EquationTokenizer.AddNamespace(typeof(VS_DiffAllFiles.DiffAllFilesBaseClasses.CompareModes));
+	        QuickConverter.EquationTokenizer.AddNamespace(typeof(CompareModes));
         }
 
         /////////////////////////////////////////////////////////////////////////////

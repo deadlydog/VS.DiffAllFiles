@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.Win32;
+using VS_DiffAllFiles.StructuresAndEnums;
 
 namespace VS_DiffAllFiles
 {
@@ -67,7 +68,7 @@ namespace VS_DiffAllFiles
 						string executableArgumentsFormat = (string)compareSubKey.GetValue("Arguments");
 
 						// Add this file extension's configuration to our list.
-						diffToolsConfigured.Add(new FileExtensionDiffToolConfiguration(fileExtension, executableFilePath, executableArgumentsFormat));
+						diffToolsConfigured.Add(new FileExtensionDiffToolConfiguration(fileExtension, new DiffToolConfiguration(executableFilePath, executableArgumentsFormat)));
 					}
 				}
 

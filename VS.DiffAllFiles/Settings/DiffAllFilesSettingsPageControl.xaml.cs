@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
+using VS_DiffAllFiles.StructuresAndEnums;
 
 namespace VS_DiffAllFiles.Settings
 {
@@ -78,17 +79,17 @@ namespace VS_DiffAllFiles.Settings
 
 		private void radioCompareMode_LetUserDecide_Checked(object sender, RoutedEventArgs e)
 		{
-			_settings.CompareModesAvailable = DiffAllFilesBaseClasses.CompareModes.AllowUserToChoose;
+			_settings.CompareModesAvailable = CompareModes.AllowUserToChoose;
 		}
 
 		private void radioCompareMode_Independent_Checked(object sender, RoutedEventArgs e)
 		{
-			_settings.CompareModesAvailable = DiffAllFilesBaseClasses.CompareModes.IndividualFiles;
+			_settings.CompareModesAvailable = CompareModes.IndividualFiles;
 		}
 
 		private void radioCompareMode_Combined_Checked(object sender, RoutedEventArgs e)
 		{
-			_settings.CompareModesAvailable = DiffAllFilesBaseClasses.CompareModes.CombinedIntoSingleFile;
+			_settings.CompareModesAvailable = CompareModes.CombinedIntoSingleFile;
 		}
 	}
 }

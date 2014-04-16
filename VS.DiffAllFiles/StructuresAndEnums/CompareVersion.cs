@@ -1,6 +1,7 @@
 using System;
+using System.Linq;
 
-namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
+namespace VS_DiffAllFiles.StructuresAndEnums
 {
 	/// <summary>
 	/// Enum of possible file versions to compare local changes against.

@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.TeamFoundation.Controls;
-using Microsoft.TeamFoundation.VersionControl.Controls.Extensibility;
 using VS_DiffAllFiles.DiffAllFilesBaseClasses;
+using VS_DiffAllFiles.StructuresAndEnums;
 
-namespace VS_DiffAllFiles
+namespace VS_DiffAllFiles.Sections
 {
 	/// <summary>
 	/// Diff All Files section in the Changeset Details window.

@@ -116,26 +116,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DiffAllFilesBaseClasses\CompareModes.cs" />
-    <Compile Include="DiffAllFilesBaseClasses\SectionTypes.cs" />
-    <Compile Include="FileExtensionDiffToolConfiguration.cs" />
-    <Compile Include="GitDiffAllFilesSectionBase.cs" />
-    <Compile Include="ShelvesetDetailsSection.cs" />
-    <Compile Include="GitChangesSection.cs" />
-    <Compile Include="GitCommitDetailsSection.cs" />
-    <Compile Include="ChangesetDetailsSection.cs" />
-    <Compile Include="DiffAllFilesBaseClasses\CompareVersion.cs" />
+    <Compile Include="StructuresAndEnums\CompareModes.cs" />
+    <Compile Include="StructuresAndEnums\DiffToolConfiguration.cs" />
+    <Compile Include="StructuresAndEnums\SectionTypes.cs" />
+    <Compile Include="StructuresAndEnums\FileExtensionDiffToolConfiguration.cs" />
+    <Compile Include="DiffAllFilesBaseClasses\GitDiffAllFilesSectionBase.cs" />
+    <Compile Include="Sections\ShelvesetDetailsSection.cs" />
+    <Compile Include="Sections\GitChangesSection.cs" />
+    <Compile Include="Sections\GitCommitDetailsSection.cs" />
+    <Compile Include="Sections\ChangesetDetailsSection.cs" />
+    <Compile Include="StructuresAndEnums\CompareVersion.cs" />
     <Compile Include="DiffAllFilesBaseClasses\DiffAllFilesSectionBase.cs" />
     <Compile Include="DiffAllFilesBaseClasses\IDiffAllFilesSection.cs" />
-    <Compile Include="DiffAllFilesBaseClasses\ItemStatusTypesToCompare.cs" />
+    <Compile Include="StructuresAndEnums\ItemStatusTypesToCompare.cs" />
     <Compile Include="DiffAllFilesBaseClasses\TfsDiffAllFilesSectionBase.cs" />
     <Compile Include="DiffAllFilesHelper.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="PackageHelper.cs" />
-    <Compile Include="DiffAllFilesSectionControl.xaml.cs">
+    <Compile Include="Sections\DiffAllFilesSectionControl.xaml.cs">
       <DependentUpon>DiffAllFilesSectionControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PendingChangesSection.cs" />
+    <Compile Include="Sections\PendingChangesSection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\DiffAllFilesSettings.cs">
       <SubType>Component</SubType>
@@ -143,7 +144,8 @@
     <Compile Include="Settings\DiffAllFilesSettingsPageControl.xaml.cs">
       <DependentUpon>DiffAllFilesSettingsPageControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SupportsIncludedAndExcludedChangesTfsSectionBase.cs" />
+    <Compile Include="DiffAllFilesBaseClasses\SupportsIncludedAndExcludedChangesTfsSectionBase.cs" />
+    <Compile Include="StructuresAndEnums\SourceAndTargetFilePathsAndLabels.cs" />
     <Compile Include="TeamExplorerBaseClasses\TeamExplorerBase.cs" />
     <Compile Include="TeamExplorerBaseClasses\TeamExplorerBaseNavigationItem.cs" />
     <Compile Include="TeamExplorerBaseClasses\TeamExplorerBaseNavigationLink.cs" />
@@ -152,7 +154,7 @@
     <Compile Include="VS.DiffAllFilesPackage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="DiffAllFilesSectionControl.xaml">
+    <Page Include="Sections\DiffAllFilesSectionControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
