@@ -9,24 +9,14 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 	public class SourceAndTargetFilePathsAndLabels
 	{
 		/// <summary>
-		/// The path to the source file.
+		/// The path to the source file and its label.
 		/// </summary>
-		public string SourceFilePath { get; private set; }
+		public FilePathAndLabel SourceFilePathAndLabel { get; private set; }
 
 		/// <summary>
-		/// The path to the target file.
+		/// The path to the target file and its label.
 		/// </summary>
-		public string TargetFilePath { get; private set; }
-
-		/// <summary>
-		/// The label for the source file.
-		/// </summary>
-		public string SourceFileLabel { get; private set; }
-
-		/// <summary>
-		/// The label for the target file.
-		/// </summary>
-		public string TargetFileLabel { get; private set; }
+		public FilePathAndLabel TargetFilePathAndLabel { get; private set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SourceAndTargetFilePathsAndLabels"/> class.
@@ -34,22 +24,29 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 		/// <param name="sourceFilePath">The source file path.</param>
 		/// <param name="targetFilePath">The target file path.</param>
 		public SourceAndTargetFilePathsAndLabels(string sourceFilePath, string targetFilePath)
-			: this(sourceFilePath, targetFilePath, string.Empty, string.Empty)
+			: this(new FilePathAndLabel(sourceFilePath), new FilePathAndLabel(targetFilePath))
 		{ }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SourceAndTargetFilePathsAndLabels"/> class.
 		/// </summary>
-		/// <param name="sourceFilePath">The source file path.</param>
-		/// <param name="targetFilePath">The target file path.</param>
+		/// <param name="sourceFilePathAndLabel">The source file path and label.</param>
+		/// <param name="targetFilePathAndLabel">The target file path and label.</param>
+		public SourceAndTargetFilePathsAndLabels(FilePathAndLabel sourceFilePathAndLabel, FilePathAndLabel targetFilePathAndLabel)
+		{
+			SourceFilePathAndLabel = sourceFilePathAndLabel;
+			TargetFilePathAndLabel = targetFilePathAndLabel;
+		}
+
+		/// <summary>
+		/// Gets a copy of this instance with new file labels.
+		/// </summary>
 		/// <param name="sourceFileLabel">The source file label.</param>
 		/// <param name="targetFileLabel">The target file label.</param>
-		public SourceAndTargetFilePathsAndLabels(string sourceFilePath, string targetFilePath, string sourceFileLabel, string targetFileLabel)
+		public SourceAndTargetFilePathsAndLabels GetCopyWithNewFileLabels(FileLabel sourceFileLabel, FileLabel targetFileLabel)
 		{
-			SourceFilePath = sourceFilePath;
-			TargetFilePath = targetFilePath;
-			SourceFileLabel = sourceFileLabel;
-			TargetFileLabel = targetFileLabel;
+			return new SourceAndTargetFilePathsAndLabels(
+				new FilePathAndLabel(SourceFilePathAndLabel.FilePath, sourceFileLabel), new FilePathAndLabel(TargetFilePathAndLabel.FilePath, targetFileLabel));
 		}
 	}
 }

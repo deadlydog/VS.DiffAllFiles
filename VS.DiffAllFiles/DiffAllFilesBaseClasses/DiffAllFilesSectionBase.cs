@@ -136,7 +136,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		{
 			switch (e.PropertyName)
 			{
-				case "NumberOfFilesToCompareAtATime": NotifyPropertyChanged("NextSetOfFilesCommandLabel"); break;
+				case "NumberOfIndividualFilesToCompareAtATime": NotifyPropertyChanged("NextSetOfFilesCommandLabel"); break;
 
 				case "PendingChangesCompareVersion":
 				case "ChangesetDetailsCompareVersion":
@@ -269,7 +269,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		{
 			get
 			{
-				int numberOfFilesToCompareNextSet = Math.Min(Settings.NumberOfFilesToCompareAtATime, (NumberOfFilesToCompare - NumberOfFilesCompared));
+				int numberOfFilesToCompareNextSet = Math.Min(Settings.NumberOfIndividualFilesToCompareAtATime, (NumberOfFilesToCompare - NumberOfFilesCompared));
 				return (Settings != null && numberOfFilesToCompareNextSet > 1) ? string.Format("Next {0} Files", numberOfFilesToCompareNextSet) : "Next File"; 
 			}
 		}
@@ -414,14 +414,18 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			}
 
 			// Close all windows that we opened using the built-in VS diff tool and are still open.
-			// Loop through the list backwards as it may be modified by another task while we loop through it.
+			// Loop through the list backwards as it will be modified while we loop through it as we close windows.
 			// The windows Item list index starts at 1, not 0.
 			var windows = PackageHelper.DTE2.Windows;
+			var vsDiffToolCaptionsToLookFor = vsDiffToolTabCaptionsStillOpen.ToList();	// Create a copy of the list so we can remove from it safely when a matching window is found; this avoids us removing too many windows when multiple have the same name.
 			for (int windowIndex = windows.Count; windowIndex > 0; windowIndex--)
 			{
 				var window = windows.Item(windowIndex);
-				if (vsDiffToolTabCaptionsStillOpen.Contains(window.Caption))
+				if (vsDiffToolCaptionsToLookFor.Contains(window.Caption))
+				{
+					vsDiffToolCaptionsToLookFor.Remove(window.Caption);
 					window.Close();
+				}
 			}
 		}
 

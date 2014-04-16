@@ -68,10 +68,10 @@ namespace VS_DiffAllFiles.Settings
 			CompareFilesNotChanged = true;
 			CompareNewFiles = true;
 			CompareDeletedFiles = true;
-			NumberOfFilesToCompareAtATime = 1;
+			NumberOfIndividualFilesToCompareAtATime = 1;
 			CompareModesAvailable = CompareModes.AllowUserToChoose;
 			CompareModeToUse = CompareModes.IndividualFiles;
-			UseSameHeaderForBothFiles = false;
+			UseSameHeadersForCombinedFiles = false;
 		}
 
 		/// <summary>
@@ -93,10 +93,10 @@ namespace VS_DiffAllFiles.Settings
 		private bool _compareFilesNotChanged = false;
 
 		/// <summary>
-		/// Get / Set the number of files to compare at a time.
+		/// Get / Set the number of files to compare at a time when using Individual File Compare Mode.
 		/// </summary>
-		public int NumberOfFilesToCompareAtATime { get { return _numberOfFilesToCompareAtATime; } set { _numberOfFilesToCompareAtATime = value; NotifyPropertyChanged("NumberOfFilesToCompareAtATime"); } }
-		private int _numberOfFilesToCompareAtATime = 0;
+		public int NumberOfIndividualFilesToCompareAtATime { get { return _numberOfIndividualFilesToCompareAtATime; } set { _numberOfIndividualFilesToCompareAtATime = value; NotifyPropertyChanged("NumberOfIndividualFilesToCompareAtATime"); } }
+		private int _numberOfIndividualFilesToCompareAtATime = 0;
 
 		/// <summary>
 		/// Get / Set the list of file extensions to not compare.
@@ -155,8 +155,8 @@ namespace VS_DiffAllFiles.Settings
 		/// <summary>
 		/// If true, the file headers placed in the Combined files will be the same when in the CombinedIntoSingleFile Compare Mode.
 		/// </summary>
-		public bool UseSameHeaderForBothFiles { get { return _useSameHeaderForBothFiles; } set { _useSameHeaderForBothFiles = value; NotifyPropertyChanged("UseSameHeaderForBothFiles"); } }
-		private bool _useSameHeaderForBothFiles = false;
+		public bool UseSameHeadersForCombinedFiles { get { return _useSameHeadersForCombinedFiles; } set { _useSameHeadersForCombinedFiles = value; NotifyPropertyChanged("UseSameHeadersForCombinedFiles"); } }
+		private bool _useSameHeadersForCombinedFiles = false;
 
 		#endregion
 
@@ -165,7 +165,7 @@ namespace VS_DiffAllFiles.Settings
 		// Any time a change is made to a Per-Window setting we save the changes immediately, so that we can always restore these settings with the values they had last.
 		// This should work properly since the Tools -> Options window is modal, so Global and Per-Window settings cannot be modified at the same time.
 
-		// We have to use CompareVersion.Values because CompareVersion is a class that the DialogPage does not know how to save, so we save the int enum value.
+		// We have to use CompareVersion.Values because CompareVersion is a class, which the DialogPage does not know how to save, so we save the int enum value instead.
 
 		/// <summary>
 		/// The version to compare against when in the Pending Changes window.

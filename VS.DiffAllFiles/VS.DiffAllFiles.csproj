@@ -118,6 +118,8 @@
   <ItemGroup>
     <Compile Include="StructuresAndEnums\CompareModes.cs" />
     <Compile Include="StructuresAndEnums\DiffToolConfiguration.cs" />
+    <Compile Include="StructuresAndEnums\FileLabel.cs" />
+    <Compile Include="StructuresAndEnums\FilePathAndLabel.cs" />
     <Compile Include="StructuresAndEnums\SectionTypes.cs" />
     <Compile Include="StructuresAndEnums\FileExtensionDiffToolConfiguration.cs" />
     <Compile Include="DiffAllFilesBaseClasses\GitDiffAllFilesSectionBase.cs" />

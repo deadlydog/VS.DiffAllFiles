@@ -280,7 +280,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					}
 
 					// If we have reached the maximum number of diff tool instances to launch for this set, and there are still more to launch.
-					if ((ExternalDiffToolProcessIdsRunningInThisSet.Count + VsDiffToolTabCaptionsStillOpenInThisSet.Count) % settings.NumberOfFilesToCompareAtATime == 0 &&
+					if ((ExternalDiffToolProcessIdsRunningInThisSet.Count + VsDiffToolTabCaptionsStillOpenInThisSet.Count) % settings.NumberOfIndividualFilesToCompareAtATime == 0 &&
 						NumberOfFilesCompared < NumberOfFilesToCompare)
 					{
 						bool cancelCompareOperations = !(await WaitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelled(dte2));
@@ -305,16 +305,16 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						GetTemporarySourceAndTargetFilePaths("CombinedFiles", out combinedFilePathsAndLabels, out combinedTempDiffFilesDirectory);
 
 						// Create and apply the labels to use for the Combined files.
-						string sourceVersionForLabel = string.Empty;
+						string sourceVersionForLabel = compareVersion.ToString();
+						string targetVersionForLabel = string.Empty;
 						switch (this.SectionType)
 						{
-							case SectionTypes.PendingChanges: sourceVersionForLabel = "Local Changes"; break;
-							case SectionTypes.ChangesetDetails: sourceVersionForLabel = string.Format("Changeset {0}", pendingChange.Version); break;
-							case SectionTypes.ShelvesetDetails: sourceVersionForLabel = string.Format("Shelveset \"{0}\"", pendingChange.PendingSetName); break;
+							case SectionTypes.PendingChanges: targetVersionForLabel = "Local Changes"; break;
+							case SectionTypes.ChangesetDetails: targetVersionForLabel = string.Format("Changeset {0}", pendingChange.Version); break;
+							case SectionTypes.ShelvesetDetails: targetVersionForLabel = string.Format("Shelveset <{0}>", pendingChange.PendingSetName); break;
 						}
-						string targetVersionForLabel = compareVersion.ToString();
-						combinedFilePathsAndLabels = new SourceAndTargetFilePathsAndLabels(combinedFilePathsAndLabels.SourceFilePath, combinedFilePathsAndLabels.TargetFilePath, 
-							string.Format("Combined Files: {0}", sourceVersionForLabel), string.Format("Combined Files: {0}", targetVersionForLabel));
+						combinedFilePathsAndLabels = combinedFilePathsAndLabels.GetCopyWithNewFileLabels(new FileLabel("Combined Files", string.Empty, sourceVersionForLabel),
+							new FileLabel("Combined Files", string.Empty, targetVersionForLabel));
 						
 						// Add this diff tool configuration to our dictionary.
 						combinedDiffToolConfigurationsAndFilePaths.Add(diffToolConfigKey, combinedFilePathsAndLabels);
@@ -322,31 +322,41 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 					// Get a shortcut handle to the Combined files to write to.
 					var combinedFiles = combinedDiffToolConfigurationsAndFilePaths[diffToolConfigKey];
-
+					
 					// Create the labels to use for the header information.
-					var sourceFileLabel = filePathsAndLabels.SourceFileLabel;
-					var targetFileLabel = filePathsAndLabels.TargetFileLabel;
-					if (settings.UseSameHeaderForBothFiles)
+					var sourceFileLabelString = filePathsAndLabels.SourceFilePathAndLabel.FileLabel.ToString();
+					var targetFileLabelString = filePathsAndLabels.TargetFilePathAndLabel.FileLabel.ToString();
+					// If the file headers for the Source and Target should match, use the same header for both.
+					if (settings.UseSameHeadersForCombinedFiles)
 					{
+						var fileLabelStringToUseForBothFiles = string.Format("{0} vs. {1}", sourceFileLabelString, targetFileLabelString);
+
+						// If the Prefix and FilePath for both labels match, just include them once and display the different versions.
+						if (filePathsAndLabels.SourceFilePathAndLabel.FileLabel.Prefix.Equals(filePathsAndLabels.TargetFilePathAndLabel.FileLabel.Prefix) &&
+							filePathsAndLabels.SourceFilePathAndLabel.FileLabel.FilePath.Equals(filePathsAndLabels.TargetFilePathAndLabel.FileLabel.FilePath))
+						{
+							fileLabelStringToUseForBothFiles = string.Format("{0} vs. {1}", sourceFileLabelString, filePathsAndLabels.TargetFilePathAndLabel.FileLabel.Version);
+						}
+
 						// Make both headers match and display both pieces of information.
-						sourceFileLabel = string.Format("{0} vs. {1}", sourceFileLabel, targetFileLabel);
-						targetFileLabel = sourceFileLabel;
+						sourceFileLabelString = fileLabelStringToUseForBothFiles;
+						targetFileLabelString = fileLabelStringToUseForBothFiles;
 					}
 
 					// Get this file's contents and append it to the Combined file's contents, along with some header info.
 					var combinedSourceFileContentsToAppend = new StringBuilder();
 					combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-					combinedSourceFileContentsToAppend.AppendLine(sourceFileLabel);
+					combinedSourceFileContentsToAppend.AppendLine(sourceFileLabelString);
 					combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-					combinedSourceFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.SourceFilePath));
-					File.AppendAllText(combinedFiles.SourceFilePath, combinedSourceFileContentsToAppend.ToString());
+					combinedSourceFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.SourceFilePathAndLabel.FilePath));
+					File.AppendAllText(combinedFiles.SourceFilePathAndLabel.FilePath, combinedSourceFileContentsToAppend.ToString());
 
 					var combinedTargetFileContentsToAppend = new StringBuilder();
 					combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-					combinedTargetFileContentsToAppend.AppendLine(targetFileLabel);
+					combinedTargetFileContentsToAppend.AppendLine(targetFileLabelString);
 					combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-					combinedTargetFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.TargetFilePath));
-					File.AppendAllText(combinedFiles.TargetFilePath, combinedTargetFileContentsToAppend.ToString());
+					combinedTargetFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.TargetFilePathAndLabel.FilePath));
+					File.AppendAllText(combinedFiles.TargetFilePathAndLabel.FilePath, combinedTargetFileContentsToAppend.ToString());
 
 					// Delete the original temp files if they still exist.
 					if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
@@ -355,17 +365,18 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					// If we have combined all of the files' contents, actually perform the diff now.
 					if (NumberOfFilesCompared == NumberOfFilesToCompare)
 					{
+						// Loop through each diff tool to use and launch it.
 						foreach (var combinedFileSet in combinedDiffToolConfigurationsAndFilePaths)
 						{
 							var diffToolConfiguration = combinedFileSet.Key;
 							var filesAndLabels = combinedFileSet.Value;
-							var tempFilesDirectory = Path.GetDirectoryName(filesAndLabels.SourceFilePath);
+							var tempFilesDirectory = Path.GetDirectoryName(filesAndLabels.SourceFilePathAndLabel.FilePath);
 
 							// If this set should be compared in the default Visual Studio diff tool.
 							if (diffToolConfiguration == DiffToolConfiguration.VsBuiltInDiffToolConfiguration)
 							{
 								// Perform the diff for this file using the built-in Visual Studio diff tool.
-								OpenFileDiffInVsDiffTool(filesAndLabels, tempFilesDirectory, "Diff All Combined Files", dte2);
+								OpenFileDiffInVsDiffTool(filesAndLabels, tempFilesDirectory, string.Empty, dte2);
 							}
 							else
 							{
@@ -373,6 +384,12 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 								OpenFileDiffInExternalDiffTool(diffToolConfiguration, filesAndLabels, tempFilesDirectory);
 							}
 						}
+
+						// Since we compare all of the files at once we don't have separate "file sets", so clear our Set lists out.
+						lock (ExternalDiffToolProcessIdsRunningLock)
+						{ ExternalDiffToolProcessIdsRunningInThisSet.Clear(); }
+						lock (VsDiffToolTabCaptionsStillOpenLock)
+						{ VsDiffToolTabCaptionsStillOpenInThisSet.Clear(); }
 					}
 				}
 			}
@@ -496,80 +513,79 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		/// <param name="filePathsAndLabels">The file paths and labels.</param>
 		/// <param name="tempDiffFilesDirectory">The temporary difference files directory holding the temp files.</param>
-		/// <param name="fileName">Name of the file being compared. This will be used as the Visual Studio diff tool Tab's label.</param>
+		/// <param name="fileName">Name of the file being compared. Visual Studio typically uses this for diff tool Tab's caption.</param>
 		/// <param name="dte2">The dte2 object we can use to hook into Visual Studio with.</param>
 		private void OpenFileDiffInVsDiffTool(SourceAndTargetFilePathsAndLabels filePathsAndLabels, string tempDiffFilesDirectory, string fileName, DTE2 dte2)
 		{
 			// Get if the user should be able to edit the files to save changes back to them; only allow it if they are not temp files.
-			bool sourceIsTemp = filePathsAndLabels.SourceFilePath.StartsWith(tempDiffFilesDirectory);
-			bool targetIsTemp = filePathsAndLabels.TargetFilePath.StartsWith(tempDiffFilesDirectory);
-
-			// Strip the Server/Local/Shelved prefix off of the label and use it as the "tag", as the VisualDiffFiles() function will still display a colon even if one is not provided.
-			int sourceFileLabelsFirstColonIndex = filePathsAndLabels.SourceFileLabel.IndexOf(':');
-			string sourceFileLabelPrefix = filePathsAndLabels.SourceFileLabel.Substring(0, sourceFileLabelsFirstColonIndex);
-			string sourceFileLabelWithoutPrefix = filePathsAndLabels.SourceFileLabel.Remove(0, sourceFileLabelsFirstColonIndex + 1).Trim();
-
-			int targetFileLabelsFirstColonIndex = filePathsAndLabels.TargetFileLabel.IndexOf(':');
-			string targetFileLabelPrefix = filePathsAndLabels.TargetFileLabel.Substring(0, targetFileLabelsFirstColonIndex);
-			string targetFileLabelWithoutPrefix = filePathsAndLabels.TargetFileLabel.Remove(0, targetFileLabelsFirstColonIndex + 1).Trim();
+			bool sourceIsTemp = filePathsAndLabels.SourceFilePathAndLabel.FilePath.StartsWith(tempDiffFilesDirectory);
+			bool targetIsTemp = filePathsAndLabels.TargetFilePathAndLabel.FilePath.StartsWith(tempDiffFilesDirectory);
 
 			// Launch the VS diff tool to diff this file.
-			Difference.VisualDiffFiles(filePathsAndLabels.SourceFilePath, filePathsAndLabels.TargetFilePath, sourceFileLabelPrefix, targetFileLabelPrefix, sourceFileLabelWithoutPrefix, targetFileLabelWithoutPrefix, sourceIsTemp, targetIsTemp);
+			// The VisualDiffFiles() function will still display a colon even if a "Tag" is not provided, so use the label's Prefix for the Tag.
+			Difference.VisualDiffFiles(filePathsAndLabels.SourceFilePathAndLabel.FilePath, filePathsAndLabels.TargetFilePathAndLabel.FilePath, 
+				filePathsAndLabels.SourceFilePathAndLabel.FileLabel.Prefix, filePathsAndLabels.TargetFilePathAndLabel.FileLabel.Prefix, 
+				filePathsAndLabels.SourceFilePathAndLabel.FileLabel.ToStringWithoutPrefix(), filePathsAndLabels.TargetFilePathAndLabel.FileLabel.ToStringWithoutPrefix(), 
+				sourceIsTemp, targetIsTemp);
 
 			// We are likely opening several diff windows, so make sure they don't just replace one another in the Preview Tab.
 			if (PackageHelper.IsCommandAvailable("Window.KeepTabOpen"))
 				dte2.ExecuteCommand("Window.KeepTabOpen");
 
-			// If the diff tool successfully opened, add this VS diff tool's window name to our list of open VS diff tool tabs.
+			// If the diff tool was not opened successfully, just exit.
+			// The active window's caption will typically contain the filename, except for "Combined" files it will contain the File Labels.
 			string diffToolWindowCaption = dte2.ActiveWindow.Caption;
-			if (diffToolWindowCaption.Contains(fileName))
+			if (!diffToolWindowCaption.Contains(fileName) &&
+				(!diffToolWindowCaption.Contains(filePathsAndLabels.SourceFilePathAndLabel.FileLabel.ToStringWithoutPrefix()) &&
+				!diffToolWindowCaption.Contains(filePathsAndLabels.TargetFilePathAndLabel.FileLabel.ToStringWithoutPrefix())))
+				return;
+
+			// Add this VS diff tool's window name to our list of open VS diff tool tabs.
+			lock (VsDiffToolTabCaptionsStillOpenLock)
 			{
+				VsDiffToolTabCaptionsStillOpen.Add(diffToolWindowCaption);
+				VsDiffToolTabCaptionsStillOpenInThisSet.Add(diffToolWindowCaption);
+			}
+
+			// Start a new Task to monitor for when this VS diff tool tab is closed, and remove it from our list of open VS diff tool tabs.
+			Task.Run(() =>
+			{
+				string vsDiffToolWindowStillOpenCaption = diffToolWindowCaption;
+				var tempDirectory = tempDiffFilesDirectory;
+				bool windowIsStillOpen = true;
+
+				// Keep looping until the VS diff tool tab window is closed.
+				do
+				{
+					// Sleep the thread for a bit before checking to see if the VS Diff Tabs are all closed or not.
+					System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
+
+					// Get the list of open Windows in Visual Studio right now.
+					var openWindowsInVS = dte2.Windows;
+
+					try
+					{
+						// Loop through all of the open windows in Visual Studio and see if this VS Diff Tool Tab is still open or not.
+						windowIsStillOpen = openWindowsInVS.Cast<Window>().Any(window => window.Caption.Equals(vsDiffToolWindowStillOpenCaption));
+					}
+						// Sometimes a Window is already disposed when we try and access it here, so just eat those exceptions.
+					catch
+					{ }
+				} while (windowIsStillOpen);
+
+				// Now that the diff tool tab window has been closed, remove it from our lists.
 				lock (VsDiffToolTabCaptionsStillOpenLock)
 				{
-					VsDiffToolTabCaptionsStillOpen.Add(diffToolWindowCaption);
-					VsDiffToolTabCaptionsStillOpenInThisSet.Add(diffToolWindowCaption);
+					if (VsDiffToolTabCaptionsStillOpen.Contains(vsDiffToolWindowStillOpenCaption))
+						VsDiffToolTabCaptionsStillOpen.Remove(vsDiffToolWindowStillOpenCaption);
+					if (VsDiffToolTabCaptionsStillOpenInThisSet.Contains(vsDiffToolWindowStillOpenCaption))
+						VsDiffToolTabCaptionsStillOpenInThisSet.Remove(vsDiffToolWindowStillOpenCaption);
 				}
 
-				// Start a new Task to monitor for when this VS diff tool tab is closed, and remove it from our list of open VS diff tool tabs.
-				Task.Run(() =>
-				{
-					string vsDiffToolWindowStillOpenCaption = diffToolWindowCaption;
-					var tempDirectory = tempDiffFilesDirectory;
-					bool windowIsStillOpen = true;
-
-					// Keep looping until the VS diff tool tab window is closed.
-					do
-					{
-						// Sleep the thread for a bit before checking to see if the VS Diff Tabs are all closed or not.
-						System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
-
-						// Get the list of open Windows in Visual Studio right now.
-						var openWindowsInVS = dte2.Windows;
-
-						try
-						{
-							// Loop through all of the open windows in Visual Studio and see if this VS Diff Tool Tab is still open or not.
-							windowIsStillOpen = openWindowsInVS.Cast<Window>().Any(window => window.Caption.Equals(vsDiffToolWindowStillOpenCaption));
-						}
-						// Sometimes a Window is already disposed when we try and access it here, so just eat those exceptions.
-						catch
-						{ }
-					} while (windowIsStillOpen);
-
-					// Now that the diff tool tab window has been closed, remove it from our lists.
-					lock (VsDiffToolTabCaptionsStillOpenLock)
-					{
-						if (VsDiffToolTabCaptionsStillOpen.Contains(vsDiffToolWindowStillOpenCaption))
-							VsDiffToolTabCaptionsStillOpen.Remove(vsDiffToolWindowStillOpenCaption);
-						if (VsDiffToolTabCaptionsStillOpenInThisSet.Contains(vsDiffToolWindowStillOpenCaption))
-							VsDiffToolTabCaptionsStillOpenInThisSet.Remove(vsDiffToolWindowStillOpenCaption);
-					}
-
-					// Delete the temp files if they still exist.
-					if (!string.IsNullOrWhiteSpace(tempDirectory) && Directory.Exists(tempDirectory))
-						Directory.Delete(tempDirectory, true);
-				});
-			}
+				// Delete the temp files if they still exist.
+				if (!string.IsNullOrWhiteSpace(tempDirectory) && Directory.Exists(tempDirectory))
+					Directory.Delete(tempDirectory, true);
+			});
 		}
 
 		/// <summary>
@@ -582,10 +598,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		{
 			// Build the arguments to pass to the diff tool's executable.
 			string diffToolArguments = diffToolConfiguration.ExecutableArgumentFormat;
-			diffToolArguments = diffToolArguments.Replace("%1", string.Format("\"{0}\"", filePathsAndLabels.SourceFilePath));
-			diffToolArguments = diffToolArguments.Replace("%2", string.Format("\"{0}\"", filePathsAndLabels.TargetFilePath));
-			diffToolArguments = diffToolArguments.Replace("%6", string.Format("\"{0}\"", filePathsAndLabels.SourceFileLabel));
-			diffToolArguments = diffToolArguments.Replace("%7", string.Format("\"{0}\"", filePathsAndLabels.TargetFileLabel));
+			diffToolArguments = diffToolArguments.Replace("%1", string.Format("\"{0}\"", filePathsAndLabels.SourceFilePathAndLabel.FilePath));
+			diffToolArguments = diffToolArguments.Replace("%2", string.Format("\"{0}\"", filePathsAndLabels.TargetFilePathAndLabel.FilePath));
+			diffToolArguments = diffToolArguments.Replace("%6", string.Format("\"{0}\"", filePathsAndLabels.SourceFilePathAndLabel.FileLabel));
+			diffToolArguments = diffToolArguments.Replace("%7", string.Format("\"{0}\"", filePathsAndLabels.TargetFilePathAndLabel.FileLabel));
 
 			// Launch the configured diff tool to diff this file.
 			var diffToolProcess = new System.Diagnostics.Process
@@ -670,21 +686,23 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		{
 			// Get the file paths to save the files to.
 			GetTemporarySourceAndTargetFilePaths(Path.GetFileName(pendingChange.LocalOrServerItem), out filePathsAndLabels, out tempDiffFilesDirectory);
-			string sourceFileLabel = filePathsAndLabels.SourceFilePath;	// This value should never actually be used for the label, but set it in case something gets missed.
-			string targetFileLabel = filePathsAndLabels.TargetFilePath;	// This value should never actually be used for the label, but set it in case something gets missed.
 
 			// Create the files as blank files to make sure they exist.
-			File.WriteAllText(filePathsAndLabels.SourceFilePath, string.Empty);
-			File.WriteAllText(filePathsAndLabels.TargetFilePath, string.Empty);
+			File.WriteAllText(filePathsAndLabels.SourceFilePathAndLabel.FilePath, string.Empty);
+			File.WriteAllText(filePathsAndLabels.TargetFilePathAndLabel.FilePath, string.Empty);
+
+			FileLabel sourceFileLabel = FileLabel.Empty;
+			FileLabel targetFileLabel = FileLabel.Empty;
 
 			// Get the source and target files to use in the compare.
+			VersionSpec versionSpec;
 			switch (this.SectionType)
 			{
 				case SectionTypes.PendingChanges:
 					// If this file is being added to source control, there is no "source" file to retrieve, so set the label appropriately.
 					if (pendingChange.IsAdd)
 					{
-						sourceFileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_NEW_FILE_LABEL;
+						sourceFileLabel = new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NEW_FILE_LABEL_STRING);
 					}
 					else
 					{
@@ -692,13 +710,15 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						switch (compareVersion.Value)
 						{
 							case CompareVersion.Values.WorkspaceVersion:
-								pendingChange.DownloadBaseFile(filePathsAndLabels.SourceFilePath);
-								sourceFileLabel = string.Format("Server: {0};C{1}", pendingChange.ServerItem, pendingChange.Version);
+								pendingChange.DownloadBaseFile(filePathsAndLabels.SourceFilePathAndLabel.FilePath);
+								sourceFileLabel = new FileLabel("Server", pendingChange.ServerItem, string.Format("C{0}", pendingChange.Version));
 								break;
 
 							case CompareVersion.Values.LatestVersion:
-								if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, VersionSpec.Latest, filePathsAndLabels.SourceFilePath, ref sourceFileLabel))
-									sourceFileLabel = string.Format("Server: {0};T", pendingChange.ServerItem);
+								versionSpec = VersionSpec.Latest;
+								sourceFileLabel = DownloadFileVersionIfItExistsInVersionControl(pendingChange, versionSpec, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ? 
+									new FileLabel("Server", pendingChange.ServerItem, "T") : 
+									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString));
 								break;
 						}
 					}
@@ -706,13 +726,13 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					// If the file is being deleted, there is no "target" file to retrieve, so set the label appropriately.
 					if (pendingChange.IsDelete)
 					{
-						targetFileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_DELETED_FILE_LABEL;
+						targetFileLabel = new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_DELETED_FILE_LABEL_STRING);
 					}
 					else
 					{
 						// Get the file's local changes, using the existing local file for the Target file.
-						filePathsAndLabels = new SourceAndTargetFilePathsAndLabels(filePathsAndLabels.SourceFilePath, pendingChange.LocalItem);
-						targetFileLabel = string.Format("Local: {0}", pendingChange.LocalItem);
+						filePathsAndLabels = new SourceAndTargetFilePathsAndLabels(filePathsAndLabels.SourceFilePathAndLabel, new FilePathAndLabel(pendingChange.LocalItem));
+						targetFileLabel = new FileLabel("Local", pendingChange.LocalItem, string.Empty);
 					}
 					break;
 
@@ -720,7 +740,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					// If this file is being added to source control, there is no "source" file to retrieve, so set the label appropriately.
 					if (pendingChange.IsAdd)
 					{
-						sourceFileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_NEW_FILE_LABEL;
+						sourceFileLabel = new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NEW_FILE_LABEL_STRING);
 					}
 					else
 					{
@@ -728,18 +748,24 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						switch (compareVersion.Value)
 						{
 							case CompareVersion.Values.PreviousVersion:
-								if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, new ChangesetVersionSpec(pendingChange.Version - 1), filePathsAndLabels.SourceFilePath, ref sourceFileLabel))
-									sourceFileLabel = string.Format("Server: {0};C{1}", pendingChange.ServerItem, pendingChange.Version - 1);
+								versionSpec = new ChangesetVersionSpec(pendingChange.Version - 1);
+								sourceFileLabel = DownloadFileVersionIfItExistsInVersionControl(pendingChange, versionSpec, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ? 
+									new FileLabel("Server", pendingChange.ServerItem, string.Format("C{0}", pendingChange.Version - 1)) : 
+									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString));
 								break;
 
 							case CompareVersion.Values.WorkspaceVersion:
-								if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, new WorkspaceVersionSpec(_pendingChangesService.Workspace), filePathsAndLabels.SourceFilePath, ref sourceFileLabel))
-									sourceFileLabel = string.Format("Server: {0};W{1}", pendingChange.ServerItem, _pendingChangesService.Workspace.DisplayName);
+								versionSpec = new WorkspaceVersionSpec(_pendingChangesService.Workspace);
+								sourceFileLabel = DownloadFileVersionIfItExistsInVersionControl(pendingChange, versionSpec, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ? 
+									new FileLabel("Server", pendingChange.ServerItem, string.Format("W{0}", _pendingChangesService.Workspace.DisplayName)) : 
+									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString));
 								break;
 
 							case CompareVersion.Values.LatestVersion:
-								if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, VersionSpec.Latest, filePathsAndLabels.SourceFilePath, ref sourceFileLabel))
-									sourceFileLabel = string.Format("Server: {0};T", pendingChange.ServerItem);
+								versionSpec = VersionSpec.Latest;
+								sourceFileLabel = DownloadFileVersionIfItExistsInVersionControl(pendingChange, versionSpec, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ? 
+									new FileLabel("Server", pendingChange.ServerItem, "T") : 
+									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString));
 								break;
 						}
 					}
@@ -747,13 +773,15 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					// If the file is being deleted, there is no "target" file to retrieve, so set the label appropriately.
 					if (pendingChange.IsDelete)
 					{
-						targetFileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_DELETED_FILE_LABEL;
+						targetFileLabel = new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_DELETED_FILE_LABEL_STRING);
 					}
 					else
 					{
 						// Get the Changeset's version of the file.
-						if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, new ChangesetVersionSpec(pendingChange.Version), filePathsAndLabels.TargetFilePath, ref targetFileLabel))
-							targetFileLabel = string.Format("Server: {0};C{1}", pendingChange.ServerItem, pendingChange.Version);
+						versionSpec = new ChangesetVersionSpec(pendingChange.Version);
+						targetFileLabel = DownloadFileVersionIfItExistsInVersionControl(pendingChange, versionSpec, filePathsAndLabels.TargetFilePathAndLabel.FilePath) ? 
+							new FileLabel("Server", pendingChange.ServerItem, string.Format("C{0}", pendingChange.Version)) : 
+							new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString));
 					}
 					break;
 
@@ -761,7 +789,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					// If this file is being added to source control, there is no "source" file to retrieve, so set the label appropriately.
 					if (pendingChange.IsAdd)
 					{
-						sourceFileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_NEW_FILE_LABEL;
+						sourceFileLabel = new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NEW_FILE_LABEL_STRING);
 					}
 					else
 					{
@@ -769,18 +797,22 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						switch (compareVersion.Value)
 						{
 							case CompareVersion.Values.UnmodifiedVersion:
-								pendingChange.DownloadBaseFile(filePathsAndLabels.SourceFilePath);
-								sourceFileLabel = string.Format("Server: {0};C{1}", pendingChange.ServerItem, pendingChange.Version);
+								pendingChange.DownloadBaseFile(filePathsAndLabels.SourceFilePathAndLabel.FilePath);
+								sourceFileLabel = new FileLabel("Server", pendingChange.ServerItem, string.Format("C{0}", pendingChange.Version));
 								break;
 
 							case CompareVersion.Values.WorkspaceVersion:
-								if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, new WorkspaceVersionSpec(_pendingChangesService.Workspace), filePathsAndLabels.SourceFilePath, ref sourceFileLabel))
-									sourceFileLabel = string.Format("Server: {0};W{1}", pendingChange.ServerItem, _pendingChangesService.Workspace.DisplayName);
+								versionSpec = new WorkspaceVersionSpec(_pendingChangesService.Workspace);
+								sourceFileLabel = DownloadFileVersionIfItExistsInVersionControl(pendingChange, versionSpec, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ? 
+									new FileLabel("Server", pendingChange.ServerItem, string.Format("W{0}", _pendingChangesService.Workspace.DisplayName)) : 
+									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString));
 								break;
 
 							case CompareVersion.Values.LatestVersion:
-								if (DownloadFileVersionIfItExistsInVersionControl(pendingChange, VersionSpec.Latest, filePathsAndLabels.SourceFilePath, ref sourceFileLabel))
-									sourceFileLabel = string.Format("Server: {0};T", pendingChange.ServerItem);
+								versionSpec = VersionSpec.Latest;
+								sourceFileLabel = DownloadFileVersionIfItExistsInVersionControl(pendingChange, versionSpec, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ? 
+									new FileLabel("Server", pendingChange.ServerItem, "T") : 
+									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString));
 								break;
 						}
 					}
@@ -788,19 +820,19 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					// If the file is being deleted, there is no "target" file to retrieve, so set the label appropriately.
 					if (pendingChange.IsDelete)
 					{
-						targetFileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_DELETED_FILE_LABEL;
+						targetFileLabel = new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_DELETED_FILE_LABEL_STRING);
 					}
 					else
 					{
 						// Get the Shelveset's version of the file.
-						pendingChange.DownloadShelvedFile(filePathsAndLabels.TargetFilePath);
-						targetFileLabel = string.Format("Shelved Change: {0};{1}", pendingChange.ServerItem, pendingChange.PendingSetName);
+						pendingChange.DownloadShelvedFile(filePathsAndLabels.TargetFilePathAndLabel.FilePath);
+						targetFileLabel = new FileLabel("Shelved Change", pendingChange.ServerItem, pendingChange.PendingSetName);
 					}
 					break;
 			}
 
-			// Record the Labels to use with the files.
-			filePathsAndLabels = new SourceAndTargetFilePathsAndLabels(filePathsAndLabels.SourceFilePath, filePathsAndLabels.TargetFilePath, sourceFileLabel, targetFileLabel);
+			// Apply the Labels to use with the files.
+			filePathsAndLabels = filePathsAndLabels.GetCopyWithNewFileLabels(sourceFileLabel, targetFileLabel);
 		}
 
 		/// <summary>
@@ -821,12 +853,12 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 		/// <summary>
 		/// Downloads the specific version of a file if it exists in version control.
+		/// <para>Returns true if the file was downloaded successfully, false if it failed.</para>
 		/// </summary>
 		/// <param name="pendingChange">The pending change.</param>
 		/// <param name="versionSpec">The version spec.</param>
 		/// <param name="filePathToDownloadTo">The file path to download to.</param>
-		/// <param name="fileLabel">If the file is not available to download from the server, this label will be updated to say so.</param>
-		private bool DownloadFileVersionIfItExistsInVersionControl(PendingChange pendingChange, VersionSpec versionSpec, string filePathToDownloadTo, ref string fileLabel)
+		private bool DownloadFileVersionIfItExistsInVersionControl(PendingChange pendingChange, VersionSpec versionSpec, string filePathToDownloadTo)
 		{
 			bool fileDownloaded = true;
 
@@ -839,14 +871,12 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				}
 				catch (Microsoft.TeamFoundation.VersionControl.Client.VersionControlException ex)
 				{
-					fileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString);
 					fileDownloaded = false;
 				}
 			}
 			// Else the file doesn't exist so update the file's label to specify that.
 			else
 			{
-				fileLabel = DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString);
 				fileDownloaded = false;
 			}
 

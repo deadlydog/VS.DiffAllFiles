@@ -5,7 +5,7 @@
 						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 						 xmlns:QC="clr-namespace:QuickConverter;assembly=QuickConverter"
 						 mc:Ignorable="d" 
-						 d:DesignHeight="300" d:DesignWidth="300">
+						 d:DesignHeight="200" d:DesignWidth="300">
 	<UserControl.Resources>
 		<Style TargetType="{x:Type Button}">
 			<Setter Property="ToolTipService.ShowDuration" Value="60000" />

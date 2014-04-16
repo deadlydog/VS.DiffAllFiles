@@ -222,6 +222,12 @@
     <Compile Include="..\VS.DiffAllFiles\StructuresAndEnums\FileExtensionDiffToolConfiguration.cs">
       <Link>FilesFromShared\StructuresAndEnums\FileExtensionDiffToolConfiguration.cs</Link>
     </Compile>
+    <Compile Include="..\VS.DiffAllFiles\StructuresAndEnums\FileLabel.cs">
+      <Link>FilesFromShared\StructuresAndEnums\FileLabel.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\StructuresAndEnums\FilePathAndLabel.cs">
+      <Link>FilesFromShared\StructuresAndEnums\FilePathAndLabel.cs</Link>
+    </Compile>
     <Compile Include="..\VS.DiffAllFiles\StructuresAndEnums\ItemStatusTypesToCompare.cs">
       <Link>FilesFromShared\StructuresAndEnums\ItemStatusTypesToCompare.cs</Link>
     </Compile>

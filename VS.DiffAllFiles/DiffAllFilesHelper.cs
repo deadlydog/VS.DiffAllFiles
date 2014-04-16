@@ -15,13 +15,13 @@ namespace VS_DiffAllFiles
 {
 	public static class DiffAllFilesHelper
 	{
-		public const string NO_FILE_TO_COMPARE_NEW_FILE_LABEL = "[No File To Compare: File is being added to source control]";
-		public const string NO_FILE_TO_COMPARE_DELETED_FILE_LABEL = "[No File To Compare: File is being deleted from source control]";
-		private const string _NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL = "[No File To Compare: File version does not exist in source control]";
+		public const string NO_FILE_TO_COMPARE_NEW_FILE_LABEL_STRING = "[No File To Compare: File is being added to source control]";
+		public const string NO_FILE_TO_COMPARE_DELETED_FILE_LABEL_STRING = "[No File To Compare: File is being deleted from source control]";
+		private const string _NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL_STRING = "[No File To Compare: File version does not exist in source control]";
 
 		public static string NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(string filePath, string version)
 		{
-			return string.Format("{0}: {1};{2}", _NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL, filePath, version);
+			return string.Format("{0}: {1};{2}", _NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL_STRING, filePath, version);
 		}
 
 		/// <summary>
