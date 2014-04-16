@@ -48,7 +48,7 @@ namespace VS_DiffAllFiles.Settings
 			// Initialize Global Settings.
 			ResetGlobalSettings();
 
-			// Initialize Per-Window Settings.
+			// Initialize default Per-Window Settings.
 			PendingChangesCompareVersionValue = CompareVersion.WorkspaceVersion.Value;
 			ChangesetDetailsCompareVersionValue = CompareVersion.PreviousVersion.Value;
 			ShelvesetDetailsCompareVersionValue = CompareVersion.UnmodifiedVersion.Value;
@@ -71,7 +71,7 @@ namespace VS_DiffAllFiles.Settings
 			NumberOfIndividualFilesToCompareAtATime = 1;
 			CompareModesAvailable = CompareModes.AllowUserToChoose;
 			CompareModeToUse = CompareModes.IndividualFiles;
-			UseSameHeadersForCombinedFiles = false;
+			UseSameHeadersForCombinedFiles = true;
 		}
 
 		/// <summary>
@@ -156,7 +156,7 @@ namespace VS_DiffAllFiles.Settings
 		/// If true, the file headers placed in the Combined files will be the same when in the CombinedIntoSingleFile Compare Mode.
 		/// </summary>
 		public bool UseSameHeadersForCombinedFiles { get { return _useSameHeadersForCombinedFiles; } set { _useSameHeadersForCombinedFiles = value; NotifyPropertyChanged("UseSameHeadersForCombinedFiles"); } }
-		private bool _useSameHeadersForCombinedFiles = false;
+		private bool _useSameHeadersForCombinedFiles = true;
 
 		#endregion
 

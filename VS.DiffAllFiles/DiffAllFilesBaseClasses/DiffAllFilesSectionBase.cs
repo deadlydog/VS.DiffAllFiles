@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using VS_DiffAllFiles.Sections;
 using VS_DiffAllFiles.Settings;
@@ -255,10 +256,30 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		{
 			get
 			{
+				// Get a user-friendly string describing how many files have been compared, how many there are to compare, and how many were skipped.
 				string message = string.Format("Compared {0} of {1} files.", NumberOfFilesCompared, NumberOfFilesToCompare);
 				if (NumberOfFilesSkipped > 0)
-					message += string.Format(" Skipping {0}.", NumberOfFilesSkipped);
+					message += string.Format(" Skipped {0}.", NumberOfFilesSkipped);
+
+				// If we haven't compared any files yet, change the message to be more user-friendly.
+				if (NumberOfFilesCompared == 0 && NumberOfFilesToCompare == 0)
+					message = "No files compared yet.";
+
 				return message;
+			}
+		}
+
+		/// <summary>
+		/// Gets a user-friendly message that describes the File Comparison Progress Message and lists the files that were skipped and why.
+		/// </summary>
+		public string FileComparisonProgressMessageToolTip
+		{
+			get
+			{
+				var message = new StringBuilder();
+				message.AppendLine("How many file comparisons have been launched so far.");
+				message.Append("Files may be skipped due to the settings configuration.");
+				return message.ToString();
 			}
 		}
 

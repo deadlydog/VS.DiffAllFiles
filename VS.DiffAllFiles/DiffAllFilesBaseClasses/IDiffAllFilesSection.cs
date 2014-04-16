@@ -65,6 +65,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		string FileComparisonProgressMessage { get; }
 
 		/// <summary>
+		/// Gets a user-friendly message that describes the File Comparison Progress Message and lists the files that were skipped.
+		/// </summary>
+		string FileComparisonProgressMessageToolTip { get; }
+
+		/// <summary>
 		/// Gets a user-friendly label to use for the command used to compare the next set of files.
 		/// </summary>
 		string NextSetOfFilesCommandLabel { get; }

@@ -56,15 +56,10 @@
 				<Button Content="Close All" Visibility="{QC:Binding '($P > 0) ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." />
 
 				<Button Content="Cancel" Click="btnCancelComparingFiles_Click" ToolTip="Do not compare any more files." />
-				<TextBlock Text="{Binding Path=FileComparisonProgressMessage, FallbackValue=File comparisons in progress}">
-					<TextBlock.ToolTip>
-						<TextBlock>
-							How many file comparisons have been launched so far.<LineBreak />
-							Files may be skipped due to the settings configuration.
-						</TextBlock>
-					</TextBlock.ToolTip>
-					</TextBlock>
 			</WrapPanel>
+
+			<!-- Progress message gets shown in both views. -->
+			<TextBlock Text="{Binding Path=FileComparisonProgressMessage, FallbackValue=File comparisons in progress}" ToolTip="{Binding Path=FileComparisonProgressMessageToolTip}" />
 		</WrapPanel>
 	</Grid>
 </UserControl>
