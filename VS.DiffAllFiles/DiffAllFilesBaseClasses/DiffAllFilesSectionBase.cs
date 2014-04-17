@@ -205,7 +205,14 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		public bool IsRunningCompareFilesCommand
 		{
 			get { return _isRunningCompareFilesCommand; }
-			set { _isRunningCompareFilesCommand = value; NotifyPropertyChanged("IsRunningCompareFilesCommand"); }
+			set
+			{
+				_isRunningCompareFilesCommand = value; NotifyPropertyChanged("IsRunningCompareFilesCommand");
+				
+				// If we are running the Compare Files Command then that means we haven't cancelled it.
+				if (_isRunningCompareFilesCommand)
+					IsCompareOperationsCancelled = false;
+			}
 		}
 		private bool _isRunningCompareFilesCommand = false;
 
@@ -260,6 +267,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				string message = string.Format("{0} {1} of {2} files.", UseCombinedCompareMode ? "Combined" : "Compared", NumberOfFilesCompared, NumberOfFilesToCompare);
 				if (NumberOfFilesSkipped > 0)
 					message += string.Format(" Skipped {0}.", NumberOfFilesSkipped);
+				if (IsCompareOperationsCancelled)
+					message += " Compare cancelled.";
 
 				// If we haven't compared any files yet, change the message to be more user-friendly.
 				if (NumberOfFilesCompared == 0 && NumberOfFilesToCompare == 0)
@@ -389,6 +398,25 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Gets if the version control service is available or not.
 		/// </summary>
 		protected abstract Task<bool> GetIfVersionControlServiceIsAvailable();
+
+		/// <summary>
+		/// Cancel any running operations.
+		/// </summary>
+		public override void Cancel()
+		{
+			base.Cancel();
+			IsCompareOperationsCancelled = true;
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the last compare operations were cancelled or not.
+		/// </summary>
+		public bool IsCompareOperationsCancelled
+		{
+			get { return _isCompareOperationsCancelled; }
+			set { _isCompareOperationsCancelled = value; NotifyPropertyChanged("IsCompareOperationsCancelled"); NotifyPropertyChanged("FileComparisonProgressMessage"); }
+		}
+		bool _isCompareOperationsCancelled = false;
 
 		/// <summary>
 		/// Launches the diff tool to compare the next set of files in the currently running compare files set.

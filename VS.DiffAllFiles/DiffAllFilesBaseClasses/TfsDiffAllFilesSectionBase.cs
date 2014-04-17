@@ -947,6 +947,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		public override void Cancel()
 		{
+			base.Cancel();
 			_cancelComparingFiles = true;
 		}
 		private bool _cancelComparingFiles = false;
