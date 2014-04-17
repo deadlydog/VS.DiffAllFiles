@@ -109,6 +109,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			return true;
 		}
 
+		#region Perform Difference Code
+
 		/// <summary>
 		/// Asynchronously launch the diff tools to compare the files.
 		/// </summary>
@@ -291,7 +293,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					else
 					{
 						// Perform the diff for this file using the built-in Visual Studio diff tool.
-						OpenFileDiffInVsDiffTool(filePathsAndLabels, tempDiffFilesDirectory, pendingChange.FileName, dte2);
+						await OpenFileDiffInVsDiffTool(filePathsAndLabels, tempDiffFilesDirectory, pendingChange.FileName, dte2);
 					}
 
 					// If we have reached the maximum number of diff tool instances to launch for this set, and there are still more to launch.
@@ -314,7 +316,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					if (NumberOfFilesCompared == NumberOfFilesToCompare)
 					{
 						// Launch all of the diff tools at the same time.
-						OpenAllCombinedFilesInTheirRespectiveDiffTools(combinedDiffToolConfigurationsAndFilePaths, dte2);
+						await OpenAllCombinedFilesInTheirRespectiveDiffTools(combinedDiffToolConfigurationsAndFilePaths, dte2);
 					}
 				}
 			}
@@ -325,7 +327,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		/// <param name="combinedDiffToolConfigurationsAndFilePaths">The combined difference tool configurations and file paths.</param>
 		/// <param name="dte2">The dte2.</param>
-		private void OpenAllCombinedFilesInTheirRespectiveDiffTools(Dictionary<DiffToolConfiguration, SourceAndTargetFilePathsAndLabels> combinedDiffToolConfigurationsAndFilePaths, DTE2 dte2)
+		private async Task OpenAllCombinedFilesInTheirRespectiveDiffTools(Dictionary<DiffToolConfiguration, SourceAndTargetFilePathsAndLabels> combinedDiffToolConfigurationsAndFilePaths, DTE2 dte2)
 		{
 			// Loop through each diff tool to use and launch it.
 			foreach (var combinedFileSet in combinedDiffToolConfigurationsAndFilePaths)
@@ -338,7 +340,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				if (diffToolConfiguration == DiffToolConfiguration.VsBuiltInDiffToolConfiguration)
 				{
 					// Perform the diff for this file using the built-in Visual Studio diff tool.
-					OpenFileDiffInVsDiffTool(filesAndLabels, tempFilesDirectory, string.Empty, dte2);
+					await OpenFileDiffInVsDiffTool(filesAndLabels, tempFilesDirectory, string.Empty, dte2);
 				}
 				else
 				{
@@ -569,7 +571,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <param name="tempDiffFilesDirectory">The temporary difference files directory holding the temp files.</param>
 		/// <param name="fileName">Name of the file being compared. Visual Studio typically uses this for diff tool Tab's caption.</param>
 		/// <param name="dte2">The dte2 object we can use to hook into Visual Studio with.</param>
-		private void OpenFileDiffInVsDiffTool(SourceAndTargetFilePathsAndLabels filePathsAndLabels, string tempDiffFilesDirectory, string fileName, DTE2 dte2)
+		private async Task OpenFileDiffInVsDiffTool(SourceAndTargetFilePathsAndLabels filePathsAndLabels, string tempDiffFilesDirectory, string fileName, DTE2 dte2)
 		{
 			// Get if the user should be able to edit the files to save changes back to them; only allow it if they are not temp files.
 			bool sourceIsTemp = filePathsAndLabels.SourceFilePathAndLabel.FilePath.StartsWith(tempDiffFilesDirectory);
@@ -577,10 +579,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 			// Launch the VS diff tool to diff this file.
 			// The VisualDiffFiles() function will still display a colon even if a "Tag" is not provided, so use the label's Prefix for the Tag.
-			Difference.VisualDiffFiles(filePathsAndLabels.SourceFilePathAndLabel.FilePath, filePathsAndLabels.TargetFilePathAndLabel.FilePath, 
+			await Task.Run(() => Difference.VisualDiffFiles(filePathsAndLabels.SourceFilePathAndLabel.FilePath, filePathsAndLabels.TargetFilePathAndLabel.FilePath, 
 				filePathsAndLabels.SourceFilePathAndLabel.FileLabel.Prefix, filePathsAndLabels.TargetFilePathAndLabel.FileLabel.Prefix, 
 				filePathsAndLabels.SourceFilePathAndLabel.FileLabel.ToStringWithoutPrefix(), filePathsAndLabels.TargetFilePathAndLabel.FileLabel.ToStringWithoutPrefix(), 
-				sourceIsTemp, targetIsTemp);
+				sourceIsTemp, targetIsTemp));
 
 			// We are likely opening several diff windows, so make sure they don't just replace one another in the Preview Tab.
 			if (PackageHelper.IsCommandAvailable("Window.KeepTabOpen"))
@@ -937,6 +939,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			// Return if the file was downloaded or not.
 			return fileDownloaded;
 		}
+
+		#endregion
 
 		/// <summary>
 		/// Cancel any running operations.

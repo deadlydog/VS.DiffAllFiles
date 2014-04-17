@@ -34,7 +34,7 @@
 	<Grid>
 		<WrapPanel Orientation="Horizontal">
 			<!-- Not Comparing Files OR Currently Comparing Files in Combined Mode View -->
-			<WrapPanel Orientation="Horizontal" Visibility="{QC:MultiBinding '$P0 ## !$P1 ? Visibility.Collapsed : Visibility.Visible', P0={Binding Path=IsRunningCompareFilesCommand}, P1={Binding Path=UseCombinedCompareMode}}" IsEnabled="{QC:Binding '!$P', P={Binding Path=IsRunningCompareFilesCommand}}">
+			<WrapPanel Orientation="Horizontal" Visibility="{QC:MultiBinding '!$P0 || ($P0 ## $P1) ? Visibility.Visible : Visibility.Collapsed', P0={Binding Path=IsRunningCompareFilesCommand}, P1={Binding Path=UseCombinedCompareMode}}" IsEnabled="{QC:Binding '!$P', P={Binding Path=IsRunningCompareFilesCommand}}">
 				<Button Content="All Files" IsEnabled="{Binding Path=IsCompareAllFilesEnabled}" Click="btnDiffAllFiles_Click" ToolTip="Compare all files." />
 				<!--<Button Content="Selected" IsEnabled="{Binding Path=IsCompareSelectedFilesEnabled}" Click="btnDiffSelectedFiles_Click" ToolTip="Compare only selected files." />-->
 				<Button Content="Included" IsEnabled="{Binding Path=IsCompareIncludedFilesEnabled}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsCompareIncludedFilesAvailable}}" Click="btnDiffIncludedFiles_Click" ToolTip="Compare only included files." />
@@ -48,7 +48,7 @@
 			</WrapPanel>
 
 			<!-- Currently Comparing Files in Individual File Mode View -->
-			<WrapPanel Orientation="Horizontal" Visibility="{QC:MultiBinding '$P0 ## !$P1 ? Visibility.Visible : Visibility.Collapsed', P0={Binding Path=IsRunningCompareFilesCommand}, P1={Binding Path=UseCombinedCompareMode}}">
+			<WrapPanel Orientation="Horizontal" Visibility="{QC:MultiBinding '($P0 ## !$P1) ? Visibility.Visible : Visibility.Collapsed', P0={Binding Path=IsRunningCompareFilesCommand}, P1={Binding Path=UseCombinedCompareMode}}">
 				<Button Content="{Binding Path=NextSetOfFilesCommandLabel, FallbackValue=Next Set Of Files}" Click="btnNextSetOfFiles_Click" ToolTip="Launch the next set of file compares." />
 
 				<!-- These 2 Close buttons are duplicated in both the Comparing and Not Comparing Files Views so that we can put it in a nice spot on both views, so be sure to update both places. -->

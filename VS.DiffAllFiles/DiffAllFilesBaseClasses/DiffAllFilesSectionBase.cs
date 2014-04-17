@@ -147,7 +147,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					NotifyPropertyChanged("CompareVersionToUse"); 
 					break;
 
-				case "CompareModesAvailable": 
+				case "CompareModesAvailable":
 					NotifyPropertyChanged("AllowUserToChooseWhichCompareModeToUse"); 
 					NotifyPropertyChanged("UseCombinedCompareMode"); 
 					break;
@@ -487,7 +487,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		public bool UseCombinedCompareMode
 		{
 			get { return Settings.CompareModeToUse == CompareModes.CombinedIntoSingleFile; }
-			set { Settings.CompareModeToUse = (value ? CompareModes.CombinedIntoSingleFile : CompareModes.IndividualFiles); }
+			set { Settings.CompareModeToUse = (value ? CompareModes.CombinedIntoSingleFile : CompareModes.IndividualFiles); NotifyPropertyChanged("UseCombinedCompareMode"); }
 		}
 
 		#endregion
