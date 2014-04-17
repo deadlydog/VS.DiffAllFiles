@@ -286,12 +286,14 @@
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="..\VS.DiffAllFiles\Resources\PackageIcon_Small.ico">
+    <Content Include="..\VS.DiffAllFiles\Resources\PackageIcon_Small.ico">
       <Link>FilesFromShared\Resources\PackageIcon_Small.ico</Link>
-    </Resource>
-    <Resource Include="..\VS.DiffAllFiles\Resources\PreviewImage.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\VS.DiffAllFiles\Resources\PreviewImage.png">
       <Link>FilesFromShared\Resources\PreviewImage.png</Link>
-    </Resource>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.dll" />
     <Resource Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.xml" />
