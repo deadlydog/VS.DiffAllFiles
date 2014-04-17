@@ -291,8 +291,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					else
 					{
 						// Perform the diff for this file using the built-in Visual Studio diff tool.
-						await OpenFileDiffInVsDiffTool(filePathsAndLabels, tempDiffFilesDirectory, pendingChange.FileName, dte2);
+						OpenFileDiffInVsDiffTool(filePathsAndLabels, tempDiffFilesDirectory, pendingChange.FileName, dte2);
 					}
+
+					// Sleep very briefly in order to check and process if the Cancel button was clicked, and to allow any UI updates to be shown.
+					await Task.Run(() => System.Threading.Thread.Sleep(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME));
 
 					// If we have reached the maximum number of diff tool instances to launch for this set, and there are still more to launch, or the user cancelled the compare operations.
 					if (((ExternalDiffToolProcessIdsRunningInThisSet.Count + VsDiffToolTabCaptionsStillOpenInThisSet.Count) % settings.NumberOfIndividualFilesToCompareAtATime == 0 &&
@@ -344,7 +347,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				if (diffToolConfiguration == DiffToolConfiguration.VsBuiltInDiffToolConfiguration)
 				{
 					// Perform the diff for this file using the built-in Visual Studio diff tool.
-					await OpenFileDiffInVsDiffTool(filesAndLabels, tempFilesDirectory, string.Empty, dte2);
+					OpenFileDiffInVsDiffTool(filesAndLabels, tempFilesDirectory, string.Empty, dte2);
 				}
 				else
 				{
@@ -402,7 +405,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						targetVersionForLabel = string.Format("Changeset {0}", pendingChange.Version);
 						break;
 					case SectionTypes.ShelvesetDetails:
-						targetVersionForLabel = string.Format("Shelveset <{0}>", pendingChange.PendingSetName);
+						targetVersionForLabel = string.Format("Shelveset '{0}'", pendingChange.PendingSetName);
 						break;
 				}
 				combinedFilePathsAndLabels = combinedFilePathsAndLabels.GetCopyWithNewFileLabels(new FileLabel("Combined Files", string.Empty, sourceVersionForLabel),
@@ -479,7 +482,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					System.Diagnostics.Process process = null;
 					do
 					{
-						System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
+						System.Threading.Thread.Sleep(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME);
 						process = System.Diagnostics.Process.GetProcessById(processId);
 					} while (!cancellationToken.IsCancellationRequested && !process.HasExited);
 				}
@@ -495,7 +498,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				while (!cancellationToken.IsCancellationRequested && VsDiffToolTabCaptionsStillOpenInThisSet.Count > 0)
 				{
 					// Sleep the thread for a bit before checking to see if the VS Diff Tabs are all closed or not.
-					System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
+					System.Threading.Thread.Sleep(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME);
 
 					// Get the list of open Windows in Visual Studio right now.
 					var openWindowsInVs = dte2.Windows;
@@ -533,7 +536,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			{
 				// Just sleep this thread until the user wants to compare the next set of files, or cancels the compare operations.
 				while (!cancellationToken.IsCancellationRequested && !_compareNextSetOfFiles && !IsCompareOperationsCancelled)
-					System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
+					System.Threading.Thread.Sleep(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME);
 			});
 
 			// Merge the list of tasks waiting for the external diff tool windows and the VS diff tool tabs to be closed.
@@ -575,7 +578,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <param name="tempDiffFilesDirectory">The temporary difference files directory holding the temp files.</param>
 		/// <param name="fileName">Name of the file being compared. Visual Studio typically uses this for diff tool Tab's caption.</param>
 		/// <param name="dte2">The dte2 object we can use to hook into Visual Studio with.</param>
-		private async Task OpenFileDiffInVsDiffTool(SourceAndTargetFilePathsAndLabels filePathsAndLabels, string tempDiffFilesDirectory, string fileName, DTE2 dte2)
+		private void OpenFileDiffInVsDiffTool(SourceAndTargetFilePathsAndLabels filePathsAndLabels, string tempDiffFilesDirectory, string fileName, DTE2 dte2)
 		{
 			// Get if the user should be able to edit the files to save changes back to them; only allow it if they are not temp files.
 			bool sourceIsTemp = filePathsAndLabels.SourceFilePathAndLabel.FilePath.StartsWith(tempDiffFilesDirectory);
@@ -583,10 +586,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 			// Launch the VS diff tool to diff this file.
 			// The VisualDiffFiles() function will still display a colon even if a "Tag" is not provided, so use the label's Prefix for the Tag.
-			await Task.Run(() => Difference.VisualDiffFiles(filePathsAndLabels.SourceFilePathAndLabel.FilePath, filePathsAndLabels.TargetFilePathAndLabel.FilePath, 
+			Difference.VisualDiffFiles(filePathsAndLabels.SourceFilePathAndLabel.FilePath, filePathsAndLabels.TargetFilePathAndLabel.FilePath, 
 				filePathsAndLabels.SourceFilePathAndLabel.FileLabel.Prefix, filePathsAndLabels.TargetFilePathAndLabel.FileLabel.Prefix, 
 				filePathsAndLabels.SourceFilePathAndLabel.FileLabel.ToStringWithoutPrefix(), filePathsAndLabels.TargetFilePathAndLabel.FileLabel.ToStringWithoutPrefix(), 
-				sourceIsTemp, targetIsTemp));
+				sourceIsTemp, targetIsTemp);
 
 			// We are likely opening several diff windows, so make sure they don't just replace one another in the Preview Tab.
 			if (PackageHelper.IsCommandAvailable("Window.KeepTabOpen"))
@@ -618,7 +621,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				do
 				{
 					// Sleep the thread for a bit before checking to see if the VS Diff Tabs are all closed or not.
-					System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
+					System.Threading.Thread.Sleep(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME);
 
 					// Get the list of open Windows in Visual Studio right now.
 					var openWindowsInVS = dte2.Windows;
@@ -712,7 +715,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					System.Diagnostics.Process process = null;
 					do
 					{
-						System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
+						System.Threading.Thread.Sleep(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME);
 						process = System.Diagnostics.Process.GetProcessById(diffToolProcessId);
 					} while (!process.HasExited);
 				}

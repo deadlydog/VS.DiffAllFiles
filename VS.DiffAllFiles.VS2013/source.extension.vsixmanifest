@@ -1,9 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="975F4DB4-B063-4247-A120-A13CD1556AF4" Version="2.0" Language="en-US" Publisher="DansKingdom" />
+		<Identity Id="975F4DB4-B063-4247-A120-A13CD1556AF4" Version="2.1" Language="en-US" Publisher="DansKingdom" />
 		<DisplayName>Diff All Files for VS2013</DisplayName>
 		<Description xml:space="preserve">Quickly compare changes to all files in a TFS shelveset, changeset, or with pending changes.</Description>
+		<MoreInfo>http://visualstudiogallery.msdn.microsoft.com/d8d61cc9-6660-41af-b8d0-0f8403b4b39c</MoreInfo>
+		<License>https://diffallfilesvisualstudioextension.codeplex.com/license</License>
 		<Icon>FilesFromShared\Resources\PackageIcon_Small.ico</Icon>
 		<PreviewImage>FilesFromShared\Resources\PreviewImage.png</PreviewImage>
 		<Tags>Diff, Difference, Differences, Compare, Review, All, Many, Multiple, Files, Items, TF, TFS, Team Foundation, Team Foundation Server, TFVC, Pending Changes, Pending, Changes, Changeset, Shelveset, Git, Commit</Tags>

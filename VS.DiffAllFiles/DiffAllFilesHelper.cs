@@ -21,8 +21,13 @@ namespace VS_DiffAllFiles
 
 		public static string NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(string filePath, string version)
 		{
-			return string.Format("{0}: {1};{2}", _NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL_STRING, filePath, version);
+			return String.Format("{0}: {1};{2}", _NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL_STRING, filePath, version);
 		}
+
+		/// <summary>
+		/// The default length of time to sleep a thread, in milliseconds.
+		/// </summary>
+		public const int DEFAULT_THREAD_SLEEP_TIME = 100;
 
 		/// <summary>
 		/// Gets the full path to TF.exe.
@@ -109,7 +114,5 @@ namespace VS_DiffAllFiles
 				}
 			}
 		}
-
-
 	}
 }
