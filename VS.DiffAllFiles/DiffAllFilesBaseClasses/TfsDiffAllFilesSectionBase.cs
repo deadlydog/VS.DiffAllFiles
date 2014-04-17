@@ -174,6 +174,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 		private CancellationTokenSource _compareTasksCancellationTokenSource = new CancellationTokenSource();
 
+		/// <summary>
+		/// Downloads and compares the given list of items.
+		/// </summary>
+		/// <param name="itemsToCompare">The items to compare.</param>
 		private async Task CompareItems(List<PendingChange> itemsToCompare)
 		{
 			// Get a handle to the Automation Model that we can use to interact with the VS IDE.
@@ -291,108 +295,147 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				// Else we are combining all of the files together and comparing a single file.
 				else
 				{
-					// Get the Diff Tool Configuration that should be used to diff this file.
-					var diffToolConfigKey = (diffToolConfigurationAndExtension == null )
-						? DiffToolConfiguration.VsBuiltInDiffToolConfiguration
-						: diffToolConfigurationAndExtension.DiffToolConfiguration;
+					// Append the source and target file's contents to the Combined files asynchronously.
+					AppendFilesContentsToCombinedFiles(diffToolConfigurationAndExtension, combinedDiffToolConfigurationsAndFilePaths, compareVersion, 
+						pendingChange, filePathsAndLabels, settings, tempDiffFilesDirectory);
 
-					// If we haven't created the Combine files for this diff tool configuration yet, create them.
-					if (!combinedDiffToolConfigurationsAndFilePaths.ContainsKey(diffToolConfigKey))
-					{
-						// Create the Combined files to hold all of their contents.
-						SourceAndTargetFilePathsAndLabels combinedFilePathsAndLabels;
-						string combinedTempDiffFilesDirectory;
-						GetTemporarySourceAndTargetFilePaths("CombinedFiles", out combinedFilePathsAndLabels, out combinedTempDiffFilesDirectory);
-
-						// Create and apply the labels to use for the Combined files.
-						string sourceVersionForLabel = compareVersion.ToString();
-						string targetVersionForLabel = string.Empty;
-						switch (this.SectionType)
-						{
-							case SectionTypes.PendingChanges: targetVersionForLabel = "Local Changes"; break;
-							case SectionTypes.ChangesetDetails: targetVersionForLabel = string.Format("Changeset {0}", pendingChange.Version); break;
-							case SectionTypes.ShelvesetDetails: targetVersionForLabel = string.Format("Shelveset <{0}>", pendingChange.PendingSetName); break;
-						}
-						combinedFilePathsAndLabels = combinedFilePathsAndLabels.GetCopyWithNewFileLabels(new FileLabel("Combined Files", string.Empty, sourceVersionForLabel),
-							new FileLabel("Combined Files", string.Empty, targetVersionForLabel));
-						
-						// Add this diff tool configuration to our dictionary.
-						combinedDiffToolConfigurationsAndFilePaths.Add(diffToolConfigKey, combinedFilePathsAndLabels);
-					}
-
-					// Get a shortcut handle to the Combined files to write to.
-					var combinedFiles = combinedDiffToolConfigurationsAndFilePaths[diffToolConfigKey];
-					
-					// Create the labels to use for the header information.
-					var sourceFileLabelString = filePathsAndLabels.SourceFilePathAndLabel.FileLabel.ToString();
-					var targetFileLabelString = filePathsAndLabels.TargetFilePathAndLabel.FileLabel.ToString();
-					// If the file headers for the Source and Target should match, use the same header for both.
-					if (settings.UseSameHeadersForCombinedFiles)
-					{
-						var fileLabelStringToUseForBothFiles = string.Format("{0} vs. {1}", sourceFileLabelString, targetFileLabelString);
-
-						// If the Prefix and FilePath for both labels match, just include them once and display the different versions.
-						if (filePathsAndLabels.SourceFilePathAndLabel.FileLabel.Prefix.Equals(filePathsAndLabels.TargetFilePathAndLabel.FileLabel.Prefix) &&
-							filePathsAndLabels.SourceFilePathAndLabel.FileLabel.FilePath.Equals(filePathsAndLabels.TargetFilePathAndLabel.FileLabel.FilePath))
-						{
-							fileLabelStringToUseForBothFiles = string.Format("{0} vs. {1}", sourceFileLabelString, filePathsAndLabels.TargetFilePathAndLabel.FileLabel.Version);
-						}
-
-						// Make both headers match and display both pieces of information.
-						sourceFileLabelString = fileLabelStringToUseForBothFiles;
-						targetFileLabelString = fileLabelStringToUseForBothFiles;
-					}
-
-					// Get this file's contents and append it to the Combined file's contents, along with some header info.
-					var combinedSourceFileContentsToAppend = new StringBuilder();
-					combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-					combinedSourceFileContentsToAppend.AppendLine(sourceFileLabelString);
-					combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-					combinedSourceFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.SourceFilePathAndLabel.FilePath));
-					File.AppendAllText(combinedFiles.SourceFilePathAndLabel.FilePath, combinedSourceFileContentsToAppend.ToString());
-
-					var combinedTargetFileContentsToAppend = new StringBuilder();
-					combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-					combinedTargetFileContentsToAppend.AppendLine(targetFileLabelString);
-					combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-					combinedTargetFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.TargetFilePathAndLabel.FilePath));
-					File.AppendAllText(combinedFiles.TargetFilePathAndLabel.FilePath, combinedTargetFileContentsToAppend.ToString());
-
-					// Delete the original temp files if they still exist.
-					if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
-						Directory.Delete(tempDiffFilesDirectory, true);
-
-					// If we have combined all of the files' contents, actually perform the diff now.
+					// If we have finished creating all of the Combined files, actually perform the diff now.
 					if (NumberOfFilesCompared == NumberOfFilesToCompare)
 					{
-						// Loop through each diff tool to use and launch it.
-						foreach (var combinedFileSet in combinedDiffToolConfigurationsAndFilePaths)
-						{
-							var diffToolConfiguration = combinedFileSet.Key;
-							var filesAndLabels = combinedFileSet.Value;
-							var tempFilesDirectory = Path.GetDirectoryName(filesAndLabels.SourceFilePathAndLabel.FilePath);
-
-							// If this set should be compared in the default Visual Studio diff tool.
-							if (diffToolConfiguration == DiffToolConfiguration.VsBuiltInDiffToolConfiguration)
-							{
-								// Perform the diff for this file using the built-in Visual Studio diff tool.
-								OpenFileDiffInVsDiffTool(filesAndLabels, tempFilesDirectory, string.Empty, dte2);
-							}
-							else
-							{
-								// Perform the diff for this file in the configured external tool.
-								OpenFileDiffInExternalDiffTool(diffToolConfiguration, filesAndLabels, tempFilesDirectory);
-							}
-						}
-
-						// Since we compare all of the files at once we don't have separate "file sets", so clear our Set lists out.
-						lock (ExternalDiffToolProcessIdsRunningLock)
-						{ ExternalDiffToolProcessIdsRunningInThisSet.Clear(); }
-						lock (VsDiffToolTabCaptionsStillOpenLock)
-						{ VsDiffToolTabCaptionsStillOpenInThisSet.Clear(); }
+						// Launch all of the diff tools at the same time.
+						OpenAllCombinedFilesInTheirRespectiveDiffTools(combinedDiffToolConfigurationsAndFilePaths, dte2);
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Opens all of the Combined files in their respective difference tools.
+		/// </summary>
+		/// <param name="combinedDiffToolConfigurationsAndFilePaths">The combined difference tool configurations and file paths.</param>
+		/// <param name="dte2">The dte2.</param>
+		private void OpenAllCombinedFilesInTheirRespectiveDiffTools(Dictionary<DiffToolConfiguration, SourceAndTargetFilePathsAndLabels> combinedDiffToolConfigurationsAndFilePaths, DTE2 dte2)
+		{
+			// Loop through each diff tool to use and launch it.
+			foreach (var combinedFileSet in combinedDiffToolConfigurationsAndFilePaths)
+			{
+				var diffToolConfiguration = combinedFileSet.Key;
+				var filesAndLabels = combinedFileSet.Value;
+				var tempFilesDirectory = Path.GetDirectoryName(filesAndLabels.SourceFilePathAndLabel.FilePath);
+
+				// If this set should be compared in the default Visual Studio diff tool.
+				if (diffToolConfiguration == DiffToolConfiguration.VsBuiltInDiffToolConfiguration)
+				{
+					// Perform the diff for this file using the built-in Visual Studio diff tool.
+					OpenFileDiffInVsDiffTool(filesAndLabels, tempFilesDirectory, string.Empty, dte2);
+				}
+				else
+				{
+					// Perform the diff for this file in the configured external tool.
+					OpenFileDiffInExternalDiffTool(diffToolConfiguration, filesAndLabels, tempFilesDirectory);
+				}
+			}
+
+			// Since we compare all of the files at once we don't have separate "file sets", so clear our Set lists out.
+			lock (ExternalDiffToolProcessIdsRunningLock)
+			{
+				ExternalDiffToolProcessIdsRunningInThisSet.Clear();
+			}
+			lock (VsDiffToolTabCaptionsStillOpenLock)
+			{
+				VsDiffToolTabCaptionsStillOpenInThisSet.Clear();
+			}
+		}
+
+		/// <summary>
+		/// Creates the Combined files required and appends the Source and Target files contents to them.
+		/// </summary>
+		/// <param name="diffToolConfigurationAndExtension">The difference tool configuration and extension.</param>
+		/// <param name="combinedDiffToolConfigurationsAndFilePaths">The combined difference tool configurations and file paths.</param>
+		/// <param name="compareVersion">The compare version.</param>
+		/// <param name="pendingChange">The pending change.</param>
+		/// <param name="filePathsAndLabels">The file paths and labels.</param>
+		/// <param name="settings">The settings.</param>
+		/// <param name="tempDiffFilesDirectory">The temporary difference files directory.</param>
+		private void AppendFilesContentsToCombinedFiles(FileExtensionDiffToolConfiguration diffToolConfigurationAndExtension, Dictionary<DiffToolConfiguration, SourceAndTargetFilePathsAndLabels> combinedDiffToolConfigurationsAndFilePaths,
+			CompareVersion compareVersion, PendingChange pendingChange, SourceAndTargetFilePathsAndLabels filePathsAndLabels, DiffAllFilesSettings settings, string tempDiffFilesDirectory)
+		{
+			// Get the Diff Tool Configuration that should be used to diff this file.
+			var diffToolConfigKey = (diffToolConfigurationAndExtension == null)
+				? DiffToolConfiguration.VsBuiltInDiffToolConfiguration
+				: diffToolConfigurationAndExtension.DiffToolConfiguration;
+
+			// If we haven't created the Combine files for this diff tool configuration yet, create them.
+			if (!combinedDiffToolConfigurationsAndFilePaths.ContainsKey(diffToolConfigKey))
+			{
+				// Create the Combined files to hold all of their contents.
+				SourceAndTargetFilePathsAndLabels combinedFilePathsAndLabels;
+				string combinedTempDiffFilesDirectory;
+				GetTemporarySourceAndTargetFilePaths("CombinedFiles", out combinedFilePathsAndLabels, out combinedTempDiffFilesDirectory);
+
+				// Create and apply the labels to use for the Combined files.
+				string sourceVersionForLabel = compareVersion.ToString();
+				string targetVersionForLabel = string.Empty;
+				switch (this.SectionType)
+				{
+					case SectionTypes.PendingChanges:
+						targetVersionForLabel = "Local Changes";
+						break;
+					case SectionTypes.ChangesetDetails:
+						targetVersionForLabel = string.Format("Changeset {0}", pendingChange.Version);
+						break;
+					case SectionTypes.ShelvesetDetails:
+						targetVersionForLabel = string.Format("Shelveset <{0}>", pendingChange.PendingSetName);
+						break;
+				}
+				combinedFilePathsAndLabels = combinedFilePathsAndLabels.GetCopyWithNewFileLabels(new FileLabel("Combined Files", string.Empty, sourceVersionForLabel),
+					new FileLabel("Combined Files", string.Empty, targetVersionForLabel));
+
+				// Add this diff tool configuration to our dictionary.
+				combinedDiffToolConfigurationsAndFilePaths.Add(diffToolConfigKey, combinedFilePathsAndLabels);
+			}
+
+			// Get a shortcut handle to the Combined files to write to.
+			var combinedFiles = combinedDiffToolConfigurationsAndFilePaths[diffToolConfigKey];
+
+			// Create the labels to use for the header information.
+			var sourceFileLabelString = filePathsAndLabels.SourceFilePathAndLabel.FileLabel.ToString();
+			var targetFileLabelString = filePathsAndLabels.TargetFilePathAndLabel.FileLabel.ToString();
+			// If the file headers for the Source and Target should match, use the same header for both.
+			if (settings.UseSameHeadersForCombinedFiles)
+			{
+				var fileLabelStringToUseForBothFiles = string.Format("{0} vs. {1}", sourceFileLabelString, targetFileLabelString);
+
+				// If the Prefix and FilePath for both labels match, just include them once and display the different versions.
+				if (filePathsAndLabels.SourceFilePathAndLabel.FileLabel.Prefix.Equals(filePathsAndLabels.TargetFilePathAndLabel.FileLabel.Prefix) &&
+					filePathsAndLabels.SourceFilePathAndLabel.FileLabel.FilePath.Equals(filePathsAndLabels.TargetFilePathAndLabel.FileLabel.FilePath))
+				{
+					fileLabelStringToUseForBothFiles = string.Format("{0} vs. {1}", sourceFileLabelString, filePathsAndLabels.TargetFilePathAndLabel.FileLabel.Version);
+				}
+
+				// Make both headers match and display both pieces of information.
+				sourceFileLabelString = fileLabelStringToUseForBothFiles;
+				targetFileLabelString = fileLabelStringToUseForBothFiles;
+			}
+
+			// Get this file's contents and append it to the Combined file's contents, along with some header info.
+			var combinedSourceFileContentsToAppend = new StringBuilder();
+			combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+			combinedSourceFileContentsToAppend.AppendLine(sourceFileLabelString);
+			combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+			combinedSourceFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.SourceFilePathAndLabel.FilePath));
+			File.AppendAllText(combinedFiles.SourceFilePathAndLabel.FilePath, combinedSourceFileContentsToAppend.ToString());
+
+			var combinedTargetFileContentsToAppend = new StringBuilder();
+			combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+			combinedTargetFileContentsToAppend.AppendLine(targetFileLabelString);
+			combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+			combinedTargetFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.TargetFilePathAndLabel.FilePath));
+			File.AppendAllText(combinedFiles.TargetFilePathAndLabel.FilePath, combinedTargetFileContentsToAppend.ToString());
+
+			// Delete the original temp files if they still exist.
+			if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
+				Directory.Delete(tempDiffFilesDirectory, true);
 		}
 
 		/// <summary>
