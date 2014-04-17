@@ -54,11 +54,10 @@
 				<!-- These 2 Close buttons are duplicated in both the Comparing and Not Comparing Files Views so that we can put it in a nice spot on both views, so be sure to update both places. -->
 				<Button Content="{Binding Path=CloseLastSetOfFilesCommandLabel, FallbackValue=Close All In Last Set}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=CompareWindowsFromMultipleSetsOfFilesAreOpen}}" Click="btnCloseAllOpenDiffToolsInThisSet_Click" ToolTip="Closes all diff tool windows that are still open from the last set of file compares performed." />
 				<Button Content="Close All" Visibility="{QC:Binding '($P > 0) ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." />
-
-				<Button Content="Cancel" Click="btnCancelComparingFiles_Click" ToolTip="Do not compare any more files." />
 			</WrapPanel>
 
-			<!-- Progress message gets shown in both views. -->
+			<!--Controls that get shown on both views. -->
+			<Button Content="Cancel" Click="btnCancelComparingFiles_Click" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsRunningCompareFilesCommand}}" ToolTip="Do not compare any more files."  />
 			<TextBlock Text="{Binding Path=FileComparisonProgressMessage, FallbackValue=File comparisons in progress}" ToolTip="{Binding Path=FileComparisonProgressMessageToolTip}" />
 		</WrapPanel>
 	</Grid>

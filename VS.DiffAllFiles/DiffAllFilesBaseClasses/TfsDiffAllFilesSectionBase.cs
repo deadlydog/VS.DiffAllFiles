@@ -139,8 +139,6 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			}
 		}
 
-		private CancellationTokenSource _compareTasksCancellationTokenSource = new CancellationTokenSource();
-
 		/// <summary>
 		/// Retrieves the PendingChange items and then compares them.
 		/// </summary>
@@ -296,28 +294,34 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						await OpenFileDiffInVsDiffTool(filePathsAndLabels, tempDiffFilesDirectory, pendingChange.FileName, dte2);
 					}
 
-					// If we have reached the maximum number of diff tool instances to launch for this set, and there are still more to launch.
-					if ((ExternalDiffToolProcessIdsRunningInThisSet.Count + VsDiffToolTabCaptionsStillOpenInThisSet.Count) % settings.NumberOfIndividualFilesToCompareAtATime == 0 &&
-						NumberOfFilesCompared < NumberOfFilesToCompare)
+					// If we have reached the maximum number of diff tool instances to launch for this set, and there are still more to launch, or the user cancelled the compare operations.
+					if (((ExternalDiffToolProcessIdsRunningInThisSet.Count + VsDiffToolTabCaptionsStillOpenInThisSet.Count) % settings.NumberOfIndividualFilesToCompareAtATime == 0 &&
+						NumberOfFilesCompared < NumberOfFilesToCompare) || IsCompareOperationsCancelled)
 					{
-						bool cancelCompareOperations = !(await WaitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelled(dte2));
-						if (cancelCompareOperations)
-							break;
+						await WaitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelled(dte2);							
 					}
+
+					// If the user wants to cancel comparing the rest of the files in this set, break out of the loop so we stop comparing more files.
+					if (IsCompareOperationsCancelled)
+						break;
 				}
 				// Else we are combining all of the files together and comparing a single file.
 				else
 				{
 					// Append the source and target file's contents to the Combined files asynchronously.
-					AppendFilesContentsToCombinedFiles(diffToolConfigurationAndExtension, combinedDiffToolConfigurationsAndFilePaths, compareVersion, 
+					await AppendFilesContentsToCombinedFiles(diffToolConfigurationAndExtension, combinedDiffToolConfigurationsAndFilePaths, compareVersion, 
 						pendingChange, filePathsAndLabels, settings, tempDiffFilesDirectory);
 
-					// If we have finished creating all of the Combined files, actually perform the diff now.
-					if (NumberOfFilesCompared == NumberOfFilesToCompare)
+					// If we have finished creating all of the Combined files, or the user has cancelled the combine process, actually perform the diff now with the combined files.
+					if (NumberOfFilesCompared == NumberOfFilesToCompare || IsCompareOperationsCancelled)
 					{
 						// Launch all of the diff tools at the same time.
 						await OpenAllCombinedFilesInTheirRespectiveDiffTools(combinedDiffToolConfigurationsAndFilePaths, dte2);
 					}
+
+					// If the user wants to cancel comparing the rest of the files in this set, break out of the loop so we stop comparing more files.
+					if (IsCompareOperationsCancelled)
+						break;
 				}
 			}
 		}
@@ -370,7 +374,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <param name="filePathsAndLabels">The file paths and labels.</param>
 		/// <param name="settings">The settings.</param>
 		/// <param name="tempDiffFilesDirectory">The temporary difference files directory.</param>
-		private void AppendFilesContentsToCombinedFiles(FileExtensionDiffToolConfiguration diffToolConfigurationAndExtension, Dictionary<DiffToolConfiguration, SourceAndTargetFilePathsAndLabels> combinedDiffToolConfigurationsAndFilePaths,
+		private async Task AppendFilesContentsToCombinedFiles(FileExtensionDiffToolConfiguration diffToolConfigurationAndExtension, Dictionary<DiffToolConfiguration, SourceAndTargetFilePathsAndLabels> combinedDiffToolConfigurationsAndFilePaths,
 			CompareVersion compareVersion, PendingChange pendingChange, SourceAndTargetFilePathsAndLabels filePathsAndLabels, DiffAllFilesSettings settings, string tempDiffFilesDirectory)
 		{
 			// Get the Diff Tool Configuration that should be used to diff this file.
@@ -431,24 +435,29 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				targetFileLabelString = fileLabelStringToUseForBothFiles;
 			}
 
-			// Get this file's contents and append it to the Combined file's contents, along with some header info.
-			var combinedSourceFileContentsToAppend = new StringBuilder();
-			combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-			combinedSourceFileContentsToAppend.AppendLine(sourceFileLabelString);
-			combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-			combinedSourceFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.SourceFilePathAndLabel.FilePath));
-			File.AppendAllText(combinedFiles.SourceFilePathAndLabel.FilePath, combinedSourceFileContentsToAppend.ToString());
+			// Do heavy I/O operations asynchronously.
+			await Task.Run(() =>
+			{
+				// Get this file's contents and append it to the Combined file's contents, along with some header info.
+				var combinedSourceFileContentsToAppend = new StringBuilder();
+				combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+				combinedSourceFileContentsToAppend.AppendLine(sourceFileLabelString);
+				combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+				combinedSourceFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.SourceFilePathAndLabel.FilePath));
+				File.AppendAllText(combinedFiles.SourceFilePathAndLabel.FilePath, combinedSourceFileContentsToAppend.ToString());
 
-			var combinedTargetFileContentsToAppend = new StringBuilder();
-			combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-			combinedTargetFileContentsToAppend.AppendLine(targetFileLabelString);
-			combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-			combinedTargetFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.TargetFilePathAndLabel.FilePath));
-			File.AppendAllText(combinedFiles.TargetFilePathAndLabel.FilePath, combinedTargetFileContentsToAppend.ToString());
+				var combinedTargetFileContentsToAppend = new StringBuilder();
+				combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+				combinedTargetFileContentsToAppend.AppendLine(targetFileLabelString);
+				combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+				combinedTargetFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.TargetFilePathAndLabel.FilePath));
+				File.AppendAllText(combinedFiles.TargetFilePathAndLabel.FilePath, combinedTargetFileContentsToAppend.ToString());
 
-			// Delete the original temp files if they still exist.
-			if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
-				Directory.Delete(tempDiffFilesDirectory, true);
+				// Delete the original temp files if they still exist.
+				if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
+					Directory.Delete(tempDiffFilesDirectory, true);
+			});
+
 		}
 
 		/// <summary>
@@ -456,10 +465,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <para>Returns True if everything finished properly, and False if the user cancelled the operations.</para>
 		/// </summary>
 		/// <param name="dte2">The dte2.</param>
-		private async Task<bool> WaitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelled(DTE2 dte2)
+		private async Task WaitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelled(DTE2 dte2)
 		{
 			// Get the Cancellation Token to use for the tasks we create.
-			var cancellationToken = _compareTasksCancellationTokenSource.Token;
+			var cancellationToken = _waitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelledCancellationTokenSource.Token;
 
 			// Get the Tasks to wait for all of the external diff tool processes to be closed.
 			var waitForAllExternalDiffToolProcessFromThisSetToCloseTasks = ExternalDiffToolProcessIdsRunningInThisSet.Select(processId => Task.Run(() =>
@@ -523,7 +532,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			var waitForNextSetOfFilesOrCancelCommandsToBeExecutedTask = Task.Run(() =>
 			{
 				// Just sleep this thread until the user wants to compare the next set of files, or cancels the compare operations.
-				while (!cancellationToken.IsCancellationRequested && !_compareNextSetOfFiles && !_cancelComparingFiles)
+				while (!cancellationToken.IsCancellationRequested && !_compareNextSetOfFiles && !IsCompareOperationsCancelled)
 					System.Threading.Thread.Sleep(DEFAULT_THREAD_SLEEP_TIME);
 			});
 
@@ -537,18 +546,15 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			this.IsBusy = true;
 
 			// Now that we are done waiting for this set, cancel any Tasks that are still running and refresh the Cancellation Token Source to use for the next set of Tasks we create.
-			_compareTasksCancellationTokenSource.Cancel();
-			_compareTasksCancellationTokenSource = new CancellationTokenSource();
+			_waitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelledCancellationTokenSource.Cancel();
+			_waitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelledCancellationTokenSource = new CancellationTokenSource();
 
 			// We are done comparing this set of files, so reset the flag to start comparing the next set of files.
 			_compareNextSetOfFiles = false;
 
 			// If the user wants to cancel comparing the rest of the files in this set, break out of the loop so we stop comparing more files.
-			if (_cancelComparingFiles)
-			{
-				_cancelComparingFiles = false;
-				return false;
-			}
+			if (IsCompareOperationsCancelled)
+				return;
 
 			// Now that we are done with this set of compares, clear the list of diff tool windows still open from this set.
 			lock (ExternalDiffToolProcessIdsRunningLock)
@@ -559,10 +565,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			{
 				VsDiffToolTabCaptionsStillOpenInThisSet.Clear();
 			}
-
-			// Return that everything completed successfully without the user cancelling the operations.
-			return true;
 		}
+		private CancellationTokenSource _waitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelledCancellationTokenSource = new CancellationTokenSource();
 
 		/// <summary>
 		/// Opens the file difference in built-in Visual Studio difference tool.
@@ -941,16 +945,6 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		}
 
 		#endregion
-
-		/// <summary>
-		/// Cancel any running operations.
-		/// </summary>
-		public override void Cancel()
-		{
-			base.Cancel();
-			_cancelComparingFiles = true;
-		}
-		private bool _cancelComparingFiles = false;
 
 		/// <summary>
 		/// Launches the diff tool to compare the next set of files in the currently running compare files set.

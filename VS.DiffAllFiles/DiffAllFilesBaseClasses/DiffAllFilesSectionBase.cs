@@ -205,7 +205,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		public bool IsRunningCompareFilesCommand
 		{
 			get { return _isRunningCompareFilesCommand; }
-			set
+			protected set
 			{
 				_isRunningCompareFilesCommand = value; NotifyPropertyChanged("IsRunningCompareFilesCommand");
 				
