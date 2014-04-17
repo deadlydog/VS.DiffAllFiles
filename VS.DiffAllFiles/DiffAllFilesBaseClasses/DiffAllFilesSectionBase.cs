@@ -257,7 +257,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			get
 			{
 				// Get a user-friendly string describing how many files have been compared, how many there are to compare, and how many were skipped.
-				string message = string.Format("Compared {0} of {1} files.", NumberOfFilesCompared, NumberOfFilesToCompare);
+				string message = string.Format("{0} {1} of {2} files.", UseCombinedCompareMode ? "Combined" : "Compared", NumberOfFilesCompared, NumberOfFilesToCompare);
 				if (NumberOfFilesSkipped > 0)
 					message += string.Format(" Skipped {0}.", NumberOfFilesSkipped);
 

@@ -121,43 +121,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				IsRunningCompareFilesCommand = true;
 				this.IsBusy = true;
 
-				// If we don't have a handle to the Pending Changes service, display an error and exit.
-				if (_pendingChangesService == null)
-				{
-					ShowNotification("Could not get a handle to the Visual Studio extensibility service.", NotificationType.Error);
-					return;
-				}
-
-				// Get the list of pending changes to compare.
-				List<PendingChange> itemsToCompare = null;
-				switch (itemStatusTypesToCompare)
-				{
-					case ItemStatusTypesToCompare.All:
-						itemsToCompare = _pendingChangesService.IncludedChanges.Union(_pendingChangesService.ExcludedChanges).ToList();
-						break;
-
-					case ItemStatusTypesToCompare.Selected:
-						itemsToCompare = _pendingChangesService.SelectedIncludedItems.Where(i => i.IsPendingChange).Select(i => i.PendingChange)
-							.Union(_pendingChangesService.SelectedExcludedItems.Where(i => i.IsPendingChange).Select(i => i.PendingChange)).ToList();
-						break;
-
-					case ItemStatusTypesToCompare.Included:
-						// If there are filtered included changes, only grab them, else grab all of the included changes.
-						itemsToCompare = _pendingChangesService.FilteredIncludedChanges.Length > 0
-							? _pendingChangesService.FilteredIncludedChanges.ToList()
-							: _pendingChangesService.IncludedChanges.ToList();
-						break;
-
-					case ItemStatusTypesToCompare.Excluded:
-						// If there are filtered excluded changes, only grab them, else grab all of the excluded changes.
-						itemsToCompare = _pendingChangesService.FilteredExcludedChanges.Length > 0
-							? _pendingChangesService.FilteredExcludedChanges.ToList()
-							: _pendingChangesService.ExcludedChanges.ToList();
-						break;
-				}
-
 				// Compare all of the files.
-				await CompareItems(itemsToCompare);
+				await CompareItems(itemStatusTypesToCompare);
 			}
 			catch (Exception ex)
 			{
@@ -173,6 +138,52 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		}
 
 		private CancellationTokenSource _compareTasksCancellationTokenSource = new CancellationTokenSource();
+
+		/// <summary>
+		/// Retrieves the PendingChange items and then compares them.
+		/// </summary>
+		/// <param name="itemStatusTypesToCompare">The item status types to compare.</param>
+		/// <returns></returns>
+		private async Task CompareItems(ItemStatusTypesToCompare itemStatusTypesToCompare)
+		{
+			// If we don't have a handle to the Pending Changes service, display an error and exit.
+			if (_pendingChangesService == null)
+			{
+				ShowNotification("Could not get a handle to the Visual Studio extensibility service.", NotificationType.Error);
+				return;
+			}
+
+			// Get the list of pending changes to compare.
+			List<PendingChange> itemsToCompare = null;
+			switch (itemStatusTypesToCompare)
+			{
+				case ItemStatusTypesToCompare.All:
+					itemsToCompare = _pendingChangesService.IncludedChanges.Union(_pendingChangesService.ExcludedChanges).ToList();
+					break;
+
+				case ItemStatusTypesToCompare.Selected:
+					itemsToCompare = _pendingChangesService.SelectedIncludedItems.Where(i => i.IsPendingChange).Select(i => i.PendingChange)
+						.Union(_pendingChangesService.SelectedExcludedItems.Where(i => i.IsPendingChange).Select(i => i.PendingChange)).ToList();
+					break;
+
+				case ItemStatusTypesToCompare.Included:
+					// If there are filtered included changes, only grab them, else grab all of the included changes.
+					itemsToCompare = _pendingChangesService.FilteredIncludedChanges.Length > 0
+						? _pendingChangesService.FilteredIncludedChanges.ToList()
+						: _pendingChangesService.IncludedChanges.ToList();
+					break;
+
+				case ItemStatusTypesToCompare.Excluded:
+					// If there are filtered excluded changes, only grab them, else grab all of the excluded changes.
+					itemsToCompare = _pendingChangesService.FilteredExcludedChanges.Length > 0
+						? _pendingChangesService.FilteredExcludedChanges.ToList()
+						: _pendingChangesService.ExcludedChanges.ToList();
+					break;
+			}
+
+			// Compare all of the files.
+			await CompareItems(itemsToCompare);
+		}
 
 		/// <summary>
 		/// Downloads and compares the given list of items.
