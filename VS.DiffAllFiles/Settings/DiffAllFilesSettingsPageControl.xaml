@@ -58,12 +58,12 @@
 					
 					<RadioButton GroupName="HowToCompareFiles" Content="Always combine and compare all files in a single window" IsChecked="{QC:Binding '$P == CompareModes.CombinedIntoSingleFile', P={Binding Path=CompareModesAvailable, Mode=OneTime}}" Checked="radioCompareMode_Combined_Checked" ToolTip="If selected, all files will be combined and compared in a single window." Margin="0,10,0,0" />
 					<StackPanel Orientation="Horizontal" Margin="30,0,0,0">
-						<CheckBox Content="Use same headers in both files" IsChecked="{Binding Path=UseSameHeadersForCombinedFiles}">
+						<CheckBox Content="Use same file headers in source and target files" IsChecked="{Binding Path=UseSameHeadersForCombinedFiles}">
 							<CheckBox.ToolTip>
 								<TextBlock>
-									In the 2 files being compared, a header is placed above each sub-file's contents.<LineBreak /> 
-									If checked, these headers will match so that only the original file differences are detected.<LineBreak />
-									If unchecked, each file's header will differ, making it easier to move from one file to the next in the compare tool.
+									In the 2 combined files being compared, a header is placed above each sub-file's contents.<LineBreak /> 
+									If checked, these headers will match so that only the original file differences are detected by the diff tool.<LineBreak />
+									If unchecked, each file's header will differ and will be detected by the diff tool, making it more obvious which file the changes you are looking at are in.
 								</TextBlock>
 							</CheckBox.ToolTip>
 						</CheckBox>
