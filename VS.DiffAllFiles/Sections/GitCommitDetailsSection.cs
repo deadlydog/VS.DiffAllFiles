@@ -12,7 +12,7 @@ namespace VS_DiffAllFiles.Sections
 	/// <summary>
 	/// Diff All Files section in the Changeset Details window.
 	/// </summary>
-	//[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 25)]
+	[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 25)]
 	public class GitCommitDetailsSection : GitDiffAllFilesSectionBase
 	{
 		/// <summary>
@@ -48,7 +48,7 @@ namespace VS_DiffAllFiles.Sections
 
 			// Register for property change notifications on the Pending Changes window.
 			if (_commitDetailsService != null)
-				_commitDetailsService.PropertyChanged += pendingChangesService_PropertyChanged;
+				_commitDetailsService.PropertyChanged += commitDetailsService_PropertyChanged;
 
 			// Make sure the Version Control is available on load.
 			Refresh();
@@ -60,7 +60,7 @@ namespace VS_DiffAllFiles.Sections
 		public override void Dispose()
 		{
 			if (_commitDetailsService != null)
-				_commitDetailsService.PropertyChanged -= pendingChangesService_PropertyChanged;
+				_commitDetailsService.PropertyChanged -= commitDetailsService_PropertyChanged;
 			_commitDetailsService = null;
 
 			base.Dispose();
@@ -69,12 +69,11 @@ namespace VS_DiffAllFiles.Sections
 		/// <summary>
 		/// Pending Changes Extensibility PropertyChanged event handler.
 		/// </summary>
-		private void pendingChangesService_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		private void commitDetailsService_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
 			{
-				case "IncludedChanges":
-				case "FilteredIncludedChanges":
+				case "Changes":
 					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
 
@@ -89,6 +88,7 @@ namespace VS_DiffAllFiles.Sections
 		{
 			var a = _commitDetailsService;
 			var b = a;
+			var c = b;
 		}
 
 		/// <summary>

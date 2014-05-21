@@ -12,7 +12,7 @@ namespace VS_DiffAllFiles.Sections
 	/// <summary>
 	/// Diff All Files section in the Changeset Details window.
 	/// </summary>
-	//[TeamExplorerSection(GitChangesSection.SectionId, TeamExplorerPageIds.GitChanges, 25)]
+	[TeamExplorerSection(GitChangesSection.SectionId, TeamExplorerPageIds.GitChanges, 25)]
 	public class GitChangesSection : GitDiffAllFilesSectionBase
 	{
 		/// <summary>
@@ -48,7 +48,7 @@ namespace VS_DiffAllFiles.Sections
 
 			// Register for property change notifications on the Pending Changes window.
 			if (_changesService != null)
-				_changesService.PropertyChanged += pendingChangesService_PropertyChanged;
+				_changesService.PropertyChanged += changesService_PropertyChanged;
 
 			// Make sure the Version Control is available on load.
 			Refresh();
@@ -60,7 +60,7 @@ namespace VS_DiffAllFiles.Sections
 		public override void Dispose()
 		{
 			if (_changesService != null)
-				_changesService.PropertyChanged -= pendingChangesService_PropertyChanged;
+				_changesService.PropertyChanged -= changesService_PropertyChanged;
 			_changesService = null;
 
 			base.Dispose();
@@ -69,17 +69,22 @@ namespace VS_DiffAllFiles.Sections
 		/// <summary>
 		/// Pending Changes Extensibility PropertyChanged event handler.
 		/// </summary>
-		private void pendingChangesService_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		private void changesService_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
 			{
 				case "IncludedChanges":
-				case "FilteredIncludedChanges":
+					NotifyPropertyChanged("IsCompareIncludedFilesEnabled");
 					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
 
-				case "SelectedExcludedChanges":
+				case "ExcludedChanges":
+					NotifyPropertyChanged("IsCompareExcludedFilesEnabled");
+					NotifyPropertyChanged("IsCompareAllFilesEnabled");
+					break;
+	
 				case "SelectedIncludedChanges":
+				case "SelectedExcludedChanges":
 					NotifyPropertyChanged("IsCompareSelectedFilesEnabled");
 					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
