@@ -4,61 +4,69 @@
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 						 xmlns:QC="clr-namespace:QuickConverter;assembly=QuickConverter"
+						 xmlns:System="clr-namespace:System;assembly=mscorlib"
 						 mc:Ignorable="d" 
 						 d:DesignHeight="200" d:DesignWidth="300">
 	<UserControl.Resources>
-		<Style TargetType="{x:Type Button}">
-			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
-			<Setter Property="Padding" Value="5,2,5,2" />
-			<Setter Property="Margin" Value="0,2,5,2" />
-			<Setter Property="Height" Value="25" />
-			<Setter Property="VerticalAlignment" Value="Center" />
-		</Style>
-		<Style TargetType="{x:Type ComboBox}">
-			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
-			<Setter Property="Margin" Value="0,2,5,2" />
-			<Setter Property="Height" Value="25" />
-		</Style>
-		<Style TargetType="{x:Type CheckBox}">
-			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
-			<Setter Property="Margin" Value="0,2,5,2" />
-			<Setter Property="VerticalAlignment" Value="Center" />
-			<Setter Property="VerticalContentAlignment" Value="Center" />
-		</Style>
-		<Style TargetType="{x:Type TextBlock}">
-			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
-			<Setter Property="Margin" Value="0,2,5,2" />
-			<Setter Property="VerticalAlignment" Value="Center" />
-		</Style>
+		<!-- We can't define styles for each control type (e.g. Button) because when we do, it overrides the inherited style, so our controls won't match
+				the current Visual Studio theme; and using the BasedOn attribute doesn't seem to work. So we have to manually apply these to every control :( -->
+		<System:Int32 x:Key="ToolTipServerShowDuration">60000</System:Int32>
+		
+		<Thickness x:Key="ButtonPadding">5,2,5,2</Thickness>
+		<Thickness x:Key="ButtonMargin">0,2,5,2</Thickness>
+		<System:Double x:Key="ButtonHeight">25</System:Double>
+		<VerticalAlignment x:Key="ButtonVerticalAlignment">Center</VerticalAlignment>
+		
+		<Thickness x:Key="ComboBoxMargin">0,2,5,2</Thickness>
+		<System:Double x:Key="ComboBoxHeight">25</System:Double>
+
+		<Thickness x:Key="CheckBoxMargin">0,2,5,2</Thickness>
+		<VerticalAlignment x:Key="CheckBoxVerticalAlignment">Center</VerticalAlignment>
+		<VerticalAlignment x:Key="CheckBoxVerticalContentAlignment">Center</VerticalAlignment>
+
+		<Thickness x:Key="TextBlockMargin">0,2,5,2</Thickness>
+		<VerticalAlignment x:Key="TextBlockVerticalAlignment">Center</VerticalAlignment>
 	</UserControl.Resources>
 	<Grid>
 		<WrapPanel Orientation="Horizontal">
 			<!-- Not Comparing Files OR Currently Comparing Files in Combined Mode View -->
 			<WrapPanel Orientation="Horizontal" Visibility="{QC:MultiBinding '!$P0 || ($P0 ## $P1) ? Visibility.Visible : Visibility.Collapsed', P0={Binding Path=IsRunningCompareFilesCommand}, P1={Binding Path=UseCombinedCompareMode}}" IsEnabled="{QC:Binding '!$P', P={Binding Path=IsRunningCompareFilesCommand}}">
-				<Button Content="All Files" IsEnabled="{Binding Path=IsCompareAllFilesEnabled}" Click="btnDiffAllFiles_Click" ToolTip="Compare all files." />
+				<Button Content="All Files" IsEnabled="{Binding Path=IsCompareAllFilesEnabled}" Click="btnDiffAllFiles_Click" ToolTip="Compare all files." 
+								ToolTipService.ShowDuration="{StaticResource ToolTipServerShowDuration}" Padding="{StaticResource ButtonPadding}" Margin="{StaticResource ButtonMargin}" Height="{StaticResource ButtonHeight}" VerticalAlignment="{StaticResource ButtonVerticalAlignment}" />
 				<!--<Button Content="Selected" IsEnabled="{Binding Path=IsCompareSelectedFilesEnabled}" Click="btnDiffSelectedFiles_Click" ToolTip="Compare only selected files." />-->
-				<Button Content="Included" IsEnabled="{Binding Path=IsCompareIncludedFilesEnabled}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsCompareIncludedFilesAvailable}}" Click="btnDiffIncludedFiles_Click" ToolTip="Compare only included files." />
-				<Button Content="Excluded" IsEnabled="{Binding Path=IsCompareExcludedFilesEnabled}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsCompareExcludedFilesAvailable}}" Click="btnDiffExcludedFiles_Click" ToolTip="Compare only excluded files." />
-				<ComboBox ItemsSource="{Binding Path=CompareVersions}" SelectedItem="{Binding Path=CompareVersionToUse}" Width="140" ToolTip="The file version to compare the local changes against." />
-				<CheckBox Content="Combine" IsChecked="{Binding Path=UseCombinedCompareMode}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=AllowUserToChooseWhichCompareModeToUse}}" ToolTip="If checked all files will be combined and compared in a single window, else each file will be compared independently in its own window." />
+				<Button Content="Included" IsEnabled="{Binding Path=IsCompareIncludedFilesEnabled}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsCompareIncludedFilesAvailable}}" Click="btnDiffIncludedFiles_Click" ToolTip="Compare only included files." 
+								ToolTipService.ShowDuration="{StaticResource ToolTipServerShowDuration}" Padding="{StaticResource ButtonPadding}" Margin="{StaticResource ButtonMargin}" Height="{StaticResource ButtonHeight}" VerticalAlignment="{StaticResource ButtonVerticalAlignment}" />
+				<Button Content="Excluded" IsEnabled="{Binding Path=IsCompareExcludedFilesEnabled}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsCompareExcludedFilesAvailable}}" Click="btnDiffExcludedFiles_Click" ToolTip="Compare only excluded files." 
+								ToolTipService.ShowDuration="{StaticResource ToolTipServerShowDuration}" Padding="{StaticResource ButtonPadding}" Margin="{StaticResource ButtonMargin}" Height="{StaticResource ButtonHeight}" VerticalAlignment="{StaticResource ButtonVerticalAlignment}" />
+				<ComboBox ItemsSource="{Binding Path=CompareVersions}" SelectedItem="{Binding Path=CompareVersionToUse}" Width="140" ToolTip="The file version to compare the local changes against." 
+									Margin="{StaticResource ComboBoxMargin}" Height="{StaticResource ComboBoxHeight}" />
+				<CheckBox Content="Combine" IsChecked="{Binding Path=UseCombinedCompareMode}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=AllowUserToChooseWhichCompareModeToUse}}" ToolTip="If checked all files will be combined and compared in a single window, else each file will be compared independently in its own window." 
+									Margin="{StaticResource CheckBoxMargin}" VerticalAlignment="{StaticResource CheckBoxVerticalAlignment}" VerticalContentAlignment="{StaticResource CheckBoxVerticalContentAlignment}" />
 
 				<!-- These 2 Close buttons are duplicated in both the Comparing and Not Comparing Files Views so that we can put it in a nice spot on both views, so be sure to update both places. -->
-				<Button Content="{Binding Path=CloseLastSetOfFilesCommandLabel, FallbackValue=Close All In Last Set}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=CompareWindowsFromMultipleSetsOfFilesAreOpen}}" Click="btnCloseAllOpenDiffToolsInThisSet_Click" ToolTip="Closes all diff tool windows that are still open from the last set of file compares performed." />
-				<Button Content="Close All" Visibility="{QC:Binding '($P > 0) ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." />
+				<Button Content="{Binding Path=CloseLastSetOfFilesCommandLabel, FallbackValue=Close All In Last Set}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=CompareWindowsFromMultipleSetsOfFilesAreOpen}}" Click="btnCloseAllOpenDiffToolsInThisSet_Click" ToolTip="Closes all diff tool windows that are still open from the last set of file compares performed." 
+								ToolTipService.ShowDuration="{StaticResource ToolTipServerShowDuration}" Padding="{StaticResource ButtonPadding}" Margin="{StaticResource ButtonMargin}" Height="{StaticResource ButtonHeight}" VerticalAlignment="{StaticResource ButtonVerticalAlignment}" />
+				<Button Content="Close All" Visibility="{QC:Binding '($P > 0) ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." 
+								ToolTipService.ShowDuration="{StaticResource ToolTipServerShowDuration}" Padding="{StaticResource ButtonPadding}" Margin="{StaticResource ButtonMargin}" Height="{StaticResource ButtonHeight}" VerticalAlignment="{StaticResource ButtonVerticalAlignment}" />
 			</WrapPanel>
 
 			<!-- Currently Comparing Files in Individual File Mode View -->
 			<WrapPanel Orientation="Horizontal" Visibility="{QC:MultiBinding '($P0 ## !$P1) ? Visibility.Visible : Visibility.Collapsed', P0={Binding Path=IsRunningCompareFilesCommand}, P1={Binding Path=UseCombinedCompareMode}}">
-				<Button Content="{Binding Path=NextSetOfFilesCommandLabel, FallbackValue=Next Set Of Files}" Click="btnNextSetOfFiles_Click" ToolTip="Launch the next set of file compares." />
+				<Button Content="{Binding Path=NextSetOfFilesCommandLabel, FallbackValue=Next Set Of Files}" Click="btnNextSetOfFiles_Click" ToolTip="Launch the next set of file compares." 
+								ToolTipService.ShowDuration="{StaticResource ToolTipServerShowDuration}" Padding="{StaticResource ButtonPadding}" Margin="{StaticResource ButtonMargin}" Height="{StaticResource ButtonHeight}" VerticalAlignment="{StaticResource ButtonVerticalAlignment}" />
 
 				<!-- These 2 Close buttons are duplicated in both the Comparing and Not Comparing Files Views so that we can put it in a nice spot on both views, so be sure to update both places. -->
-				<Button Content="{Binding Path=CloseLastSetOfFilesCommandLabel, FallbackValue=Close All In Last Set}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=CompareWindowsFromMultipleSetsOfFilesAreOpen}}" Click="btnCloseAllOpenDiffToolsInThisSet_Click" ToolTip="Closes all diff tool windows that are still open from the last set of file compares performed." />
-				<Button Content="Close All" Visibility="{QC:Binding '($P > 0) ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." />
+				<Button Content="{Binding Path=CloseLastSetOfFilesCommandLabel, FallbackValue=Close All In Last Set}" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=CompareWindowsFromMultipleSetsOfFilesAreOpen}}" Click="btnCloseAllOpenDiffToolsInThisSet_Click" ToolTip="Closes all diff tool windows that are still open from the last set of file compares performed." 
+								ToolTipService.ShowDuration="{StaticResource ToolTipServerShowDuration}" Padding="{StaticResource ButtonPadding}" Margin="{StaticResource ButtonMargin}" Height="{StaticResource ButtonHeight}" VerticalAlignment="{StaticResource ButtonVerticalAlignment}" />
+				<Button Content="Close All" Visibility="{QC:Binding '($P > 0) ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=NumberOfCompareWindowsStillOpen}}" Click="btnCloseAllOpenDiffTools_Click" ToolTip="Closes all diff tool windows that are still open." 
+								ToolTipService.ShowDuration="{StaticResource ToolTipServerShowDuration}" Padding="{StaticResource ButtonPadding}" Margin="{StaticResource ButtonMargin}" Height="{StaticResource ButtonHeight}" VerticalAlignment="{StaticResource ButtonVerticalAlignment}" />
 			</WrapPanel>
 
 			<!--Controls that get shown on both views. -->
-			<Button Content="Cancel" Click="btnCancelComparingFiles_Click" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsRunningCompareFilesCommand}}" ToolTip="Do not compare any more files."  />
-			<TextBlock Text="{Binding Path=FileComparisonProgressMessage, FallbackValue=File comparisons in progress}" ToolTip="{Binding Path=FileComparisonProgressMessageToolTip}" />
+			<Button Content="Cancel" Click="btnCancelComparingFiles_Click" Visibility="{QC:Binding '$P ? Visibility.Visible : Visibility.Collapsed', P={Binding Path=IsRunningCompareFilesCommand}}" ToolTip="Do not compare any more files." 
+							ToolTipService.ShowDuration="{StaticResource ToolTipServerShowDuration}" Padding="{StaticResource ButtonPadding}" Margin="{StaticResource ButtonMargin}" Height="{StaticResource ButtonHeight}" VerticalAlignment="{StaticResource ButtonVerticalAlignment}" />
+			<TextBlock Text="{Binding Path=FileComparisonProgressMessage, FallbackValue=File comparisons in progress}" ToolTip="{Binding Path=FileComparisonProgressMessageToolTip}" 
+								 Margin="{StaticResource TextBlockMargin}" VerticalAlignment="{StaticResource TextBlockVerticalAlignment}" />
 		</WrapPanel>
 	</Grid>
 </UserControl>

@@ -208,6 +208,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			// Save how many files were set to be compared before removing the ones that do not meet the settings requirements.
 			int originalNumberOfFilesToCompare = itemsToCompare.Count;
 
+			// Filter out directories, as we can only compare files (not sure how to detect directories only on the server without downloading them).
+			itemsToCompare = itemsToCompare.Where(p => !Directory.Exists(p.LocalItem ?? string.Empty)).ToList();
+
 			// Filter out added files if they should be skipped.
 			if (!settings.CompareNewFiles)
 				itemsToCompare = itemsToCompare.Where(p => !p.IsAdd && !p.IsBranch && !p.IsUndelete).ToList();
@@ -294,10 +297,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						OpenFileDiffInVsDiffTool(filePathsAndLabels, tempDiffFilesDirectory, pendingChange.FileName, dte2);
 					}
 
-					// Sleep very briefly in order to check and process if the Cancel button was clicked, and to allow any UI updates to be shown.
-					await Task.Run(() => System.Threading.Thread.Sleep(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME));
+					// Stop processing on the UI thread very briefly in order to check and process if the Cancel button was clicked, and to allow any UI updates to be shown.
+					await Task.Delay(DiffAllFilesHelper.DEFAULT_UI_THREAD_AWAIT_TIME_TO_ALLOW_OTHER_UI_OPERATIONS_TO_PROCESS);
 
-					// If we have reached the maximum number of diff tool instances to launch for this set, and there are still more to launch, or the user cancelled the compare operations.
+					// If we have reached the maximum number of diff tool instances to launch for this set AND there are still more to launch, OR the user cancelled the compare operations.
 					if (((ExternalDiffToolProcessIdsRunningInThisSet.Count + VsDiffToolTabCaptionsStillOpenInThisSet.Count) % settings.NumberOfIndividualFilesToCompareAtATime == 0 &&
 						NumberOfFilesCompared < NumberOfFilesToCompare) || IsCompareOperationsCancelled)
 					{
@@ -441,26 +444,54 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			// Do heavy I/O operations asynchronously.
 			await Task.Run(() =>
 			{
-				// Get this file's contents and append it to the Combined file's contents, along with some header info.
-				var combinedSourceFileContentsToAppend = new StringBuilder();
-				combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-				combinedSourceFileContentsToAppend.AppendLine(sourceFileLabelString);
-				combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-				combinedSourceFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.SourceFilePathAndLabel.FilePath));
-				File.AppendAllText(combinedFiles.SourceFilePathAndLabel.FilePath, combinedSourceFileContentsToAppend.ToString());
+				bool wasAbleToReadFileContents = true;
 
-				var combinedTargetFileContentsToAppend = new StringBuilder();
-				combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-				combinedTargetFileContentsToAppend.AppendLine(targetFileLabelString);
-				combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-				combinedTargetFileContentsToAppend.AppendLine(File.ReadAllText(filePathsAndLabels.TargetFilePathAndLabel.FilePath));
-				File.AppendAllText(combinedFiles.TargetFilePathAndLabel.FilePath, combinedTargetFileContentsToAppend.ToString());
+				// Get the original files' contents.
+				string sourceFileContents = string.Empty;
+				try
+				{
+					sourceFileContents = File.ReadAllText(filePathsAndLabels.SourceFilePathAndLabel.FilePath);
+				}
+				catch
+				{
+					ShowNotification(string.Format("Unable to access file path '{0}', so it will not be compared.", filePathsAndLabels.SourceFilePathAndLabel.FilePath), NotificationType.Warning);
+					wasAbleToReadFileContents = false;
+				}
+
+				string targetFileContents = string.Empty;
+				try
+				{
+					targetFileContents = File.ReadAllText(filePathsAndLabels.SourceFilePathAndLabel.FilePath);
+				}
+				catch
+				{
+					ShowNotification(string.Format("Unable to access file path '{0}', so it will not be compared.", filePathsAndLabels.TargetFilePathAndLabel.FilePath), NotificationType.Warning);
+					wasAbleToReadFileContents = false;
+				}
+
+				// If we were able to get the file contents.
+				if (wasAbleToReadFileContents)
+				{
+					// Append the file's contents to the Combined file's contents, along with some header info.
+					var combinedSourceFileContentsToAppend = new StringBuilder();
+					combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+					combinedSourceFileContentsToAppend.AppendLine(sourceFileLabelString);
+					combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+					combinedSourceFileContentsToAppend.AppendLine(sourceFileContents);
+					File.AppendAllText(combinedFiles.SourceFilePathAndLabel.FilePath, combinedSourceFileContentsToAppend.ToString());
+
+					var combinedTargetFileContentsToAppend = new StringBuilder();
+					combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+					combinedTargetFileContentsToAppend.AppendLine(targetFileLabelString);
+					combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+					combinedTargetFileContentsToAppend.AppendLine(targetFileContents);
+					File.AppendAllText(combinedFiles.TargetFilePathAndLabel.FilePath, combinedTargetFileContentsToAppend.ToString());
+				}
 
 				// Delete the original temp files if they still exist.
 				if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
 					Directory.Delete(tempDiffFilesDirectory, true);
 			});
-
 		}
 
 		/// <summary>

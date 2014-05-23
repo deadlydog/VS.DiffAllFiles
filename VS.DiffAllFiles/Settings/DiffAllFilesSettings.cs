@@ -64,7 +64,7 @@ namespace VS_DiffAllFiles.Settings
 		private void ResetGlobalSettings()
 		{
 			// Specify the default values for all of the properties.
-			FileExtensionsToIgnoreList = new List<string>() { "dll", "exe", "bmp", "gif", "jpg", "jpeg", "png", "raw", "tif", "tiff", "nupkg" };
+			FileExtensionsToIgnoreList = new List<string>() { "dll", "exe", "pdb", "bmp", "gif", "jpg", "jpeg", "png", "raw", "tif", "tiff", "nupkg", "pfx", "snk" };
 			CompareFilesNotChanged = true;
 			CompareNewFiles = true;
 			CompareDeletedFiles = true;

@@ -30,6 +30,11 @@ namespace VS_DiffAllFiles
 		public const int DEFAULT_THREAD_SLEEP_TIME = 100;
 
 		/// <summary>
+		/// The default length of time to await the UI thread so that other UI operations can be processed.
+		/// </summary>
+		public const int DEFAULT_UI_THREAD_AWAIT_TIME_TO_ALLOW_OTHER_UI_OPERATIONS_TO_PROCESS = 25;
+
+		/// <summary>
 		/// Gets the full path to TF.exe.
 		/// </summary>
 		public static string TfFilePath
