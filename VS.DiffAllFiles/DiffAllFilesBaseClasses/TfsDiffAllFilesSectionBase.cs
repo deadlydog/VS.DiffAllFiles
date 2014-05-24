@@ -461,7 +461,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				string targetFileContents = string.Empty;
 				try
 				{
-					targetFileContents = File.ReadAllText(filePathsAndLabels.SourceFilePathAndLabel.FilePath);
+					targetFileContents = File.ReadAllText(filePathsAndLabels.TargetFilePathAndLabel.FilePath);
 				}
 				catch
 				{
@@ -469,28 +469,29 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					wasAbleToReadFileContents = false;
 				}
 
-				// If we were able to get the file contents.
-				if (wasAbleToReadFileContents)
-				{
-					// Append the file's contents to the Combined file's contents, along with some header info.
-					var combinedSourceFileContentsToAppend = new StringBuilder();
-					combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-					combinedSourceFileContentsToAppend.AppendLine(sourceFileLabelString);
-					combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-					combinedSourceFileContentsToAppend.AppendLine(sourceFileContents);
-					File.AppendAllText(combinedFiles.SourceFilePathAndLabel.FilePath, combinedSourceFileContentsToAppend.ToString());
-
-					var combinedTargetFileContentsToAppend = new StringBuilder();
-					combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-					combinedTargetFileContentsToAppend.AppendLine(targetFileLabelString);
-					combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
-					combinedTargetFileContentsToAppend.AppendLine(targetFileContents);
-					File.AppendAllText(combinedFiles.TargetFilePathAndLabel.FilePath, combinedTargetFileContentsToAppend.ToString());
-				}
-
-				// Delete the original temp files if they still exist.
+				// Now that we've read the original temp files contents in, delete them if they still exist.
 				if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
 					Directory.Delete(tempDiffFilesDirectory, true);
+
+				// If we were not able to get the file contents, just exit since we have nothing to append to the Combined files.
+				if (!wasAbleToReadFileContents) 
+					return;
+
+				// Append the source file's contents to the Combined file's contents, along with some header info.
+				var combinedSourceFileContentsToAppend = new StringBuilder();
+				combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+				combinedSourceFileContentsToAppend.AppendLine(sourceFileLabelString);
+				combinedSourceFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+				combinedSourceFileContentsToAppend.AppendLine(sourceFileContents);
+				File.AppendAllText(combinedFiles.SourceFilePathAndLabel.FilePath, combinedSourceFileContentsToAppend.ToString());
+
+				// Append the target file's contents to the Combined file's contents, along with some header info.
+				var combinedTargetFileContentsToAppend = new StringBuilder();
+				combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+				combinedTargetFileContentsToAppend.AppendLine(targetFileLabelString);
+				combinedTargetFileContentsToAppend.AppendLine("~".PadRight(60, '='));
+				combinedTargetFileContentsToAppend.AppendLine(targetFileContents);
+				File.AppendAllText(combinedFiles.TargetFilePathAndLabel.FilePath, combinedTargetFileContentsToAppend.ToString());
 			});
 		}
 
