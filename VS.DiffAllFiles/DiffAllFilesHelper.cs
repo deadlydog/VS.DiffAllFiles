@@ -43,10 +43,10 @@ namespace VS_DiffAllFiles
 		}
 
 		/// <summary>
-		/// Gets all of the diff tool configurations that are specified in the registry.
+		/// Gets all of the diff tool configurations that are specified in the registry for Tfs.
 		/// <para>If a file extension does not have a configured diff tool, it should be handled by the built-in Visual Studio diff tool.</para>
 		/// </summary>
-		public static List<FileExtensionDiffToolConfiguration> DiffToolsConfigured
+		public static List<FileExtensionDiffToolConfiguration> TfsDiffToolsConfigured
 		{
 			get
 			{
@@ -91,6 +91,20 @@ namespace VS_DiffAllFiles
 				}
 
 				// Return the configured diff tools.
+				return diffToolsConfigured;
+			}
+		}
+
+		/// <summary>
+		/// Gets all of the diff tool configurations that are specified for Git.
+		/// <para>If a file extension does not have a configured diff tool, it should be handled by the built-in Visual Studio diff tool.</para>
+		/// </summary>
+		public static List<FileExtensionDiffToolConfiguration> GitDiffToolsConfigured
+		{
+			get
+			{
+				var diffToolsConfigured = new List<FileExtensionDiffToolConfiguration>();
+				//throw new NotImplementedException();
 				return diffToolsConfigured;
 			}
 		}

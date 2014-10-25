@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.TeamFoundation.Controls;
 using Microsoft.TeamFoundation.Git.Controls.Extensibility;
+using VS_DiffAllFiles.Sections;
+using VS_DiffAllFiles.Settings;
 using VS_DiffAllFiles.StructuresAndEnums;
 
 namespace VS_DiffAllFiles.Sections
@@ -12,7 +14,7 @@ namespace VS_DiffAllFiles.Sections
 	/// <summary>
 	/// Diff All Files section in the Changeset Details window.
 	/// </summary>
-	//[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 25)]
+	[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 25)]
 	public class GitCommitDetailsSection : GitDiffAllFilesSectionBase
 	{
 		/// <summary>
@@ -30,10 +32,10 @@ namespace VS_DiffAllFiles.Sections
 		/// </summary>
 		public GitCommitDetailsSection() : base()
 		{
-			this.Title = "Diff All Files";
-			this.IsExpanded = true;
-			this.IsBusy = false;
-			this.SectionContent = new DiffAllFilesSectionControl(this);
+		//	this.Title = "Diff All Files";
+		//	this.IsExpanded = true;
+		//	this.IsBusy = false;
+		//	this.SectionContent = new DiffAllFilesSectionControl(this);
 		}
 
 		/// <summary>
@@ -46,7 +48,7 @@ namespace VS_DiffAllFiles.Sections
 			// Find the Pending Changes extensibility service and save a handle to it.
 			_commitDetailsService = this.GetService<ICommitDetailsExt>();
 
-			// Register for property change notifications on the Pending Changes window.
+			// Register for property change notifications on the Commit Details window.
 			if (_commitDetailsService != null)
 				_commitDetailsService.PropertyChanged += commitDetailsService_PropertyChanged;
 

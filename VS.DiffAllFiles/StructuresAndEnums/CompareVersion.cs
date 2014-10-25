@@ -25,6 +25,7 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 		{
 			/// <summary>
 			/// TFS - The Shelve File will compare the files with any pending changes to the corresponding files prior to the shelve being created.
+			/// Git - Compares your code to the Head of your Git branch.
 			/// </summary>
 			UnmodifiedVersion = 1,
 

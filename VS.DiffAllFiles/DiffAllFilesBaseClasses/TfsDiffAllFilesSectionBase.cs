@@ -200,7 +200,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			}
 
 			// Get all of the file types that are configured to use an external diff tool, and that diff tool's configuration.
-			var diffToolConfigurations = DiffAllFilesHelper.DiffToolsConfigured;
+			var diffToolConfigurations = DiffAllFilesHelper.TfsDiffToolsConfigured;
 
 			// Get a handle to the settings to use.
 			var settings = DiffAllFilesSettings.CurrentSettings;
@@ -232,7 +232,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			}).ToList();
 
 			// If we are supposed to skip files whose contents have not changed and this file's contents have not changed, skip it and move on to the next change.
-			// TOODO: Implement this.
+			// TODO: Implement this.
 
 			// Update the number of files compared, and the number of files to be compared.
 			NumberOfFilesCompared = 0;
@@ -712,7 +712,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			diffToolProcess.Start();
 
 			////////////////////////////////
-			//// Debugging We Diff Tool Isn't Launched Code Start
+			//// Debugging When Diff Tool Isn't Launched Code Start
 			//var diffToolProcess = new System.Diagnostics.Process
 			//{
 			//	StartInfo =
@@ -727,7 +727,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			//diffToolProcess.Start();
 			//string error = diffToolProcess.StandardError.ReadToEnd();
 			//diffToolProcess.WaitForExit();
-			//// Debugging We Diff Tool Isn't Launched Code Start
+			//// Debugging When Diff Tool Isn't Launched Code End
 			////////////////////////////////
 
 			// Add this process to our list of external diff tool processes currently running.
