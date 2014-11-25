@@ -92,6 +92,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			}
 		}
 
+		/// <summary>
+		/// Gets if the version control service is available or not.
+		/// </summary>
+		/// <returns></returns>
 		protected override async Task<bool> GetIfVersionControlServiceIsAvailable()
 		{
 			// Make sure we have a connection to Team Foundation.

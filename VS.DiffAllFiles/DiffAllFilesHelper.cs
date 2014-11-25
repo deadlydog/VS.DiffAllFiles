@@ -104,7 +104,7 @@ namespace VS_DiffAllFiles
 			get
 			{
 				var diffToolsConfigured = new List<FileExtensionDiffToolConfiguration>();
-				//throw new NotImplementedException();
+				//throw new NotImplementedException();	// another test
 				return diffToolsConfigured;
 			}
 		}

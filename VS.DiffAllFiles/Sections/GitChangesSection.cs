@@ -33,10 +33,10 @@ namespace VS_DiffAllFiles.Sections
 		/// </summary>
 		private IChangesExt _changesService = null;
 
-		/// <summary>
-		/// Handle to the Verison Control Server.
-		/// </summary>
-		private VersionControlServer _versionControl = null;
+		///// <summary>
+		///// Handle to the Version Control Server.
+		///// </summary>
+		//private VersionControlServer _versionControl = null;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PendingChangesSection"/> class.
@@ -104,17 +104,17 @@ namespace VS_DiffAllFiles.Sections
 			}
 		}
 
+		/// <summary>
+		/// Gets if version control service is available.
+		/// </summary>
+		/// <returns></returns>
+		protected override async Task<bool> GetIfVersionControlServiceIsAvailable()
+		{
+			// Check if the current solution is in a Git repository or not.
+			return GitHelper.IsPathInGitRepository(PackageHelper.DTE2.Solution.FullName);
+		}
+
 		#region Perform Difference Code
-
-		//public override async Task PerformItemDiffs(ItemStatusTypesToCompare itemStatusTypesToCompare)
-		//{
-		//	var a = _changesService;
-		//	var b = a;
-
-		//	var k = _changesService.IncludedChanges[0].ChangeType == ChangesChangeType.Add;
-		//	var i = _changesService.IncludedChanges[0].LocalItem;
-		//	var j = _changesService.IncludedChanges[0].SourceLocalItem;
-		//}
 
 		/// <summary>
 		/// Asynchronously launch the diff tools to compare the files.
@@ -202,15 +202,6 @@ namespace VS_DiffAllFiles.Sections
 			if (dte2 == null)
 			{
 				ShowNotification("Could not get a handle to the DTE2 (the Visual Studio IDE Automation Model).", NotificationType.Error);
-				return;
-			}
-
-			// Get a handle to the version control server.
-			_versionControl = null;
-			_versionControl = this.GetService<VersionControlServer>();
-			if (_versionControl == null)
-			{
-				ShowNotification("Could not get a handle to the version control server.", NotificationType.Error);
 				return;
 			}
 
@@ -802,7 +793,6 @@ namespace VS_DiffAllFiles.Sections
 			FileLabel targetFileLabel = FileLabel.Empty;
 
 			// Get the source and target files to use in the compare.
-			VersionSpec versionSpec;
 			switch (this.SectionType)
 			{
 				case SectionTypes.GitChanges:
@@ -817,8 +807,9 @@ namespace VS_DiffAllFiles.Sections
 						switch (compareVersion.Value)
 						{
 							case CompareVersion.Values.UnmodifiedVersion:
-								_versionControl.DownloadFile(pendingChange.SourceLocalItem, filePathsAndLabels.SourceFilePathAndLabel.FilePath);
-								sourceFileLabel = new FileLabel("Server", pendingChange.SourceLocalItem, "HEAD");
+								sourceFileLabel = GitHelper.GetSpecificVersionOfFile(pendingChange.SourceLocalItem, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ?
+									new FileLabel("Server", pendingChange.SourceLocalItem, "HEAD") : 
+									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.SourceLocalItem, "HEAD"));
 								break;
 						}
 					}
@@ -890,39 +881,6 @@ namespace VS_DiffAllFiles.Sections
 			string sourceFilePath = Path.Combine(tempDiffFilesDirectory, string.Format("source_{0}", fileName));
 			string targetFilePath = Path.Combine(tempDiffFilesDirectory, string.Format("target_{0}", fileName));
 			filePaths = new SourceAndTargetFilePathsAndLabels(sourceFilePath, targetFilePath);
-		}
-
-		/// <summary>
-		/// Downloads the specific version of a file if it exists in version control.
-		/// <para>Returns true if the file was downloaded successfully, false if it failed.</para>
-		/// </summary>
-		/// <param name="pendingChange">The pending change.</param>
-		/// <param name="versionSpec">The version spec.</param>
-		/// <param name="filePathToDownloadTo">The file path to download to.</param>
-		private bool DownloadFileVersionIfItExistsInVersionControl(PendingChange pendingChange, VersionSpec versionSpec, string filePathToDownloadTo)
-		{
-			bool fileDownloaded = true;
-
-			// If the file exists, download it.
-			if (pendingChange.VersionControlServer.ServerItemExists(pendingChange.ServerItem, versionSpec, DeletedState.NonDeleted, ItemType.File))
-			{
-				try
-				{
-					pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerItem, pendingChange.DeletionId, versionSpec, filePathToDownloadTo);
-				}
-				catch (Microsoft.TeamFoundation.VersionControl.Client.VersionControlException ex)
-				{
-					fileDownloaded = false;
-				}
-			}
-			// Else the file doesn't exist so update the file's label to specify that.
-			else
-			{
-				fileDownloaded = false;
-			}
-
-			// Return if the file was downloaded or not.
-			return fileDownloaded;
 		}
 
 		#endregion
