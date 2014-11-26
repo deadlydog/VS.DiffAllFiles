@@ -1,0 +1,3 @@
+﻿LibGit2Sharp.dll expects to find a NativeBinaries/[amd64|x86]/git2.dll assembly. This assembly is copied to the bin\[Debug|Release] directory, but not included in the VSIX.
+In order to get this git2.dll assembly copied into the VSIX, we have to reference the git2.dll assemblies as a shortcut, as in the shortcut properties set Include In VSIX to True.
+So these shortcut paths will need to be updated whenever a new version of the LibGit2Sharp NuGet package is installed.

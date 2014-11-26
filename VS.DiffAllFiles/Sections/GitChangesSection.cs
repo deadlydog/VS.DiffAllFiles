@@ -33,11 +33,6 @@ namespace VS_DiffAllFiles.Sections
 		/// </summary>
 		private IChangesExt _changesService = null;
 
-		///// <summary>
-		///// Handle to the Version Control Server.
-		///// </summary>
-		//private VersionControlServer _versionControl = null;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PendingChangesSection"/> class.
 		/// </summary>
@@ -110,8 +105,8 @@ namespace VS_DiffAllFiles.Sections
 		/// <returns></returns>
 		protected override async Task<bool> GetIfVersionControlServiceIsAvailable()
 		{
-			// Check if the current solution is in a Git repository or not.
-			return GitHelper.IsPathInGitRepository(PackageHelper.DTE2.Solution.FullName);
+			// Git uses a local repository which should always be available, so just return true.
+			return true;
 		}
 
 		#region Perform Difference Code

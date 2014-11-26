@@ -55,7 +55,8 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 				return false;
 
 			// Remove the Git repository path from the file path to get the file's path relative to the Git repository.
-			var relativeFilePath = filePathInRepository.Replace(repositoryPath, string.Empty);
+			var repoRootDirectory = repositoryPath.Replace(@".git\", string.Empty);
+			var relativeFilePath = filePathInRepository.Replace(repoRootDirectory, string.Empty);
 
 			// Connect to the Git repository.
 			using (var repository = new Repository(repositoryPath))
@@ -80,10 +81,12 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 
 		private static Commit GetLastCommitOfFile(Repository repo, string filePathRelativeToRepository)
 		{
-			// Algorithm taken from https://github.com/libgit2/libgit2sharp/issues/89
+			// Original algorithm taken from https://github.com/libgit2/libgit2sharp/issues/89
 
 			var commit = repo.Head.Tip;
-			var gitObj = commit[filePathRelativeToRepository].Target;
+			var treeEntry = commit[filePathRelativeToRepository];
+			if (treeEntry == null) return null;
+			var gitObj = treeEntry.Target;
 
 			var set = new HashSet<string>();
 			var queue = new Queue<Commit>();
