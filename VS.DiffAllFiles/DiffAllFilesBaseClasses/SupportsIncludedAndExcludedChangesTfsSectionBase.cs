@@ -47,7 +47,7 @@ namespace VS_DiffAllFiles
 			get
 			{
 				return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable &&
-					((_pendingChangesService.SelectedIncludedItems.Length + _pendingChangesService.SelectedExcludedItems.Length) > 0);
+					((FileChangesService.SelectedIncludedItems.Length + FileChangesService.SelectedExcludedItems.Length) > 0);
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace VS_DiffAllFiles
 			get
 			{
 				return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable &&
-					((_pendingChangesService.IncludedChanges.Length + _pendingChangesService.FilteredIncludedChanges.Length) > 0);
+					((FileChangesService.IncludedChanges.Length + FileChangesService.FilteredIncludedChanges.Length) > 0);
 			}
 		}
 
@@ -71,7 +71,7 @@ namespace VS_DiffAllFiles
 			get
 			{
 				return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable &&
-					((_pendingChangesService.ExcludedChanges.Length + _pendingChangesService.FilteredExcludedChanges.Length) > 0);
+					((FileChangesService.ExcludedChanges.Length + FileChangesService.FilteredExcludedChanges.Length) > 0);
 			}
 		}
 

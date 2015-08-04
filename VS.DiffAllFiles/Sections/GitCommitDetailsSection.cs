@@ -26,17 +26,6 @@ namespace VS_DiffAllFiles.Sections
 		/// Handle to the Commit Details Extensibility service.
 		/// </summary>
 		private ICommitDetailsExt _commitDetailsService = null;
-		
-		/// <summary>
-		/// Initializes a new instance of the <see cref="PendingChangesSection"/> class.
-		/// </summary>
-		public GitCommitDetailsSection() : base()
-		{
-		//	this.Title = "Diff All Files";
-		//	this.IsExpanded = true;
-		//	this.IsBusy = false;
-		//	this.SectionContent = new DiffAllFilesSectionControl(this);
-		}
 
 		/// <summary>
 		/// Initialize override.
@@ -86,21 +75,6 @@ namespace VS_DiffAllFiles.Sections
 			}
 		}
 
-		public override async Task PerformItemDiffs(ItemStatusTypesToCompare itemStatusTypesToCompare)
-		{
-			var a = _commitDetailsService;
-			var b = a;
-			var c = b;
-		}
-
-		/// <summary>
-		/// Gets if the Compare All Files command should be enabled.
-		/// </summary>
-		public override bool IsCompareAllFilesEnabled
-		{
-			get { return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable; }
-		}
-
 		/// <summary>
 		/// Gets if the Compare Selected Files command should be enabled.
 		/// </summary>
@@ -121,23 +95,5 @@ namespace VS_DiffAllFiles.Sections
 			get { return _compareVersions; }
 		}
 		private readonly List<CompareVersion> _compareVersions = new List<CompareVersion> { CompareVersion.PreviousVersion, CompareVersion.WorkspaceVersion, CompareVersion.LatestVersion };
-
-		public override void Cancel()
-		{
-			base.Cancel();
-		}
-
-		public override async void Refresh()
-		{
-			base.Refresh();
-		}
-
-		/// <summary>
-		/// Launches the diff tool to compare the next set of files in the currently running compare files set.
-		/// </summary>
-		public override void CompareNextSetOfFiles()
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

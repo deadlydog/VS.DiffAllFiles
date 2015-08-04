@@ -121,12 +121,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\GitFileChange.cs" />
+    <Compile Include="Adapters\IGitFileChange.cs" />
+    <Compile Include="Adapters\ITfsFileChange.cs" />
+    <Compile Include="Adapters\ITfsPendingChangesService.cs" />
+    <Compile Include="Adapters\TfsFileChange.cs" />
     <Compile Include="StructuresAndEnums\CompareModes.cs" />
     <Compile Include="StructuresAndEnums\DiffToolConfiguration.cs" />
     <Compile Include="StructuresAndEnums\FileLabel.cs" />
     <Compile Include="StructuresAndEnums\FilePathAndLabel.cs" />
     <Compile Include="GitHelper.cs" />
-    <Compile Include="StructuresAndEnums\IFileChange.cs" />
+    <Compile Include="Adapters\GitChangesService.cs" />
+    <Compile Include="Adapters\GitCommitDetailsService.cs" />
+    <Compile Include="Adapters\IFileChange.cs" />
     <Compile Include="StructuresAndEnums\SectionTypes.cs" />
     <Compile Include="StructuresAndEnums\FileExtensionDiffToolConfiguration.cs" />
     <Compile Include="DiffAllFilesBaseClasses\GitDiffAllFilesSectionBase.cs" />
@@ -161,6 +168,8 @@
     <Compile Include="TeamExplorerBaseClasses\TeamExplorerBasePage.cs" />
     <Compile Include="TeamExplorerBaseClasses\TeamExplorerBaseSection.cs" />
     <Compile Include="VS.DiffAllFilesPackage.cs" />
+    <Compile Include="Adapters\IFileChangesService.cs" />
+    <Compile Include="Adapters\TfsPendingChangesService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Sections\DiffAllFilesSectionControl.xaml">

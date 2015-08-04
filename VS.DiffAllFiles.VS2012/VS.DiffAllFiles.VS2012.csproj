@@ -165,6 +165,36 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\VS.DiffAllFiles\Adapters\GitChangesService.cs">
+      <Link>FilesFromShared\Adapters\GitChangesService.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Adapters\GitCommitDetailsService.cs">
+      <Link>FilesFromShared\Adapters\GitCommitDetailsService.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Adapters\GitFileChange.cs">
+      <Link>FilesFromShared\Adapters\GitFileChange.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Adapters\IFileChange.cs">
+      <Link>FilesFromShared\Adapters\IFileChange.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Adapters\IFileChangesService.cs">
+      <Link>FilesFromShared\Adapters\IFileChangesService.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Adapters\IGitFileChange.cs">
+      <Link>FilesFromShared\Adapters\IGitFileChange.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Adapters\ITfsFileChange.cs">
+      <Link>FilesFromShared\Adapters\ITfsFileChange.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Adapters\ITfsPendingChangesService.cs">
+      <Link>FilesFromShared\Adapters\ITfsPendingChangesService.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Adapters\TfsFileChange.cs">
+      <Link>FilesFromShared\Adapters\TfsFileChange.cs</Link>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Adapters\TfsPendingChangesService.cs">
+      <Link>FilesFromShared\Adapters\TfsPendingChangesService.cs</Link>
+    </Compile>
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\DiffAllFilesSectionBase.cs">
       <Link>FilesFromShared\DiffAllFilesBaseClasses\DiffAllFilesSectionBase.cs</Link>
     </Compile>

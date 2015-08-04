@@ -33,7 +33,7 @@ namespace VS_DiffAllFiles.Sections
 			get
 			{
 				return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable &&
-					((_pendingChangesService.SelectedIncludedItems.Length + _pendingChangesService.SelectedExcludedItems.Length) > 0);
+					((FileChangesService.SelectedIncludedChanges.Count + FileChangesService.SelectedExcludedChanges.Count) > 0);
 			}
 		}
 
