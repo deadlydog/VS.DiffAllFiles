@@ -51,7 +51,7 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> IncludedChanges
 		{
-			get { return _changesService.IncludedChanges; }
+			get { return _changesService.IncludedChanges.Select(change => new GitFileChange(change)).ToList(); }
 		}
 
 		/// <summary>
@@ -59,7 +59,7 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> ExcludedChanges
 		{
-			get { return _changesService.ExcludedChanges; }
+			get { return _changesService.ExcludedChanges.Select(change => new GitFileChange(change)).ToList(); }
 		}
 
 		/// <summary>
@@ -67,7 +67,7 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> SelectedIncludedChanges
 		{
-			get { return _changesService.SelectedIncludedChanges; }
+			get { return _changesService.SelectedIncludedChanges.Select(change => new GitFileChange(change)).ToList(); }
 		}
 
 		/// <summary>
@@ -75,7 +75,7 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> SelectedExcludedChanges
 		{
-			get { return _changesService.SelectedExcludedChanges; }
+			get { return _changesService.SelectedExcludedChanges.Select(change => new GitFileChange(change)).ToList(); }
 		}
 
 		#endregion

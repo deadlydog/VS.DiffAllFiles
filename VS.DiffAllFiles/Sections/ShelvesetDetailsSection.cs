@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.TeamFoundation.Controls;
+using VS_DiffAllFiles.DiffAllFilesBaseClasses;
 using VS_DiffAllFiles.StructuresAndEnums;
 
 namespace VS_DiffAllFiles.Sections

@@ -180,6 +180,9 @@
     <Compile Include="..\VS.DiffAllFiles\Adapters\GitCommitDetailsService.cs">
       <Link>FilesFromShared\Adapters\GitCommitDetailsService.cs</Link>
     </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Adapters\GitCommitFileChange.cs">
+      <Link>FilesFromShared\Adapters\GitCommitFileChange.cs</Link>
+    </Compile>
     <Compile Include="..\VS.DiffAllFiles\Adapters\GitFileChange.cs">
       <Link>FilesFromShared\Adapters\GitFileChange.cs</Link>
     </Compile>

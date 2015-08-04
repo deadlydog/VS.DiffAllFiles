@@ -20,7 +20,7 @@ namespace VS_DiffAllFiles.Adapters
 		public TfsPendingChangesService(IPendingChangesExt pendingChangesService)
 		{
 			if (pendingChangesService == null)
-				throw new ArgumentNullException("pendingChangesService", "The Tfs Pending Changes Service provided cannot be null.");
+				throw new ArgumentNullException("pendingChangesService", "The TFS Pending Changes Service provided cannot be null.");
 
 			// Save a handle to the service and hookup the Property Changed event handler.
 			_pendingChangesService = pendingChangesService;
@@ -52,8 +52,8 @@ namespace VS_DiffAllFiles.Adapters
 			get
 			{
 				return _pendingChangesService.FilteredIncludedChanges.Length > 0
-					  ? _pendingChangesService.FilteredIncludedChanges
-					  : _pendingChangesService.IncludedChanges[0];
+					  ? _pendingChangesService.FilteredIncludedChanges.Select(pendingChange => new TfsFileChange(pendingChange)).ToList()
+					  : _pendingChangesService.IncludedChanges.Select(pendingChange => new TfsFileChange(pendingChange)).ToList();
 			}
 		}
 
@@ -65,8 +65,8 @@ namespace VS_DiffAllFiles.Adapters
 			get
 			{
 				return _pendingChangesService.FilteredExcludedChanges.Length > 0
-					  ? _pendingChangesService.FilteredExcludedChanges
-					  : _pendingChangesService.ExcludedChanges;
+					  ? _pendingChangesService.FilteredExcludedChanges.Select(pendingChange => new TfsFileChange(pendingChange)).ToList()
+					  : _pendingChangesService.ExcludedChanges.Select(pendingChange => new TfsFileChange(pendingChange)).ToList();
 			}
 		}
 
@@ -75,7 +75,7 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> SelectedIncludedChanges
 		{
-			get { return _pendingChangesService.SelectedIncludedItems.Where(i => i.IsPendingChange).Select(i => i.PendingChange); }
+			get { return _pendingChangesService.SelectedIncludedItems.Where(i => i.IsPendingChange).Select(i => new TfsFileChange(i.PendingChange)).ToList(); }
 		}
 
 		/// <summary>
@@ -83,7 +83,7 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> SelectedExcludedChanges
 		{
-			get { return _pendingChangesService.SelectedExcludedItems.Where(i => i.IsPendingChange).Select(i => i.PendingChange); }
+			get { return _pendingChangesService.SelectedExcludedItems.Where(i => i.IsPendingChange).Select(i => new TfsFileChange(i.PendingChange)).ToList(); }
 		}
 
 		/// <summary>

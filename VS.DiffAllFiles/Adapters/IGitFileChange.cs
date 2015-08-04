@@ -9,8 +9,13 @@ namespace VS_DiffAllFiles.Adapters
 	public interface IGitFileChange : IFileChange
 	{
 		/// <summary>
-		/// Gets the version.
+		/// Gets the version (i.e. Sha ID).
 		/// </summary>
 		string Version { get; }
+
+		/// <summary>
+		/// Gets the previous versions (i.e. Sha IDs) of the file.
+		/// </summary>
+		IReadOnlyList<string> PreviousVersions { get; }
 	}
 }

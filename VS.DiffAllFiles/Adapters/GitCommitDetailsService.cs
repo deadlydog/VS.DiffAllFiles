@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Microsoft.TeamFoundation.Git.Controls.Extensibility;
 
@@ -38,7 +39,7 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> IncludedChanges
 		{
-			get { return _commitDetailsService.Changes; }
+			get { return _commitDetailsService.Changes.Select(change => new GitCommitFileChange(change)).ToList(); }
 		}
 
 		/// <summary>
@@ -54,7 +55,7 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> SelectedIncludedChanges
 		{
-			get { return _commitDetailsService.SelectedChanges; }
+			get { return _commitDetailsService.SelectedChanges.Select(change => new GitCommitFileChange(change)).ToList(); }
 		}
 
 		/// <summary>

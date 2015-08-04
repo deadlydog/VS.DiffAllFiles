@@ -4,9 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VS_DiffAllFiles.DiffAllFilesBaseClasses;
 
-namespace VS_DiffAllFiles
+namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 {
 	public abstract class SupportsIncludedAndExcludedChangesTfsSectionBase : TfsDiffAllFilesSectionBase
 	{
@@ -20,12 +19,12 @@ namespace VS_DiffAllFiles
 			switch (e.PropertyName)
 			{
 				case "IncludedChanges":
-				case "FilteredIncludedChanges":
+				case "FilteredIncludedChanges":	// I believe the "Filtered" events and properties are deprecated, but we'll leave this case here for now; no harm.
 					NotifyPropertyChanged("IsCompareIncludedFilesEnabled");
 					break;
 
 				case "ExcludedChanges":
-				case "FilteredExcludedChanges":
+				case "FilteredExcludedChanges":	// I believe the "Filtered" events and properties are deprecated, but we'll leave this case here for now; no harm.
 					NotifyPropertyChanged("IsCompareExcludedFilesEnabled");
 					break;
 			}
@@ -47,7 +46,7 @@ namespace VS_DiffAllFiles
 			get
 			{
 				return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable &&
-					((FileChangesService.SelectedIncludedItems.Length + FileChangesService.SelectedExcludedItems.Length) > 0);
+					((FileChangesService.SelectedIncludedChanges.Count + FileChangesService.SelectedExcludedChanges.Count) > 0);
 			}
 		}
 
@@ -58,8 +57,7 @@ namespace VS_DiffAllFiles
 		{
 			get
 			{
-				return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable &&
-					((FileChangesService.IncludedChanges.Length + FileChangesService.FilteredIncludedChanges.Length) > 0);
+				return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable && (FileChangesService.IncludedChanges.Count > 0);
 			}
 		}
 
@@ -70,8 +68,7 @@ namespace VS_DiffAllFiles
 		{
 			get
 			{
-				return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable &&
-					((FileChangesService.ExcludedChanges.Length + FileChangesService.FilteredExcludedChanges.Length) > 0);
+				return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable && (FileChangesService.ExcludedChanges.Count > 0);
 			}
 		}
 

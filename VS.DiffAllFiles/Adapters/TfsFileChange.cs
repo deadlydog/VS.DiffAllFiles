@@ -12,7 +12,7 @@ namespace VS_DiffAllFiles.Adapters
 		/// <summary>
 		/// Handle to the pending change.
 		/// </summary>
-		readonly PendingChange _pendingChange = null;
+		private readonly PendingChange _pendingChange = null;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="TfsFileChange"/> class.
@@ -20,6 +20,9 @@ namespace VS_DiffAllFiles.Adapters
 		/// <param name="pendingChange">The pending change.</param>
 		public TfsFileChange(PendingChange pendingChange)
 		{
+			if (pendingChange == null)
+				throw new ArgumentNullException("pendingChange", "The TFS Pending Change used to initialize a TfsFileChange instance cannot be null.");
+
 			_pendingChange = pendingChange;
 		}
 
