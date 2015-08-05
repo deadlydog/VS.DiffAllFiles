@@ -1140,6 +1140,14 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <param name="tempDiffFilesDirectory">The temporary difference files directory holding the temp files.</param>
 		private void OpenFileDiffInExternalDiffTool(DiffToolConfiguration diffToolConfiguration, SourceAndTargetFilePathsAndLabels filePathsAndLabels, string tempDiffFilesDirectory)
 		{
+			// Get if the user should be able to edit the files to save changes back to them; only allow it if they are not temp files.
+			bool sourceIsTemp = filePathsAndLabels.SourceFilePathAndLabel.FilePath.StartsWith(tempDiffFilesDirectory);
+			bool targetIsTemp = filePathsAndLabels.TargetFilePathAndLabel.FilePath.StartsWith(tempDiffFilesDirectory);
+			if (sourceIsTemp)
+				MakeFileReadOnly(filePathsAndLabels.SourceFilePathAndLabel.FilePath);
+			if (targetIsTemp)
+				MakeFileReadOnly(filePathsAndLabels.TargetFilePathAndLabel.FilePath);
+
 			// Build the arguments to pass to the diff tool's executable.
 			string diffToolArguments = diffToolConfiguration.ExecutableArgumentFormat;
 			diffToolArguments = diffToolArguments.Replace("%1", string.Format("\"{0}\"", filePathsAndLabels.SourceFilePathAndLabel.FilePath));
@@ -1217,6 +1225,16 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
 					Directory.Delete(tempDiffFilesDirectory, true);
 			});
+		}
+
+		/// <summary>
+		/// Sets the file's read-only attribute to true.
+		/// </summary>
+		/// <param name="filePath">The file path.</param>
+		private void MakeFileReadOnly(string filePath)
+		{
+			if (File.Exists(filePath))
+				File.SetAttributes(filePath, File.GetAttributes(filePath) | FileAttributes.ReadOnly);
 		}
 
 		/// <summary>
