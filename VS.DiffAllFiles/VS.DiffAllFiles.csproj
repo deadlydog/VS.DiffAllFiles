@@ -232,7 +232,7 @@ cd "$(SolutionDir)packages\LibGit2Sharp.0.20.0.0\lib\net40\"
 "C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\ildasm.exe" /all /out=LibGit2Sharp.il LibGit2Sharp.dll
 "C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\sn.exe" -k DansLibGit2SharpKey.snk
 "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\ilasm.exe" /dll /key=DansLibGit2SharpKey.snk LibGit2Sharp.il
-:: Sometimes the build fails because the Lib2Git.dll is in use when we are trying to overwrite it. Simply rebuilding the solution usually fixes the problem.</PreBuildEvent>
+:: Sometimes the build fails because the Lib2GitSharp.dll is in use when we are trying to overwrite it. Simply rebuilding the solution usually fixes the problem.</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

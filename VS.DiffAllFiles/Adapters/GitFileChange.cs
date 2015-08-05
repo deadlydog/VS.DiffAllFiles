@@ -58,12 +58,12 @@ namespace VS_DiffAllFiles.Adapters
 
 		public bool IsAdd
 		{
-			get { return _pendingChange.ChangeType == ChangesChangeType.Add; }
+			get { return (_pendingChange.ChangeType & ChangesChangeType.Add) == ChangesChangeType.Add; }
 		}
 
 		public bool IsDelete
 		{
-			get { return _pendingChange.ChangeType == ChangesChangeType.Delete; }
+			get { return (_pendingChange.ChangeType & ChangesChangeType.Delete) == ChangesChangeType.Delete; }
 		}
 	}
 }
