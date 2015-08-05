@@ -1520,7 +1520,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				{
 					pendingChange.VersionControlServer.DownloadFile(pendingChange.ServerFilePath, pendingChange.DeletionId, versionSpec, filePathToDownloadTo);
 				}
-				catch (Microsoft.TeamFoundation.VersionControl.Client.VersionControlException ex)
+				catch (Microsoft.TeamFoundation.VersionControl.Client.VersionControlException)
 				{
 					fileDownloaded = false;
 				}
