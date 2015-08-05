@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.TeamFoundation.Controls;
 using Microsoft.TeamFoundation.Git.Controls.Extensibility;
+using VS_DiffAllFiles.Adapters;
 using VS_DiffAllFiles.Sections;
 using VS_DiffAllFiles.Settings;
 using VS_DiffAllFiles.StructuresAndEnums;
@@ -23,11 +24,6 @@ namespace VS_DiffAllFiles.Sections
 		public const string SectionId = "027EE930-003B-127D-927E-1760BA9BC3B5";
 
 		/// <summary>
-		/// Handle to the Commit Details Extensibility service.
-		/// </summary>
-		private ICommitDetailsExt _commitDetailsService = null;
-
-		/// <summary>
 		/// Initialize override.
 		/// </summary>
 		public override void Initialize(object sender, SectionInitializeEventArgs e)
@@ -35,11 +31,11 @@ namespace VS_DiffAllFiles.Sections
 			base.Initialize(sender, e);
 
 			// Find the Pending Changes extensibility service and save a handle to it.
-			_commitDetailsService = this.GetService<ICommitDetailsExt>();
+			FileChangesService = new GitCommitDetailsService(this.GetService<ICommitDetailsExt>());
 
 			// Register for property change notifications on the Commit Details window.
-			if (_commitDetailsService != null)
-				_commitDetailsService.PropertyChanged += commitDetailsService_PropertyChanged;
+			if (FileChangesService != null)
+				FileChangesService.PropertyChanged += commitDetailsService_PropertyChanged;
 
 			// Make sure the Version Control is available on load.
 			Refresh();
@@ -50,9 +46,9 @@ namespace VS_DiffAllFiles.Sections
 		/// </summary>
 		public override void Dispose()
 		{
-			if (_commitDetailsService != null)
-				_commitDetailsService.PropertyChanged -= commitDetailsService_PropertyChanged;
-			_commitDetailsService = null;
+			if (FileChangesService != null)
+				FileChangesService.PropertyChanged -= commitDetailsService_PropertyChanged;
+			FileChangesService = null;
 
 			base.Dispose();
 		}
@@ -83,7 +79,7 @@ namespace VS_DiffAllFiles.Sections
 			get
 			{
 				return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable &&
-					(_commitDetailsService.SelectedChanges.Count > 0);
+					((FileChangesService.SelectedIncludedChanges.Count + FileChangesService.SelectedExcludedChanges.Count) > 0);
 			}
 		}
 
