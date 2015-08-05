@@ -1128,7 +1128,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 				// Delete the temp files if they still exist.
 				if (!string.IsNullOrWhiteSpace(tempDirectory) && Directory.Exists(tempDirectory))
-					Directory.Delete(tempDirectory, true);
+					ForceDeleteDirectory(tempDirectory);
 			});
 		}
 
@@ -1223,7 +1223,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 				// Delete the temp files if they still exist.
 				if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
-					Directory.Delete(tempDiffFilesDirectory, true);
+					ForceDeleteDirectory(tempDiffFilesDirectory);
 			});
 		}
 
@@ -1235,6 +1235,27 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		{
 			if (File.Exists(filePath))
 				File.SetAttributes(filePath, File.GetAttributes(filePath) | FileAttributes.ReadOnly);
+		}
+
+		/// <summary>
+		/// Deletes the given Directory recursively, even if it contains read-only files.
+		/// </summary>
+		/// <param name="directoryPath">The path.</param>
+		private static void ForceDeleteDirectory(string directoryPath)
+		{
+			// If the directory doesn't exist, then we can't delete it, so just exit.
+			if (!Directory.Exists(directoryPath))
+				return;
+
+			// Remove the read-only flag from the directory and any of its files before attempting to delete it so that we avoid Unauthorized Access Exceptions.
+			var directoryInfo = new DirectoryInfo(directoryPath) { Attributes = FileAttributes.Normal };
+			foreach (var info in directoryInfo.GetFileSystemInfos("*", SearchOption.AllDirectories))
+			{
+				info.Attributes = FileAttributes.Normal;
+			}
+
+			// Delete the directory recursively.
+			directoryInfo.Delete(true);
 		}
 
 		/// <summary>
