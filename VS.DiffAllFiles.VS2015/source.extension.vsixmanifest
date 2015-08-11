@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="a32e5013-c1a5-40a7-821a-cbb6f7eaa9f2" Version="1.0.0" Language="en-US" Publisher="DansKingdom" />
+		<Identity Id="a1f0537c-b754-4cd1-979e-85d9767981a7" Version="1.0.0" Language="en-US" Publisher="DansKingdom" />
 		<DisplayName>Diff All Files for VS2015</DisplayName>
 		<Description xml:space="preserve">Quickly compare changes to all files in a TFS shelveset, changeset, or with pending changes.</Description>
 		<Icon>FilesFromShared\Resources\PackageIcon_Small.ico</Icon>
@@ -13,10 +13,10 @@
 	</Installation>
 	<Dependencies>
 		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-		<Dependency d:Source="Installed" Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" Version="[14.0,15.0)" />
+		<Dependency Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" d:Source="Installed" Version="[14.0]" />
 	</Dependencies>
 	<Assets>
-		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" d:VsixSubPath="PkgdefProjectOutputGroup" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
 		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
 	</Assets>
 </PackageManifest>

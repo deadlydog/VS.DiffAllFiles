@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS.DiffAllFiles.VS2013", "V
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS.DiffAllFiles.VS2012", "VS.DiffAllFiles.VS2012\VS.DiffAllFiles.VS2012.csproj", "{0EBBE851-C353-4AC6-B021-FC576DDEC4C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS.DiffAllFiles.VS2015", "VS.DiffAllFiles.VS2015\VS.DiffAllFiles.VS2015.csproj", "{6254231A-35ED-4964-8CEF-6911FFA54A4D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS.DiffAllFiles.VS2015", "VS.DiffAllFiles.VS2015\VS.DiffAllFiles.VS2015.csproj", "{4FA6DCEE-2D83-4799-BD32-ACA356202CF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{0EBBE851-C353-4AC6-B021-FC576DDEC4C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EBBE851-C353-4AC6-B021-FC576DDEC4C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EBBE851-C353-4AC6-B021-FC576DDEC4C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6254231A-35ED-4964-8CEF-6911FFA54A4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6254231A-35ED-4964-8CEF-6911FFA54A4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6254231A-35ED-4964-8CEF-6911FFA54A4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6254231A-35ED-4964-8CEF-6911FFA54A4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FA6DCEE-2D83-4799-BD32-ACA356202CF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FA6DCEE-2D83-4799-BD32-ACA356202CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FA6DCEE-2D83-4799-BD32-ACA356202CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FA6DCEE-2D83-4799-BD32-ACA356202CF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
