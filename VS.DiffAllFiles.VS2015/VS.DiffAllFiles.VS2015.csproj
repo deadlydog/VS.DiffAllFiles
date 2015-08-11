@@ -22,7 +22,7 @@
     <ProjectGuid>{6254231A-35ED-4964-8CEF-6911FFA54A4D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VS.DiffAllFiles.VS2015</RootNamespace>
+    <RootNamespace>DansKingdom.VS_DiffAllFiles_VS2015</RootNamespace>
     <AssemblyName>VS.DiffAllFiles.VS2015</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
@@ -37,7 +37,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;VS2015</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>

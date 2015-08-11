@@ -15,7 +15,10 @@ namespace VS_DiffAllFiles.Sections
 	/// <summary>
 	/// Diff All Files section in the Changeset Details window.
 	/// </summary>
+// VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013, so don't try to register the control in VS 2012.
+#if (!VS2012)
 	[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 25)]
+#endif
 	public class GitCommitDetailsSection : GitDiffAllFilesSectionBase
 	{
 		/// <summary>

@@ -8,7 +8,7 @@ using VS_DiffAllFiles;
 
 namespace DansKingdom.VS_DiffAllFiles_VS2015
 {
-	// Assign the VS 2013 Guid that matches the VSIX manifest to this package.
+	// Assign the VS 2015 Guid that matches the VSIX manifest to this package.
 	[Guid(Guids.guidVS_DiffAllFiles_VS2015PkgString)]
 	public sealed class VS_DiffAllFiles_VS2015Package : VS_DiffAllFilesPackage
 	{ }
