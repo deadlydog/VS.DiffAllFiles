@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="a1f0537c-b754-4cd1-979e-85d9767981a7" Version="1.0.0" Language="en-US" Publisher="DansKingdom" />
+		<Identity Id="E3FB14C0-2288-4D95-93B3-948B7319420E" Version="1.0.0" Language="en-US" Publisher="DansKingdom" />
 		<DisplayName>Diff All Files for VS2015</DisplayName>
 		<Description xml:space="preserve">Quickly compare changes to all files in a TFS shelveset, changeset, or with pending changes.</Description>
 		<Icon>FilesFromShared\Resources\PackageIcon_Small.ico</Icon>
