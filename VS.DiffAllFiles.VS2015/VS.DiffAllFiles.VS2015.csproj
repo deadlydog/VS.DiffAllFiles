@@ -212,7 +212,7 @@
     <Reference Include="EnvDTE90">
       <HintPath>..\..\..\..\Program Files (x86)\Common Files\Microsoft Shared\MSEnv\PublicAssemblies\envdte90.dll</HintPath>
     </Reference>
-    <Reference Include="LibGit2Sharp, Version=0.20.0.0, Culture=neutral, PublicKeyToken=3b47bbfa8b8a39bf, processorArchitecture=MSIL">
+    <Reference Include="LibGit2Sharp, Version=0.20.0.0, Culture=neutral, PublicKeyToken=b492e000f90e8743, processorArchitecture=MSIL">
       <HintPath>..\packages\LibGit2Sharp.0.20.0.0\lib\net40\LibGit2Sharp.dll</HintPath>
       <Private>True</Private>
     </Reference>

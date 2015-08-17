@@ -721,7 +721,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 				// Get the diff tool to use for this file's extension.
 				var fileExtension = Path.GetExtension(pendingChange.LocalOrServerFilePath);
-				var diffToolConfigurationAndExtension = diffToolConfigurations.FirstOrDefault(d => d.FileExtension.Equals(fileExtension) || d.FileExtension.Equals(".*"));
+				var diffToolConfigurationAndExtension = diffToolConfigurations.FirstOrDefault(d => d.FileExtension.Equals(fileExtension, StringComparison.OrdinalIgnoreCase) || d.FileExtension.Equals(".*", StringComparison.OrdinalIgnoreCase));
 
 				// If we should compare the files individually.
 				if (Settings.CompareModeToUse == CompareModes.IndividualFiles)

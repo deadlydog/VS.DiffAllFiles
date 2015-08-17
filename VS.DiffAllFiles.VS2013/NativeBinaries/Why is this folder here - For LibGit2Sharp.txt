@@ -1,3 +1,6 @@
 ﻿LibGit2Sharp.dll expects to find a NativeBinaries/[amd64|x86]/git2.dll assembly. This assembly is copied to the bin\[Debug|Release] directory, but not included in the VSIX.
 In order to get this git2.dll assembly copied into the VSIX, we have to reference the git2.dll assemblies as a shortcut, and in the shortcut properties set Include In VSIX to True.
 So these shortcut paths will need to be updated whenever a new version of the LibGit2Sharp NuGet package is installed.
+
+Also, because we need to strongly name LibGit2Sharp, the strong name seems to change between Debug and Release mode, resulting in the assembly not being found when switching
+between the two. The work around I've found is to uninstall and reinstall the LibGit2Sharp NuGet package after switching configurations.
