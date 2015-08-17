@@ -165,26 +165,11 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\VS.DiffAllFiles\Adapters\GitChangesService.cs">
-      <Link>FilesFromShared\Adapters\GitChangesService.cs</Link>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\Adapters\GitCommitDetailsService.cs">
-      <Link>FilesFromShared\Adapters\GitCommitDetailsService.cs</Link>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\Adapters\GitCommitFileChange.cs">
-      <Link>FilesFromShared\Adapters\GitCommitFileChange.cs</Link>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\Adapters\GitFileChange.cs">
-      <Link>FilesFromShared\Adapters\GitFileChange.cs</Link>
-    </Compile>
     <Compile Include="..\VS.DiffAllFiles\Adapters\IFileChange.cs">
       <Link>FilesFromShared\Adapters\IFileChange.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\Adapters\IFileChangesService.cs">
       <Link>FilesFromShared\Adapters\IFileChangesService.cs</Link>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\Adapters\IGitFileChange.cs">
-      <Link>FilesFromShared\Adapters\IGitFileChange.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\Adapters\ITfsFileChange.cs">
       <Link>FilesFromShared\Adapters\ITfsFileChange.cs</Link>
@@ -201,9 +186,6 @@
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\DiffAllFilesSectionBase.cs">
       <Link>FilesFromShared\DiffAllFilesBaseClasses\DiffAllFilesSectionBase.cs</Link>
     </Compile>
-    <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\GitDiffAllFilesSectionBase.cs">
-      <Link>FilesFromShared\DiffAllFilesBaseClasses\GitDiffAllFilesSectionBase.cs</Link>
-    </Compile>
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesBaseClasses\IDiffAllFilesSection.cs">
       <Link>FilesFromShared\DiffAllFilesBaseClasses\IDiffAllFilesSection.cs</Link>
     </Compile>
@@ -215,9 +197,6 @@
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\DiffAllFilesHelper.cs">
       <Link>FilesFromShared\DiffAllFilesHelper.cs</Link>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\GitHelper.cs">
-      <Link>FilesFromShared\GitHelper.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\Guids.cs">
       <Link>FilesFromShared\Guids.cs</Link>
@@ -231,12 +210,6 @@
     <Compile Include="..\VS.DiffAllFiles\Sections\DiffAllFilesSectionControl.xaml.cs">
       <Link>FilesFromShared\Sections\DiffAllFilesSectionControl.xaml.cs</Link>
       <DependentUpon>DiffAllFilesSectionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\Sections\GitChangesSection.cs">
-      <Link>FilesFromShared\Sections\GitChangesSection.cs</Link>
-    </Compile>
-    <Compile Include="..\VS.DiffAllFiles\Sections\GitCommitDetailsSection.cs">
-      <Link>FilesFromShared\Sections\GitCommitDetailsSection.cs</Link>
     </Compile>
     <Compile Include="..\VS.DiffAllFiles\Sections\PendingChangesSection.cs">
       <Link>FilesFromShared\Sections\PendingChangesSection.cs</Link>

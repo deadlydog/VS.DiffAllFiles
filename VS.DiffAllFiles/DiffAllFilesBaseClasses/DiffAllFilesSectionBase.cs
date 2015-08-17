@@ -852,13 +852,15 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					case SectionTypes.ShelvesetDetails:
 						targetVersionForLabel = string.Format("Shelveset '{0}'", (fileChange as ITfsFileChange).ShelvesetName);
 						break;
-
+// VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013.
+#if (!VS2012)
 					case SectionTypes.GitChanges:
 						targetVersionForLabel = "Local Changes";
 						break;
 					case SectionTypes.GitCommitDetails:
 						targetVersionForLabel = string.Format("SHA {0}", (fileChange as IGitFileChange).Version);
 						break;
+#endif
 				}
 				combinedFilePathsAndLabels = combinedFilePathsAndLabels.GetCopyWithNewFileLabels(new FileLabel("Combined Files", string.Empty, sourceVersionForLabel),
 					new FileLabel("Combined Files", string.Empty, targetVersionForLabel));
@@ -1452,7 +1454,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						targetFileLabel = new FileLabel("Shelved Change", shelvesetChange.ServerFilePath, shelvesetChange.ShelvesetName);
 					}
 					break;
-
+// VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013.
+#if (!VS2012)
 				case SectionTypes.GitChanges:
 					// If this file is being added to source control, there is no "source" file to retrieve, so set the label appropriately.
 					if (fileChange.IsAdd)
@@ -1519,6 +1522,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						//	new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString));
 					}
 					break;
+#endif
 			}
 
 			// Apply the Labels to use with the files.
