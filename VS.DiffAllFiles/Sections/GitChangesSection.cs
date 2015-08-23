@@ -23,7 +23,7 @@ namespace VS_DiffAllFiles.Sections
 	/// </summary>
 // VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013, so don't try to register the control in VS 2012.
 #if (!VS2012)
-	//[TeamExplorerSection(GitChangesSection.SectionId, TeamExplorerPageIds.GitChanges, 25)]
+	[TeamExplorerSection(GitChangesSection.SectionId, TeamExplorerPageIds.GitChanges, 25)]
 #endif
 	public class GitChangesSection : GitDiffAllFilesSectionBase
 	{
@@ -35,12 +35,28 @@ namespace VS_DiffAllFiles.Sections
 		/// <summary>
 		/// Initialize override.
 		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		public override void Initialize(object sender, SectionInitializeEventArgs e)
 		{
 			base.Initialize(sender, e);
+		}
+
+		public override void Loaded(object sender, SectionLoadedEventArgs e)
+		{
+			base.Loaded(sender, e);
+
+			if (FileChangesService != null)
+				return;
 
 			// Find the Pending Changes extensibility service and save a handle to it.
-			FileChangesService = new GitChangesService(this.GetService<IChangesExt>());
+			var service = this.GetService<IChangesExt>();
+
+			var teamExplorer = this.GetService<ITeamExplorer>();
+			var service2 = teamExplorer.GetService(typeof(IChangesExt)) as IChangesExt;
+			var service3 = teamExplorer.CurrentPage.GetExtensibilityService(typeof(IChangesExt)) as IChangesExt;
+			var service4 = teamExplorer.CurrentPage.GetService<IChangesExt>();
+			FileChangesService = new GitChangesService(service);
 
 			// Register for property change notifications on the Changes window.
 			if (FileChangesService != null)
@@ -65,6 +81,8 @@ namespace VS_DiffAllFiles.Sections
 		/// <summary>
 		/// Pending Changes Extensibility PropertyChanged event handler.
 		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
 		private void changesService_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)

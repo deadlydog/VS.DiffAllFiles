@@ -17,7 +17,7 @@ namespace VS_DiffAllFiles.Sections
 	/// </summary>
 // VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013, so don't try to register the control in VS 2012.
 #if (!VS2012)
-	//[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 25)]
+	[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 25)]
 #endif
 	public class GitCommitDetailsSection : GitDiffAllFilesSectionBase
 	{
@@ -29,6 +29,8 @@ namespace VS_DiffAllFiles.Sections
 		/// <summary>
 		/// Initialize override.
 		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		public override void Initialize(object sender, SectionInitializeEventArgs e)
 		{
 			base.Initialize(sender, e);
@@ -59,6 +61,8 @@ namespace VS_DiffAllFiles.Sections
 		/// <summary>
 		/// Pending Changes Extensibility PropertyChanged event handler.
 		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
 		private void commitDetailsService_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
