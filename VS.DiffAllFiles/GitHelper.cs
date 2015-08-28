@@ -39,6 +39,18 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			return Repository.Discover(Path.GetFullPath(path));
 		}
 
+		public static Repository GetGitRepository(string repositoryPath)
+		{
+			try
+			{
+				return new Repository(repositoryPath);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(string.Format("There was a problem initializing a Git Repository instance from the path '{0}'. There may be a problem with one of your git .config files, such as invalid syntax or not properly escaping a file path.", repositoryPath), ex);
+			}
+		}
+
 		/// <summary>
 		/// Copies the specific version of a file to the specified path.
 		/// <para>Returns true if the version was found and the file copy performed; false if not.</para>
@@ -59,7 +71,7 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			var relativeFilePath = filePathInRepository.Replace(repoRootDirectory, string.Empty);
 
 			// Connect to the Git repository.
-			using (var repository = new Repository(repositoryPath))
+			using (var repository = GetGitRepository(repositoryPath))
 			{
 				// Find the specific commit containing the version of the file to obtain.
 				var commit = (sha == null) ? GetLastCommitOfFile(repository, relativeFilePath) : repository.Lookup<Commit>(sha);
@@ -112,6 +124,21 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			}
 
 			return commit;
+		}
+
+		public static List<ConfigurationEntry<string>> GetGitConfigurationEntries(string filePathInRepository)
+		{
+			// Get the path to the Git repository from the file path.
+			var repositoryPath = GetGitRepositoryPath(filePathInRepository);
+			if (repositoryPath == null)
+				return new List<ConfigurationEntry<string>>();
+			
+			// Connect to the Git repository.
+			using (var repository = GetGitRepository(repositoryPath))
+			{
+				// Return the configuration information.
+				return repository.Config.ToList();
+			}
 		}
 	}
 }

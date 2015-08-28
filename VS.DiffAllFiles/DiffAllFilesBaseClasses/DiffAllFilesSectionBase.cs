@@ -622,7 +622,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				// If using Git source control, get the configured Git tools.
 				case SectionTypes.GitChanges:
 				case SectionTypes.GitCommitDetails:
-					diffToolConfigurations = DiffAllFilesHelper.GitDiffToolsConfigured;
+					var filePath = itemsToCompare.FirstOrDefault().LocalOrServerFilePath;
+                    diffToolConfigurations = DiffAllFilesHelper.GetGitDiffToolsConfigured(filePath);
 					break;
 
 				// Else using TFS source control, so get the configured TFS tools.
@@ -1168,7 +1169,15 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					UseShellExecute = false
 				}
 			};
-			diffToolProcess.Start();
+
+			try
+			{
+				diffToolProcess.Start();
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(string.Format("It appears that your diff tool is not configured correctly. Most likely the path to the executable is not correct or is not the correct format (e.g. requires backslashes or double quotes to be escaped). We attempted to invoke the diff tool using the following command: '{0} {1}'.", diffToolConfiguration.ExecutableFilePath, diffToolArguments), ex);
+			}
 
 			////////////////////////////////
 			//// Debugging When Diff Tool Isn't Launched Code Start

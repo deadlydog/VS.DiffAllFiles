@@ -95,19 +95,136 @@ namespace VS_DiffAllFiles
 			}
 		}
 
+// VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013, so don't try to register the control in VS 2012.
+#if (!VS2012)
+		private const string _defaultExeArgumentFormat = "\"%1\" \"%2\"";
+
 		/// <summary>
 		/// Gets all of the diff tool configurations that are specified for Git.
 		/// <para>If a file extension does not have a configured diff tool, it should be handled by the built-in Visual Studio diff tool.</para>
 		/// </summary>
-		public static List<FileExtensionDiffToolConfiguration> GitDiffToolsConfigured
+		/// <param name="filePathInRepository">The file path in repository.</param>
+		/// <returns></returns>
+		public static List<FileExtensionDiffToolConfiguration> GetGitDiffToolsConfigured(string filePathInRepository)
 		{
-			get
+            var diffToolsConfigured = new List<FileExtensionDiffToolConfiguration>();
+
+			// Get the name of the diff tool entry to use.
+			var configurationEntries = GitHelper.GetGitConfigurationEntries(filePathInRepository);
+			var diffToolEntry = GetGitDiffToolEntry(configurationEntries);
+			if (diffToolEntry == null) return diffToolsConfigured;
+
+			// If the diff tool has a specific command to use to launch it, get the executable file path and arguments from it.
+			var diffToolCmdEntry = GetGitDiffToolCmdEntry(configurationEntries, diffToolEntry);
+			if (diffToolCmdEntry != null)
 			{
-				var diffToolsConfigured = new List<FileExtensionDiffToolConfiguration>();
-				//throw new NotImplementedException();	// another test
-				return diffToolsConfigured;
+				var diffToolExePath = string.Empty;
+				var diffToolExeArgumentFormat = string.Empty;
+				GetGitExePathAndArgumentsFormatFromCmdValue(diffToolCmdEntry.Value, out diffToolExePath, out diffToolExeArgumentFormat);
+				diffToolExePath = GetSanitizedFilePath(diffToolExePath);
+
+				if (!string.IsNullOrWhiteSpace(diffToolExePath))
+					diffToolsConfigured.Add(new FileExtensionDiffToolConfiguration(".*", new DiffToolConfiguration(diffToolExePath, diffToolExeArgumentFormat)));
+            }
+			// Else a specific command to use to launch the diff tool does not exist, so let's assume the exe takes the default arguments.
+			else
+			{
+				var diffToolPathEntry = GetGitDiffToolPathEntry(configurationEntries, diffToolEntry);
+				if (diffToolPathEntry == null) return diffToolsConfigured;
+
+				// Make sure the executable path is using the correct slashes for a path, and that it is wrapped in double quotes in case it contains spaces.
+				var diffToolExePath = GetSanitizedFilePath(diffToolPathEntry.Value);
+				diffToolsConfigured.Add(new FileExtensionDiffToolConfiguration(".*", new DiffToolConfiguration(diffToolExePath, _defaultExeArgumentFormat)));
 			}
+
+			return diffToolsConfigured;
 		}
+
+		/// <summary>
+		/// Makes sure the file path is using the correct slashes for a path, and that it is wrapped in double quotes in case it contains spaces.
+		/// </summary>
+		/// <param name="filePath">The file path.</param>
+		/// <returns></returns>
+		private static string GetSanitizedFilePath(string filePath)
+		{
+			// Make sure the file path is using the correct slashes for a path, and that it is wrapped in double quotes in case it contains spaces.
+			filePath = filePath.Replace("/", @"\");
+			return string.Format("\"{0}\"", filePath.Trim("\"".ToCharArray()));
+		}
+
+		/// <summary>
+		/// Gets the executable path and arguments format from command value.
+		/// </summary>
+		/// <param name="diffToolCmdValue">The difference tool command value.</param>
+		/// <param name="diffToolExePath">The difference tool executable path.</param>
+		/// <param name="diffToolExeArgumentFormat">The difference tool executable argument format.</param>
+		private static void GetGitExePathAndArgumentsFormatFromCmdValue(string diffToolCmdValue, out string diffToolExePath, out string diffToolExeArgumentFormat)
+		{
+			diffToolExePath = string.Empty;
+			diffToolExeArgumentFormat = string.Empty;
+
+			// If the cmd references an executable, we want to get the executable's path and the format it expects the arguments to the exe in, otherwise just exit.
+			int exeStartIndex = diffToolCmdValue.IndexOf(".exe");
+			if (exeStartIndex < 0)
+				return;
+
+			// Find where the executable path ends and the arguments begin.
+			int indexOfDoubleQuoteAfterExePath = diffToolCmdValue.IndexOf('"', exeStartIndex);
+			int indexOfSpaceAfterExePath = diffToolCmdValue.IndexOf(' ', exeStartIndex);
+			int indexAfterExePath = exeStartIndex + 4;
+			if (indexOfSpaceAfterExePath > 0)
+				indexAfterExePath = indexOfSpaceAfterExePath;
+			else if (indexOfDoubleQuoteAfterExePath > 0)
+				indexAfterExePath = indexOfDoubleQuoteAfterExePath;
+
+			// Get the executable path.
+			diffToolExePath = diffToolCmdValue.Substring(0, indexAfterExePath);
+			diffToolExePath = diffToolExePath.Replace("\"", string.Empty).Replace("/", @"\").Trim();
+
+			// Get the arguments format.
+			int argumentStartIndex = Math.Min(indexAfterExePath + 1, diffToolCmdValue.Length);
+			diffToolExeArgumentFormat = diffToolCmdValue.Substring(argumentStartIndex).Trim();
+
+			// Remove any double quotes from around the keywords, since we add them back in later when doing the TFS-keyword replacement.
+			diffToolExeArgumentFormat = diffToolExeArgumentFormat.Replace("\"$LOCAL\"", "$LOCAL");
+			diffToolExeArgumentFormat = diffToolExeArgumentFormat.Replace("\"$REMOTE\"", "$REMOTE");
+
+			// Change the git-specific keywords to the TFS-specific keywords so that the same keyword-replacement code can be used for both TFS and Git.
+			diffToolExeArgumentFormat = diffToolExeArgumentFormat.Replace("$LOCAL", "%1");
+			diffToolExeArgumentFormat = diffToolExeArgumentFormat.Replace("$REMOTE", "%2");
+
+			// If the argument format was not specified in the cmd value, use the default.
+			if (string.IsNullOrWhiteSpace(diffToolExeArgumentFormat))
+				diffToolExeArgumentFormat = _defaultExeArgumentFormat;
+		}
+
+		private static LibGit2Sharp.ConfigurationEntry<string> GetGitDiffToolEntry(List<LibGit2Sharp.ConfigurationEntry<string>> configurationEntries)
+		{
+			return GetMostLocalGitConfigurationEntryByKey(configurationEntries, "diff.tool");
+		}
+
+		private static LibGit2Sharp.ConfigurationEntry<string> GetGitDiffToolCmdEntry(List<LibGit2Sharp.ConfigurationEntry<string>> configurationEntries, LibGit2Sharp.ConfigurationEntry<string> diffToolEntry)
+		{
+			var diffToolCmdKey = string.Format("difftool.{0}.cmd", diffToolEntry.Value);
+			return GetMostLocalGitConfigurationEntryByKey(configurationEntries, diffToolCmdKey);
+
+		}
+
+		private static LibGit2Sharp.ConfigurationEntry<string> GetGitDiffToolPathEntry(List<LibGit2Sharp.ConfigurationEntry<string>> configurationEntries, LibGit2Sharp.ConfigurationEntry<string> diffToolEntry)
+		{
+			var diffToolCmdKey = string.Format("difftool.{0}.path", diffToolEntry.Value);
+			return GetMostLocalGitConfigurationEntryByKey(configurationEntries, diffToolCmdKey);
+
+		}
+
+		private static LibGit2Sharp.ConfigurationEntry<string> GetMostLocalGitConfigurationEntryByKey(List<LibGit2Sharp.ConfigurationEntry<string>> configurationEntries, string key)
+		{
+			// Local settings take precendence over global ones.
+			return configurationEntries.FirstOrDefault(e => e.Key.Equals(key, StringComparison.OrdinalIgnoreCase) && e.Level == LibGit2Sharp.ConfigurationLevel.Local)
+				?? configurationEntries.FirstOrDefault(e => e.Key.Equals(key, StringComparison.OrdinalIgnoreCase) && e.Level == LibGit2Sharp.ConfigurationLevel.Global)
+				?? configurationEntries.FirstOrDefault(e => e.Key.Equals(key, StringComparison.OrdinalIgnoreCase) && e.Level == LibGit2Sharp.ConfigurationLevel.System);
+		}
+#endif
 
 		/// <summary>
 		/// Recursively finds the visual children of the given control.
