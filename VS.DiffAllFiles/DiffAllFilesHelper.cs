@@ -103,7 +103,7 @@ namespace VS_DiffAllFiles
 		/// Gets all of the diff tool configurations that are specified for Git.
 		/// <para>If a file extension does not have a configured diff tool, it should be handled by the built-in Visual Studio diff tool.</para>
 		/// </summary>
-		/// <param name="filePathInRepository">The file path in repository.</param>
+		/// <param name="filePathInRepository">The path to a file in the repository. This is needed to get a handle to the Git repo.</param>
 		/// <returns></returns>
 		public static List<FileExtensionDiffToolConfiguration> GetGitDiffToolsConfigured(string filePathInRepository)
 		{

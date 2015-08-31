@@ -622,8 +622,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				// If using Git source control, get the configured Git tools.
 				case SectionTypes.GitChanges:
 				case SectionTypes.GitCommitDetails:
+					//var filePath = PackageHelper.DTE2.Solution.FullName;
 					var filePath = itemsToCompare.FirstOrDefault().LocalOrServerFilePath;
-                    diffToolConfigurations = DiffAllFilesHelper.GetGitDiffToolsConfigured(filePath);
+					diffToolConfigurations = DiffAllFilesHelper.GetGitDiffToolsConfigured(filePath);
 					break;
 
 				// Else using TFS source control, so get the configured TFS tools.
