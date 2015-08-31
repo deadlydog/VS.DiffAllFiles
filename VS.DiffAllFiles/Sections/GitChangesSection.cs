@@ -40,23 +40,9 @@ namespace VS_DiffAllFiles.Sections
 		public override void Initialize(object sender, SectionInitializeEventArgs e)
 		{
 			base.Initialize(sender, e);
-		}
-
-		public override void Loaded(object sender, SectionLoadedEventArgs e)
-		{
-			base.Loaded(sender, e);
-
-			if (FileChangesService != null)
-				return;
 
 			// Find the Pending Changes extensibility service and save a handle to it.
-			var service = this.GetService<IChangesExt>();
-
-			var teamExplorer = this.GetService<ITeamExplorer>();
-			var service2 = teamExplorer.GetService(typeof(IChangesExt)) as IChangesExt;
-			var service3 = teamExplorer.CurrentPage.GetExtensibilityService(typeof(IChangesExt)) as IChangesExt;
-			var service4 = teamExplorer.CurrentPage.GetService<IChangesExt>();
-			FileChangesService = new GitChangesService(service);
+			FileChangesService = new GitChangesService(this.GetService<IChangesExt>());
 
 			// Register for property change notifications on the Changes window.
 			if (FileChangesService != null)
