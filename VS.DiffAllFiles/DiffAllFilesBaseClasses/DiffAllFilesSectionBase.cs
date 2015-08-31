@@ -607,6 +607,13 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <param name="itemsToCompare">The items to compare.</param>
 		private async Task CompareItems(List<IFileChange> itemsToCompare)
 		{
+			// If there are no file sot diff, display a message about it and exit without doing anything.
+			if (itemsToCompare == null || !itemsToCompare.Any())
+			{
+				ShowNotification("No files were selected for Diffing, so closing without doing anything.", NotificationType.Warning);
+				return;
+			}
+
 			// Get a handle to the Automation Model that we can use to interact with the VS IDE.
 			var dte2 = PackageHelper.DTE2;
 			if (dte2 == null)
