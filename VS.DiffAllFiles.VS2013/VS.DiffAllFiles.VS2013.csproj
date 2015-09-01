@@ -64,6 +64,9 @@
     <Reference Include="Microsoft.TeamFoundation.Git.Controls, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>VersionSpecificReferences\Microsoft.TeamFoundation.Git.Controls.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.TeamFoundation.Git.Provider, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>VersionSpecificReferences\Microsoft.TeamFoundation.Git.Provider.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.TeamFoundation.VersionControl.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Client.dll</HintPath>
     </Reference>
@@ -363,6 +366,7 @@
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.dll" />
     <Resource Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.xml" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Git.Controls.dll" />
+    <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Git.Provider.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Client.dll" />
     <Resource Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Client.xml" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Controls.dll" />

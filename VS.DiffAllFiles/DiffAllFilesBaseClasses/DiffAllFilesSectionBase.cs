@@ -631,9 +631,19 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				case SectionTypes.GitCommitDetails:
 					//var filePath = PackageHelper.DTE2.Solution.FullName;
 					var filePath = itemsToCompare.FirstOrDefault().LocalOrServerFilePath;
+
+					var gitService = this.GetService<Microsoft.VisualStudio.TeamFoundation.Git.Extensibility.IGitExt>();
+					if (gitService != null)
+					{
+						var gitRepo = gitService.ActiveRepositories.FirstOrDefault();
+						if (gitRepo != null)
+						{
+							filePath = gitRepo.RepositoryPath;
+						}
+					}
+
 					diffToolConfigurations = DiffAllFilesHelper.GetGitDiffToolsConfigured(filePath);
 					break;
-
 				// Else using TFS source control, so get the configured TFS tools.
 				default:
 					diffToolConfigurations = DiffAllFilesHelper.TfsDiffToolsConfigured;
