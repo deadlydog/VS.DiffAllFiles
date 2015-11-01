@@ -629,20 +629,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				// If using Git source control, get the configured Git tools.
 				case SectionTypes.GitChanges:
 				case SectionTypes.GitCommitDetails:
-					//var filePath = PackageHelper.DTE2.Solution.FullName;
-					var filePath = itemsToCompare.FirstOrDefault().LocalOrServerFilePath;
-
-					var gitService = this.GetService<Microsoft.VisualStudio.TeamFoundation.Git.Extensibility.IGitExt>();
-					if (gitService != null)
-					{
-						var gitRepo = gitService.ActiveRepositories.FirstOrDefault();
-						if (gitRepo != null)
-						{
-							filePath = gitRepo.RepositoryPath;
-						}
-					}
-
-					diffToolConfigurations = DiffAllFilesHelper.GetGitDiffToolsConfigured(filePath);
+					var gitRepositoryPath = GetGitRepositoryPath() ?? itemsToCompare.FirstOrDefault().LocalOrServerFilePath;
+					diffToolConfigurations = DiffAllFilesHelper.GetGitDiffToolsConfigured(gitRepositoryPath);
 					break;
 				// Else using TFS source control, so get the configured TFS tools.
 				default:
@@ -791,6 +779,26 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						break;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Gets the local path to the Git repository.
+		/// </summary>
+		private string GetGitRepositoryPath()
+		{
+			string gitRepoPath = null;
+
+            var gitService = this.GetService<Microsoft.VisualStudio.TeamFoundation.Git.Extensibility.IGitExt>();
+			if (gitService != null)
+			{
+				var gitRepo = gitService.ActiveRepositories.FirstOrDefault();
+				if (gitRepo != null)
+				{
+					gitRepoPath = gitRepo.RepositoryPath;
+				}
+			}
+
+			return gitRepoPath;
 		}
 
 		/// <summary>
@@ -1484,6 +1492,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 // VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013.
 #if (!VS2012)
 				case SectionTypes.GitChanges:
+					var gitRepositoryPath = GetGitRepositoryPath();
+
 					// If this file is being added to source control, there is no "source" file to retrieve, so set the label appropriately.
 					if (fileChange.IsAdd)
 					{
@@ -1495,7 +1505,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						switch (compareVersion.Value)
 						{
 							case CompareVersion.Values.UnmodifiedVersion:
-								sourceFileLabel = GitHelper.GetSpecificVersionOfFile(fileChange.ServerOrLocalFilePath, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ?
+								sourceFileLabel = GitHelper.GetSpecificVersionOfFile(gitRepositoryPath, fileChange.ServerOrLocalFilePath, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ?
 									new FileLabel("Server", fileChange.ServerOrLocalFilePath, "HEAD") :
 									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(fileChange.ServerOrLocalFilePath, "HEAD"));
 								break;
@@ -1516,6 +1526,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					break;
 
 				case SectionTypes.GitCommitDetails:
+					var gitFileChange = fileChange as IGitFileChange;
+					var gitRepoPath = GetGitRepositoryPath();
+
 					// If this file is being added to source control, there is no "source" file to retrieve, so set the label appropriately.
 					if (fileChange.IsAdd)
 					{
@@ -1527,10 +1540,18 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						switch (compareVersion.Value)
 						{
 							case CompareVersion.Values.PreviousVersion:
-								//versionSpec = new ChangesetVersionSpec(pendingChange.Version - 1);
-								//sourceFileLabel = DownloadFileVersionIfItExistsInVersionControl(pendingChange, versionSpec, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ?
-								//	new FileLabel("Server", fileChange.ServerItem, string.Format("C{0}", fileChange.Version - 1)) :
-								//	new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(fileChange.ServerItem, versionSpec.DisplayString));
+								// Get the file as it was in the commit before the specified version.
+								sourceFileLabel = GitHelper.GetPreviousVersionOfFile(gitRepoPath, fileChange.ServerOrLocalFilePath, filePathsAndLabels.SourceFilePathAndLabel.FilePath, gitFileChange.Version) ?
+									new FileLabel("Server", fileChange.ServerOrLocalFilePath, "Previous Version") :
+									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(fileChange.ServerOrLocalFilePath, "Previous Version"));
+								break;
+
+							case CompareVersion.Values.WorkspaceVersion:
+
+								break;
+
+							case CompareVersion.Values.LatestVersion:
+
 								break;
 						}
 					}
@@ -1542,11 +1563,10 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					}
 					else
 					{
-						// Get the Changeset's version of the file.
-						//versionSpec = new ChangesetVersionSpec(pendingChange.Version);
-						//targetFileLabel = DownloadFileVersionIfItExistsInVersionControl(pendingChange, versionSpec, filePathsAndLabels.TargetFilePathAndLabel.FilePath) ?
-						//	new FileLabel("Server", pendingChange.ServerItem, string.Format("C{0}", pendingChange.Version)) :
-						//	new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(pendingChange.ServerItem, versionSpec.DisplayString));
+						// Get the file as it was at the specified version.
+						targetFileLabel = GitHelper.GetSpecificVersionOfFile(gitRepoPath, fileChange.ServerOrLocalFilePath, filePathsAndLabels.TargetFilePathAndLabel.FilePath, gitFileChange.Version) ?
+							new FileLabel("Server", fileChange.ServerOrLocalFilePath, gitFileChange.Version) :
+							new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(fileChange.ServerOrLocalFilePath, gitFileChange.Version));
 					}
 					break;
 #endif
