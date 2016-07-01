@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\LibGit2Sharp.0.20.0.0\build\net40\LibGit2Sharp.props" Condition="Exists('..\packages\LibGit2Sharp.0.20.0.0\build\net40\LibGit2Sharp.props')" />
+  <Import Project="..\packages\LibGit2Sharp.NativeBinaries.1.0.129\build\LibGit2Sharp.NativeBinaries.props" Condition="Exists('..\packages\LibGit2Sharp.NativeBinaries.1.0.129\build\LibGit2Sharp.NativeBinaries.props')" />
   <Import Project="..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.props')" />
   <PropertyGroup>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
@@ -212,20 +212,23 @@
     <Reference Include="EnvDTE90">
       <HintPath>..\..\..\..\Program Files (x86)\Common Files\Microsoft Shared\MSEnv\PublicAssemblies\envdte90.dll</HintPath>
     </Reference>
-    <Reference Include="LibGit2Sharp, Version=0.20.0.0, Culture=neutral, PublicKeyToken=b492e000f90e8743, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibGit2Sharp.0.20.0.0\lib\net40\LibGit2Sharp.dll</HintPath>
+    <Reference Include="LibGit2Sharp, Version=0.22.0.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibGit2Sharp.0.22.0\lib\net40\LibGit2Sharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.TeamFoundation.Client, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Common, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>VersionSpecificReferences\Microsoft.TeamFoundation.Common.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>VersionSpecificReferences\Microsoft.TeamFoundation.Controls.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Git.Controls, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -233,9 +236,11 @@
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.VersionControl.Client, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Client.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.VersionControl.Controls, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Controls.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.CommandBars">
       <HintPath>..\..\..\..\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.CommandBars.dll</HintPath>
@@ -370,20 +375,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\packages\LibGit2Sharp.0.20.0.0\lib\net40\NativeBinaries\amd64\git2-3f8d005.dll">
-      <Link>NativeBinaries\amd64\git2-3f8d005.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
+    <Content Include="..\packages\LibGit2Sharp.NativeBinaries.1.0.129\libgit2\windows\amd64\git2-785d8c4.dll">
+      <Link>NativeBinaries\amd64\git2-785d8c4.dll</Link>
     </Content>
-    <Content Include="..\packages\LibGit2Sharp.0.20.0.0\lib\net40\NativeBinaries\x86\git2-3f8d005.dll">
-      <Link>NativeBinaries\x86\git2-3f8d005.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
+    <Content Include="..\packages\LibGit2Sharp.NativeBinaries.1.0.129\libgit2\windows\x86\git2-785d8c4.dll">
+      <Link>NativeBinaries\x86\git2-785d8c4.dll</Link>
     </Content>
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll" />
-    <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Client.xml" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Common.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Client.dll" />
-    <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Client.xml" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Controls.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.VisualStudio.Services.Common.dll" />
     <Resource Include="..\VS.DiffAllFiles.VS2013\NativeBinaries\Why is this folder here - For LibGit2Sharp.txt">
@@ -419,7 +420,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.targets'))" />
-    <Error Condition="!Exists('..\packages\LibGit2Sharp.0.20.0.0\build\net40\LibGit2Sharp.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LibGit2Sharp.0.20.0.0\build\net40\LibGit2Sharp.props'))" />
+    <Error Condition="!Exists('..\packages\LibGit2Sharp.NativeBinaries.1.0.129\build\LibGit2Sharp.NativeBinaries.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LibGit2Sharp.NativeBinaries.1.0.129\build\LibGit2Sharp.NativeBinaries.props'))" />
   </Target>
   <Import Project="..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
