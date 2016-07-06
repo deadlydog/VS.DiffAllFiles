@@ -212,7 +212,7 @@
     <Reference Include="EnvDTE90">
       <HintPath>..\..\..\..\Program Files (x86)\Common Files\Microsoft Shared\MSEnv\PublicAssemblies\envdte90.dll</HintPath>
     </Reference>
-    <Reference Include="LibGit2Sharp, Version=0.22.0.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
+    <Reference Include="LibGit2Sharp, Version=0.22.0.0, Culture=neutral, PublicKeyToken=46b69fd19a3e6094, processorArchitecture=MSIL">
       <HintPath>..\packages\LibGit2Sharp.0.22.0\lib\net40\LibGit2Sharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -380,9 +380,11 @@
   <ItemGroup>
     <Content Include="..\packages\LibGit2Sharp.NativeBinaries.1.0.129\libgit2\windows\amd64\git2-785d8c4.dll">
       <Link>NativeBinaries\amd64\git2-785d8c4.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="..\packages\LibGit2Sharp.NativeBinaries.1.0.129\libgit2\windows\x86\git2-785d8c4.dll">
       <Link>NativeBinaries\x86\git2-785d8c4.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Common.dll" />
