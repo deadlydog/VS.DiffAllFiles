@@ -58,9 +58,9 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 		/// <param name="gitRepositoryPath">The git repository path.</param>
 		/// <param name="filePathInRepository">The full file path of the file in the repository.</param>
 		/// <param name="filePathToCopyFileTo">The file path to copy the specific version of the file to.</param>
-		/// <param name="sha">The commit containing the file version to obtain. If this is null, the most recent commit of the file will be used.</param>
+		/// <param name="commitSha">The commit containing the file version to obtain. If this is null, the most recent commit of the file will be used.</param>
 		/// <returns></returns>
-		public static bool GetSpecificVersionOfFile(string gitRepositoryPath, string filePathInRepository, string filePathToCopyFileTo, string sha = null)
+		public static bool GetSpecificVersionOfFile(string gitRepositoryPath, string filePathInRepository, string filePathToCopyFileTo, string commitSha = null)
 		{
 			// Get the path to the Git repository from the file path.
 			var repositoryPath = GetGitRepositoryPath(gitRepositoryPath);
@@ -75,7 +75,7 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			using (var repository = GetGitRepository(repositoryPath))
 			{
 				// Find the specific commit containing the version of the file to obtain.
-				var commit = (sha == null) ? GetLastCommitOfFile(repository, relativeFilePath) : repository.Lookup<Commit>(sha);
+				var commit = (commitSha == null) ? GetLastCommitOfFile(repository, relativeFilePath) : repository.Lookup<Commit>(commitSha);
 				if (commit == null) return false;
 
 				// Get the file from the commit.
@@ -92,7 +92,7 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			return true;
 		}
 
-		public static bool GetPreviousVersionOfFile(string gitRepositoryPath, string filePathInRepository, string filePathToCopyFileTo, string sha)
+		public static bool GetPreviousVersionOfFile(string gitRepositoryPath, string filePathInRepository, string previousVersionsFilePathInRepository, string filePathToCopyFileTo, string commitSha)
 		{
 			// Get the path to the Git repository from the file path.
 			var repositoryPath = GetGitRepositoryPath(gitRepositoryPath);
@@ -102,16 +102,17 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			// Remove the Git repository path from the file path to get the file's path relative to the Git repository.
 			var repoRootDirectory = repositoryPath.Replace(@".git\", string.Empty);
 			var relativeFilePath = filePathInRepository.Replace(repoRootDirectory, string.Empty);
+			var previousVersionsRelativeFilePath = previousVersionsFilePathInRepository.Replace(repoRootDirectory, string.Empty);
 
 			// Connect to the Git repository.
 			using (var repository = GetGitRepository(repositoryPath))
 			{
 				// Find the specific commit containing the version of the file to obtain.
-				var commit = GetLastCommitOfFile(repository, relativeFilePath, repository.Lookup<Commit>(sha));
+				var commit = GetPreviousCommitOfFile(repository, relativeFilePath, commitSha);
 				if (commit == null) return false;
 
 				// Get the file from the commit.
-				var treeEntry = commit[relativeFilePath];
+				var treeEntry = commit[previousVersionsRelativeFilePath];
 				if (treeEntry == null) return false;
 
 				var blob = treeEntry.Target as Blob;
@@ -124,11 +125,11 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			return true;
 		}
 
-		private static Commit GetLastCommitOfFile(Repository repo, string filePathRelativeToRepository, Commit startingCommit = null)
+		private static Commit GetLastCommitOfFile(Repository repository, string filePathRelativeToRepository, Commit startingCommit = null)
 		{
 			// Original algorithm taken from https://github.com/libgit2/libgit2sharp/issues/89
 
-			var commit = (startingCommit == null) ? repo.Head.Tip : startingCommit;
+			var commit = (startingCommit == null) ? repository.Head.Tip : startingCommit;
 			var treeEntry = commit[filePathRelativeToRepository];
 			if (treeEntry == null) return null;
 			var gitObj = treeEntry.Target;
@@ -157,6 +158,29 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			}
 
 			return commit;
+		}
+
+		/// <summary>
+		/// Gets the previous commit of the file.
+		/// </summary>
+		/// <param name="repository">The repository.</param>
+		/// <param name="filePathRelativeToRepository">The file path relative to repository.</param>
+		/// <param name="commitSha">The commit sha to start the search for the previous version from. If null, the latest commit of the file will be returned.</param>
+		/// <returns></returns>
+		private static Commit GetPreviousCommitOfFile(Repository repository, string filePathRelativeToRepository, string commitSha = null)
+		{
+			bool versionMatchesGivenVersion = false;
+			var fileHistory = repository.Commits.QueryBy(filePathRelativeToRepository);
+			foreach (var version in fileHistory)
+			{
+				if (string.IsNullOrWhiteSpace(commitSha) || versionMatchesGivenVersion)
+					return version.Commit;
+
+				if (version.Commit.Sha.Equals(commitSha))
+					versionMatchesGivenVersion = true;
+			}
+
+			return null;
 		}
 
 		/// <summary>

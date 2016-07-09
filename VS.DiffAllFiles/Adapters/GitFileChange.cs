@@ -36,6 +36,11 @@ namespace VS_DiffAllFiles.Adapters
 			get { return new List<string>(); }
 		}
 
+		public string CommitVersion
+		{
+			get { return null; }
+		}
+
 		public string LocalFilePath
 		{
 			get { return _pendingChange.LocalItem; }

@@ -9,7 +9,7 @@ namespace VS_DiffAllFiles.Adapters
 	public interface IGitFileChange : IFileChange
 	{
 		/// <summary>
-		/// Gets the version (i.e. Sha ID).
+		/// Gets the file version (i.e. Sha ID).
 		/// </summary>
 		string Version { get; }
 
@@ -17,5 +17,10 @@ namespace VS_DiffAllFiles.Adapters
 		/// Gets the previous versions (i.e. Sha IDs) of the file.
 		/// </summary>
 		IReadOnlyList<string> PreviousVersions { get; }
+
+		/// <summary>
+		/// Gets the Commit version (i.e. Sha ID) that the file was part of.
+		/// </summary>
+		string CommitVersion { get; }
 	}
 }

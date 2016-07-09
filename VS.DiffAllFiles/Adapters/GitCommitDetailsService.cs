@@ -39,7 +39,7 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> IncludedChanges
 		{
-			get { return _commitDetailsService.Changes.Select(change => new GitCommitFileChange(change)).ToList(); }
+			get { return _commitDetailsService.Changes.Select(change => new GitCommitFileChange(change, _commitDetailsService.Sha)).ToList(); }
 		}
 
 		/// <summary>
@@ -55,7 +55,7 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> SelectedIncludedChanges
 		{
-			get { return _commitDetailsService.SelectedChanges.Select(change => new GitCommitFileChange(change)).ToList(); }
+			get { return _commitDetailsService.SelectedChanges.Select(change => new GitCommitFileChange(change, _commitDetailsService.Sha)).ToList(); }
 		}
 
 		/// <summary>

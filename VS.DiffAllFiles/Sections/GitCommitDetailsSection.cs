@@ -97,6 +97,6 @@ namespace VS_DiffAllFiles.Sections
 		{
 			get { return _compareVersions; }
 		}
-		private readonly List<CompareVersion> _compareVersions = new List<CompareVersion> { CompareVersion.PreviousVersion, CompareVersion.WorkspaceVersion, CompareVersion.LatestVersion };
+		private readonly List<CompareVersion> _compareVersions = new List<CompareVersion> {CompareVersion.PreviousVersion}; //, CompareVersion.WorkspaceVersion, CompareVersion.LatestVersion };	   // Visual Studio only offers to compare against the Previous Version, but we can likely do Workspace and Latest as well.
 	}
 }

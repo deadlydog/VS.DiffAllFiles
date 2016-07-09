@@ -15,15 +15,23 @@ namespace VS_DiffAllFiles.Adapters
 		private readonly ICommitDetailsChangeItem _change = null;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GitCommitFileChange"/> class.
+		/// Stores the Commit version (i.e. SHA), as opposed to each individual file's SHA within the commit.
+		/// </summary>
+		private readonly string _commitSha = null;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GitCommitFileChange" /> class.
 		/// </summary>
 		/// <param name="change">The change.</param>
-		public GitCommitFileChange(ICommitDetailsChangeItem change)
+		/// <param name="commitSha">The commit sha.</param>
+		/// <exception cref="System.ArgumentNullException">change;The Git Change item used to initialize a GitCommitFileChange instance cannot be null.</exception>
+		public GitCommitFileChange(ICommitDetailsChangeItem change, string commitSha)
 		{
 			if (change == null)
 				throw new ArgumentNullException("change", "The Git Change item used to initialize a GitCommitFileChange instance cannot be null.");
 
 			_change = change;
+			_commitSha = commitSha;
 		}
 
 		public string Version
@@ -34,6 +42,11 @@ namespace VS_DiffAllFiles.Adapters
 		public IReadOnlyList<string> PreviousVersions
 		{
 			get { return _change.PreviousIds; }
+		}
+
+		public string CommitVersion
+		{
+			get { return _commitSha; }
 		}
 
 		public string LocalFilePath
