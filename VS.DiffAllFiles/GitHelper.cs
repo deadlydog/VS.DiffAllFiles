@@ -75,7 +75,7 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			using (var repository = GetGitRepository(repositoryPath))
 			{
 				// Find the specific commit containing the version of the file to obtain.
-				var commit = (commitSha == null) ? GetLastCommitOfFile(repository, relativeFilePath) : repository.Lookup<Commit>(commitSha);
+				var commit = (commitSha == null) ? GetPreviousCommitOfFile(repository, relativeFilePath) : repository.Lookup<Commit>(commitSha);
 				if (commit == null) return false;
 
 				// Get the file from the commit.
@@ -125,41 +125,6 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			return true;
 		}
 
-		private static Commit GetLastCommitOfFile(Repository repository, string filePathRelativeToRepository, Commit startingCommit = null)
-		{
-			// Original algorithm taken from https://github.com/libgit2/libgit2sharp/issues/89
-
-			var commit = (startingCommit == null) ? repository.Head.Tip : startingCommit;
-			var treeEntry = commit[filePathRelativeToRepository];
-			if (treeEntry == null) return null;
-			var gitObj = treeEntry.Target;
-
-			var set = new HashSet<string>();
-			var queue = new Queue<Commit>();
-			queue.Enqueue(commit);
-			set.Add(commit.Sha);
-
-			while (queue.Count > 0)
-			{
-				commit = queue.Dequeue();
-				var go = false;
-				foreach (var parent in commit.Parents)
-				{
-					var tree = parent[filePathRelativeToRepository];
-					if (tree == null)
-						continue;
-					var eq = tree.Target.Sha == gitObj.Sha;
-					if (eq && set.Add(parent.Sha))
-						queue.Enqueue(parent);
-					go = go || eq;
-				}
-				if (!go)
-					break;
-			}
-
-			return commit;
-		}
-
 		/// <summary>
 		/// Gets the previous commit of the file.
 		/// </summary>
@@ -173,9 +138,11 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			var fileHistory = repository.Commits.QueryBy(filePathRelativeToRepository);
 			foreach (var version in fileHistory)
 			{
+				// If they want the latest commit or we have found the "previous" commit that they were after, return it.
 				if (string.IsNullOrWhiteSpace(commitSha) || versionMatchesGivenVersion)
 					return version.Commit;
 
+				// If this commit version matches the version specified, we want to return the next commit in the list, as it will be the previous commit.
 				if (version.Commit.Sha.Equals(commitSha))
 					versionMatchesGivenVersion = true;
 			}
