@@ -45,7 +45,7 @@
 				<StackPanel Orientation="Vertical">
 					<RadioButton GroupName="HowToCompareFiles" Content="Always compare each file independently" IsChecked="{QC:Binding '$P == CompareModes.IndividualFiles', P={Binding Path=CompareModesAvailable, Mode=OneTime}}" Checked="radioCompareMode_Independent_Checked" ToolTip="If selected, each file will be compared independently in its own window." />
 					<StackPanel Orientation="Horizontal" Margin="30,2,0,0">
-						<xctk:IntegerUpDown Minimum="1" Maximum="99" Increment="1"  Value="{Binding Path=NumberOfIndividualFilesToCompareAtATime}" Width="50" />
+						<xctk:IntegerUpDown Minimum="1" Maximum="9999" Increment="1"  Value="{Binding Path=NumberOfIndividualFilesToCompareAtATime}" Width="60" />
 						<Label Content="Maximum number of files to compare at a time">
 							<Label.ToolTip>
 								<TextBlock>
