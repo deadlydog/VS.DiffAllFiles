@@ -2,5 +2,12 @@
 In order to get this git2.dll assembly copied into the VSIX, we have to reference the git2.dll assemblies as a shortcut, and in the shortcut properties set Include In VSIX to True.
 So these shortcut paths will need to be updated whenever a new version of the LibGit2Sharp NuGet package is installed.
 
-Also, because we need to strongly name LibGit2Sharp, the strong name seems to change between Debug and Release mode, resulting in the assembly not being found when switching
-between the two. The work around I've found is to uninstall and reinstall the LibGit2Sharp NuGet package after switching configurations.
+Also, because we need to strongly name LibGit2Sharp, the strong name (i.e. PublicKeyToken) seems to change between Debug and Release mode, resulting in the assembly not being found when switching
+between the two. The work around I've found is to remove the strong name from the assembly reference in the .csproj file.
+
+e.g. In VS.DiffAllFiles.csproj change:
+	<Reference Include="LibGit2Sharp, Version=0.22.0.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
+to:
+	<Reference Include="LibGit2Sharp">
+
+This will likely need to be done whenever a new version of LibGit2Sharp is installed.
