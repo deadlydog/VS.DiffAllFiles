@@ -43,7 +43,7 @@ namespace VS_DiffAllFiles.Sections
 
 			// Find the Pending Changes extensibility service and save a handle to it.
 			FileChangesService = new GitChangesService(this.GetService<IChangesExt>());
-
+			
 			// Register for property change notifications on the Changes window.
 			if (FileChangesService != null)
 				FileChangesService.PropertyChanged += changesService_PropertyChanged;
@@ -73,16 +73,20 @@ namespace VS_DiffAllFiles.Sections
 		{
 			switch (e.PropertyName)
 			{
+				case "StagedChanges":
 				case "IncludedChanges":
 					NotifyPropertyChanged("IsCompareIncludedFilesEnabled");
 					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
 
+				case "UnstagedChanges":
 				case "ExcludedChanges":
 					NotifyPropertyChanged("IsCompareExcludedFilesEnabled");
 					NotifyPropertyChanged("IsCompareAllFilesEnabled");
 					break;
 
+				case "SelectedStagedChanges":
+				case "SelectedUnstagedChanges":
 				case "SelectedIncludedChanges":
 				case "SelectedExcludedChanges":
 					NotifyPropertyChanged("IsCompareSelectedFilesEnabled");
@@ -102,6 +106,32 @@ namespace VS_DiffAllFiles.Sections
 					   ((FileChangesService.SelectedIncludedChanges.Count + FileChangesService.SelectedExcludedChanges.Count) > 0);
 			}
 		}
+
+		/// <summary>
+		/// Gets if the Compare Included Files command should be enabled.
+		/// </summary>
+		public override bool IsCompareIncludedFilesEnabled
+		{
+			get { return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable && (FileChangesService.IncludedChanges.Count > 0); }
+		}
+
+		/// <summary>
+		/// Gets if the Compare Included Files command should be an option for the user to use.
+		/// </summary>
+		public override bool IsCompareIncludedFilesAvailable { get { return true; } }
+
+		/// <summary>
+		/// Gets if the Compare Excluded Files command should be enabled.
+		/// </summary>
+		public override bool IsCompareExcludedFilesEnabled
+		{
+			get { return !IsRunningCompareFilesCommand && IsVersionControlServiceAvailable && (FileChangesService.ExcludedChanges.Count > 0); }
+		}
+
+		/// <summary>
+		/// Gets if the Compare Excluded Files command should be an option for the user to use.
+		/// </summary>
+		public override bool IsCompareExcludedFilesAvailable { get { return true; } }
 
 		/// <summary>
 		/// The possible file versions to compare against.

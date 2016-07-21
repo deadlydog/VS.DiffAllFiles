@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.TeamFoundation.Git.Controls.Extensibility;
@@ -51,7 +52,17 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> IncludedChanges
 		{
-			get { return _changesService.IncludedChanges.Select(change => new GitFileChange(change)).ToList(); }
+			get
+			{
+				IReadOnlyList<IChangesPendingChangeItem> includedChanges = _changesService.IncludedChanges;
+
+				// We actually want to consider all Staged Changes as included ones, so if we can find that property use it instead, since the backing type's IncludedChanges vary depending on if files are Staged or not.
+				var stagedChanges = _changesService.GetType().GetProperty("StagedChanges").GetValue(_changesService) as IReadOnlyList<IChangesPendingChangeItem>;
+				if (stagedChanges != null)
+					includedChanges = stagedChanges;
+
+				return includedChanges.Select(change => new GitFileChange(change)).ToList();
+			}
 		}
 
 		/// <summary>
@@ -59,7 +70,17 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> ExcludedChanges
 		{
-			get { return _changesService.ExcludedChanges.Select(change => new GitFileChange(change)).ToList(); }
+			get
+			{
+				IReadOnlyList<IChangesPendingChangeItem> excludedChanges = _changesService.ExcludedChanges;
+
+				// We actually want to consider all Unstaged Changes as excluded ones, so if we can find that property use it instead, since the backing type's ExcludedChanges vary depending on if files are Staged or not.
+				var stagedChanges = _changesService.GetType().GetProperty("UnstagedChanges").GetValue(_changesService) as IReadOnlyList<IChangesPendingChangeItem>;
+				if (stagedChanges != null)
+					excludedChanges = stagedChanges;
+
+				return excludedChanges.Select(change => new GitFileChange(change)).ToList();
+			}
 		}
 
 		/// <summary>
@@ -67,7 +88,17 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> SelectedIncludedChanges
 		{
-			get { return _changesService.SelectedIncludedChanges.Select(change => new GitFileChange(change)).ToList(); }
+			get
+			{
+				IReadOnlyList<IChangesPendingChangeItem> includedChanges = _changesService.SelectedIncludedChanges;
+
+				// We actually want to consider all Staged Changes as included ones, so if we can find that property use it instead, since the backing type's IncludedChanges vary depending on if files are Staged or not.
+				var stagedChanges = _changesService.GetType().GetProperty("SelectedStagedChanges").GetValue(_changesService) as IReadOnlyList<IChangesPendingChangeItem>;
+				if (stagedChanges != null)
+					includedChanges = stagedChanges;
+
+				return includedChanges.Select(change => new GitFileChange(change)).ToList();
+			}
 		}
 
 		/// <summary>
@@ -75,7 +106,17 @@ namespace VS_DiffAllFiles.Adapters
 		/// </summary>
 		public IReadOnlyList<IFileChange> SelectedExcludedChanges
 		{
-			get { return _changesService.SelectedExcludedChanges.Select(change => new GitFileChange(change)).ToList(); }
+			get
+			{
+				IReadOnlyList<IChangesPendingChangeItem> excludedChanges = _changesService.ExcludedChanges;
+
+				// We actually want to consider all Unstaged Changes as excluded ones, so if we can find that property use it instead, since the backing type's ExcludedChanges vary depending on if files are Staged or not.
+				var stagedChanges = _changesService.GetType().GetProperty("SelectedUnstagedChanges").GetValue(_changesService) as IReadOnlyList<IChangesPendingChangeItem>;
+				if (stagedChanges != null)
+					excludedChanges = stagedChanges;
+
+				return excludedChanges.Select(change => new GitFileChange(change)).ToList();
+			}
 		}
 
 		#endregion
