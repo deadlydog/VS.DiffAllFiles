@@ -306,6 +306,26 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		}
 
 		/// <summary>
+		/// Gets the text to use on the Included Files button.
+		/// </summary>
+		public virtual string IncludedFilesButtonLabel { get { return "Included"; } }
+
+		/// <summary>
+		/// Gets the text to use for the Included Files button's tooltip.
+		/// </summary>
+		public string IncludedFilesButtonToolTip { get { return string.Format("Compare only {0} files.", IncludedFilesButtonLabel.ToLower()); } }
+		
+		/// <summary>
+		/// Gets the text to use on the Excluded Files button.
+		/// </summary>
+		public virtual string ExcludedFilesButtonLabel { get { return "Excluded"; } }
+
+		/// <summary>
+		/// Gets the text to use for the Included Files button's tooltip.
+		/// </summary>
+		public string ExcludedFilesButtonToolTip { get { return string.Format("Compare only {0} files.", ExcludedFilesButtonLabel.ToLower()); } }
+
+		/// <summary>
 		/// Gets a user-friendly label to use for the command used to compare the next set of files.
 		/// </summary>
 		public string NextSetOfFilesCommandLabel

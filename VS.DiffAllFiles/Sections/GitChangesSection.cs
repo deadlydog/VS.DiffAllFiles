@@ -96,6 +96,16 @@ namespace VS_DiffAllFiles.Sections
 		}
 
 		/// <summary>
+		/// Gets the text to use on the Included Files button.
+		/// </summary>
+		public override string IncludedFilesButtonLabel { get { return "Staged"; } }
+
+		/// <summary>
+		/// Gets the text to use on the Excluded Files button.
+		/// </summary>
+		public override string ExcludedFilesButtonLabel { get { return "Unstaged"; } }
+
+		/// <summary>
 		/// Gets if the Compare Selected Files command should be enabled.
 		/// </summary>
 		public override bool IsCompareSelectedFilesEnabled
