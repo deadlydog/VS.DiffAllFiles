@@ -3,7 +3,7 @@
 	<Metadata>
 		<Identity Id="E3FB14C0-2288-4D95-93B3-948B7319420E" Version="1.2.0" Language="en-US" Publisher="DansKingdom" />
 		<DisplayName>Diff All Files for VS2015</DisplayName>
-		<Description xml:space="preserve">Quickly compare changes to all files in a TFS shelveset, changeset, or with pending changes.</Description>
+		<Description xml:space="preserve">Quickly compare changes to all files in Git (Staged/Unstaged files or a commit) or TFS (shelveset, changeset, or with pending changes).</Description>
 		<MoreInfo>https://visualstudiogallery.msdn.microsoft.com/e6390f80-c953-4896-bd93-a7dfeba9887b</MoreInfo>
 		<Icon>FilesFromShared\Resources\PackageIcon_Small.ico</Icon>
 		<PreviewImage>FilesFromShared\Resources\PreviewImage.png</PreviewImage>
