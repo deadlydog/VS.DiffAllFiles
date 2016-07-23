@@ -808,7 +808,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		{
 			string gitRepoPath = null;
 
-            var gitService = this.GetService<Microsoft.VisualStudio.TeamFoundation.Git.Extensibility.IGitExt>();
+			var gitService = this.GetService<Microsoft.VisualStudio.TeamFoundation.Git.Extensibility.IGitExt>();
 			if (gitService != null)
 			{
 				var gitRepo = gitService.ActiveRepositories.FirstOrDefault();
@@ -1512,10 +1512,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 // VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013.
 #if (!VS2012)
 				case SectionTypes.GitChanges:
+					var gitFileChange = fileChange as IGitFileChange;
 					var gitRepositoryPath = GetGitRepositoryPath();
 
 					// If this file is being added to source control, there is no "source" file to retrieve, so set the label appropriately.
-					if (fileChange.IsAdd)
+					if (gitFileChange.IsAdd)
 					{
 						sourceFileLabel = new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NEW_FILE_LABEL_STRING);
 					}
@@ -1525,32 +1526,63 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						switch (compareVersion.Value)
 						{
 							case CompareVersion.Values.UnmodifiedVersion:
-								sourceFileLabel = GitHelper.GetSpecificVersionOfFile(gitRepositoryPath, fileChange.ServerOrLocalFilePath, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ?
-									new FileLabel("Server", fileChange.ServerOrLocalFilePath, "HEAD") :
-									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(fileChange.ServerOrLocalFilePath, "HEAD"));
+								// If we are comparing a Staged file, we need to compare the target against the last commit of the file.
+								if (gitFileChange.IsStaged)
+								{
+									sourceFileLabel = GitHelper.GetSpecificVersionOfFile(gitRepositoryPath, gitFileChange.ServerOrLocalFilePath, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ?
+										new FileLabel("Server", gitFileChange.ServerOrLocalFilePath, "HEAD") :
+										new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(gitFileChange.ServerOrLocalFilePath, "HEAD"));
+								}
+								// Else we are comparing an Unstaged file, so we want to compare it against any changes that may be Staged already.
+								else
+								{
+									// If there is a Staged version of this file, we will be comparing against it instead of the last committed version, so adjust the label text appropriately.
+									var labelPrefix = "Server";
+									var labelFileVersion = "HEAD";
+									if (GitHelper.IsFileStaged(gitRepositoryPath, gitFileChange.LocalOrServerFilePath))
+									{
+										labelPrefix = "Local";
+										labelFileVersion = "Staged";
+									}
+
+									sourceFileLabel = GitHelper.GetSpecificVersionOfFile(gitRepositoryPath, gitFileChange.LocalOrServerFilePath, filePathsAndLabels.SourceFilePathAndLabel.FilePath, "Staged") ?
+									new FileLabel(labelPrefix, gitFileChange.ServerOrLocalFilePath, labelFileVersion) :
+									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(gitFileChange.ServerOrLocalFilePath, labelFileVersion));
+								}
 								break;
 						}
 					}
 
 					// If the file is being deleted, there is no "target" file to retrieve, so set the label appropriately.
-					if (fileChange.IsDelete)
+					if (gitFileChange.IsDelete)
 					{
 						targetFileLabel = new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_DELETED_FILE_LABEL_STRING);
 					}
 					else
 					{
-						// Get the file's local changes, using the existing local file for the Target file.
-						filePathsAndLabels = new SourceAndTargetFilePathsAndLabels(filePathsAndLabels.SourceFilePathAndLabel, new FilePathAndLabel(fileChange.LocalFilePath));
-						targetFileLabel = new FileLabel("Local", fileChange.LocalFilePath, string.Empty);
+						// If we are comparing against a Staged version of the file, get that version, as it may not be the same as the latest local version of the file.
+						if (gitFileChange.IsStaged)
+						{
+							targetFileLabel = GitHelper.GetSpecificVersionOfFile(gitRepositoryPath, gitFileChange.LocalOrServerFilePath, filePathsAndLabels.TargetFilePathAndLabel.FilePath, "Staged") ?
+									new FileLabel("Local", gitFileChange.LocalOrServerFilePath, "Staged") :
+									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(gitFileChange.LocalOrServerFilePath, "Staged"));
+						}
+						// Else we are comparing against the Unstaged file version, which should always be the latest local version of the file on disk.
+						else
+						{
+							// Get the file's local changes, using the existing local file for the Target file.
+							filePathsAndLabels = new SourceAndTargetFilePathsAndLabels(filePathsAndLabels.SourceFilePathAndLabel, new FilePathAndLabel(gitFileChange.LocalFilePath));
+							targetFileLabel = new FileLabel("Local", gitFileChange.LocalFilePath, "Unstaged");
+						}
 					}
 					break;
 
 				case SectionTypes.GitCommitDetails:
-					var gitFileChange = fileChange as IGitFileChange;
+					var gitCommitFileChange = fileChange as IGitFileChange;
 					var gitRepoPath = GetGitRepositoryPath();
 
 					// If this file is being added to source control, there is no "source" file to retrieve, so set the label appropriately.
-					if (fileChange.IsAdd)
+					if (gitCommitFileChange.IsAdd)
 					{
 						sourceFileLabel = new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NEW_FILE_LABEL_STRING);
 					}
@@ -1561,9 +1593,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						{
 							case CompareVersion.Values.PreviousVersion:
 								// Get the file as it was in the commit before the specified version.
-								sourceFileLabel = GitHelper.GetPreviousVersionOfFile(gitRepoPath, fileChange.LocalOrServerFilePath, fileChange.ServerOrLocalFilePath, filePathsAndLabels.SourceFilePathAndLabel.FilePath, gitFileChange.CommitVersion) ?
-									new FileLabel("Server", fileChange.ServerOrLocalFilePath, "Previous Version") :
-									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(fileChange.ServerOrLocalFilePath, "Previous Version"));
+								sourceFileLabel = GitHelper.GetPreviousVersionOfFile(gitRepoPath, gitCommitFileChange.LocalOrServerFilePath, gitCommitFileChange.ServerOrLocalFilePath, filePathsAndLabels.SourceFilePathAndLabel.FilePath, gitCommitFileChange.CommitVersion) ?
+									new FileLabel("Server", gitCommitFileChange.ServerOrLocalFilePath, "Previous Version") :
+									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(gitCommitFileChange.ServerOrLocalFilePath, "Previous Version"));
 								break;
 
 							// Visual Studio does not offer comparing against the Workspace or Latest Version, but we may want to so leave these cases here for now.
@@ -1578,16 +1610,16 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					}
 
 					// If the file is being deleted, there is no "target" file to retrieve, so set the label appropriately.
-					if (fileChange.IsDelete)
+					if (gitCommitFileChange.IsDelete)
 					{
 						targetFileLabel = new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_DELETED_FILE_LABEL_STRING);
 					}
 					else
 					{
 						// Get the file as it was at the specified version.
-						targetFileLabel = GitHelper.GetSpecificVersionOfFile(gitRepoPath, fileChange.LocalOrServerFilePath, filePathsAndLabels.TargetFilePathAndLabel.FilePath, gitFileChange.CommitVersion) ?
-							new FileLabel("Server", fileChange.LocalOrServerFilePath, string.Format("SHA {0}", gitFileChange.CommitVersion)) :
-							new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(fileChange.LocalOrServerFilePath, string.Format("SHA {0}", gitFileChange.CommitVersion)));
+						targetFileLabel = GitHelper.GetSpecificVersionOfFile(gitRepoPath, gitCommitFileChange.LocalOrServerFilePath, filePathsAndLabels.TargetFilePathAndLabel.FilePath, gitCommitFileChange.CommitVersion) ?
+							new FileLabel("Server", gitCommitFileChange.LocalOrServerFilePath, string.Format("SHA {0}", gitCommitFileChange.CommitVersion)) :
+							new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(gitCommitFileChange.LocalOrServerFilePath, string.Format("SHA {0}", gitCommitFileChange.CommitVersion)));
 					}
 					break;
 #endif

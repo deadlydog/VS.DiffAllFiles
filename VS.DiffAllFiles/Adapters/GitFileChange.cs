@@ -15,15 +15,23 @@ namespace VS_DiffAllFiles.Adapters
 		private readonly IChangesPendingChangeItem _pendingChange = null;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GitFileChange"/> class.
+		/// Tells if this change is for a Staged or Unstaged change.
+		/// </summary>
+		private readonly bool _isStaged = false;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GitFileChange" /> class.
 		/// </summary>
 		/// <param name="pendingChange">The pending change.</param>
-		public GitFileChange(IChangesPendingChangeItem pendingChange)
+		/// <param name="isStaged">If this change is Staged or not.</param>
+		/// <exception cref="System.ArgumentNullException">pendingChange;The Git Pending Change used to initialize a GitFileChange instance cannot be null.</exception>
+		public GitFileChange(IChangesPendingChangeItem pendingChange, bool isStaged)
 		{
 			if (pendingChange == null)
 				throw new ArgumentNullException("pendingChange", "The Git Pending Change used to initialize a GitFileChange instance cannot be null.");
 
 			_pendingChange = pendingChange;
+			_isStaged = isStaged;
 		}
 
 		public string Version
@@ -39,6 +47,11 @@ namespace VS_DiffAllFiles.Adapters
 		public string CommitVersion
 		{
 			get { return null; }
+		}
+
+		public bool IsStaged
+		{
+			get { return _isStaged; }
 		}
 
 		public string LocalFilePath

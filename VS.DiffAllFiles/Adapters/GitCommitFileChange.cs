@@ -49,6 +49,11 @@ namespace VS_DiffAllFiles.Adapters
 			get { return _commitSha; }
 		}
 
+		public bool IsStaged
+		{
+			get { return false; }
+		}
+
 		public string LocalFilePath
 		{
 			get { return _change.RelativeItem; }

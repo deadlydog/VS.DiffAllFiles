@@ -61,7 +61,7 @@ namespace VS_DiffAllFiles.Adapters
 				if (stagedChanges != null)
 					includedChanges = stagedChanges;
 
-				return includedChanges.Select(change => new GitFileChange(change)).ToList();
+				return includedChanges.Select(change => new GitFileChange(change, true)).ToList();
 			}
 		}
 
@@ -79,7 +79,7 @@ namespace VS_DiffAllFiles.Adapters
 				if (stagedChanges != null)
 					excludedChanges = stagedChanges;
 
-				return excludedChanges.Select(change => new GitFileChange(change)).ToList();
+				return excludedChanges.Select(change => new GitFileChange(change, false)).ToList();
 			}
 		}
 
@@ -97,7 +97,7 @@ namespace VS_DiffAllFiles.Adapters
 				if (stagedChanges != null)
 					includedChanges = stagedChanges;
 
-				return includedChanges.Select(change => new GitFileChange(change)).ToList();
+				return includedChanges.Select(change => new GitFileChange(change, true)).ToList();
 			}
 		}
 
@@ -115,7 +115,7 @@ namespace VS_DiffAllFiles.Adapters
 				if (stagedChanges != null)
 					excludedChanges = stagedChanges;
 
-				return excludedChanges.Select(change => new GitFileChange(change)).ToList();
+				return excludedChanges.Select(change => new GitFileChange(change, false)).ToList();
 			}
 		}
 

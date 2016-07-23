@@ -22,5 +22,10 @@ namespace VS_DiffAllFiles.Adapters
 		/// Gets the Commit version (i.e. Sha ID) that the file was part of.
 		/// </summary>
 		string CommitVersion { get; }
+
+		/// <summary>
+		/// Get if this file is staged or not, so we know whether to compare the previous version against the local changes or the Staged changes.
+		/// </summary>
+		bool IsStaged { get; }
 	}
 }

@@ -74,15 +74,25 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			// Connect to the Git repository.
 			using (var repository = GetGitRepository(repositoryPath))
 			{
-				// Find the specific commit containing the version of the file to obtain.
-				var commit = (commitSha == null) ? GetPreviousCommitOfFile(repository, relativeFilePath) : repository.Lookup<Commit>(commitSha);
-				if (commit == null) return false;
+				Blob blob = null;
+				if (string.Equals(commitSha, "Staged", StringComparison.OrdinalIgnoreCase))
+				{
+					// Get the Staged version of the file if it exists. If it doesn't, the latest (i.e. HEAD) version will be retrieved instead.
+					var blobIndex = repository.Index.FirstOrDefault(b => b.Path.Equals(relativeFilePath));
+					if (blobIndex == null) return false;
+					blob = repository.Lookup<Blob>(blobIndex.Id);
+				}
+				else
+				{
+					// Find the specific commit containing the version of the file to obtain.
+					var commit = (commitSha == null) ? GetPreviousCommitOfFile(repository, relativeFilePath) : repository.Lookup<Commit>(commitSha);
+					if (commit == null) return false;
 
-				// Get the file from the commit.
-				var treeEntry = commit[relativeFilePath];
-				if (treeEntry == null) return false;
-
-				var blob = treeEntry.Target as Blob;
+					// Get the file from the commit.
+					var treeEntry = commit[relativeFilePath];
+					if (treeEntry == null) return false;
+					blob = treeEntry.Target as Blob;
+				}
 				if (blob == null) return false;
 
 				// Write a copy of the file to the specified file path.
@@ -148,6 +158,30 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			}
 
 			return null;
+		}
+
+		/// <summary>
+		/// Get if a file at the given path is Staged or not.
+		/// </summary>
+		/// <param name="gitRepositoryPath">The git repository path.</param>
+		/// <param name="filePathInRepository">The file path in repository.</param>
+		public static bool IsFileStaged(string gitRepositoryPath, string filePathInRepository)
+		{
+			// Get the path to the Git repository from the file path.
+			var repositoryPath = GetGitRepositoryPath(gitRepositoryPath);
+			if (repositoryPath == null)
+				return false;
+
+			// Remove the Git repository path from the file path to get the file's path relative to the Git repository.
+			var repoRootDirectory = repositoryPath.Replace(@".git\", string.Empty);
+			var relativeFilePath = filePathInRepository.Replace(repoRootDirectory, string.Empty);
+
+			// Connect to the Git repository.
+			using (var repository = GetGitRepository(repositoryPath))
+			{
+				var stagedFile = repository.RetrieveStatus().Staged.FirstOrDefault(f => string.Equals(f.FilePath, relativeFilePath, StringComparison.OrdinalIgnoreCase));
+				return stagedFile != null;
+			}
 		}
 
 		/// <summary>
