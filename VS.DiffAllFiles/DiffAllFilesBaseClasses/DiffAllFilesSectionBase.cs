@@ -1526,28 +1526,19 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						switch (compareVersion.Value)
 						{
 							case CompareVersion.Values.UnmodifiedVersion:
-								// If we are comparing a Staged file, we need to compare the target against the last commit of the file.
-								if (gitFileChange.IsStaged)
+								// If we are comparing a Staged file, OR we are comparing an Unstaged file that does not also have Staged changes, then we need to compare the target against the last commit of the file.
+								if (gitFileChange.IsStaged || !GitHelper.IsFileStaged(gitRepositoryPath, gitFileChange.LocalOrServerFilePath))
 								{
 									sourceFileLabel = GitHelper.GetSpecificVersionOfFile(gitRepositoryPath, gitFileChange.ServerOrLocalFilePath, filePathsAndLabels.SourceFilePathAndLabel.FilePath) ?
 										new FileLabel("Server", gitFileChange.ServerOrLocalFilePath, "HEAD") :
 										new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(gitFileChange.ServerOrLocalFilePath, "HEAD"));
 								}
-								// Else we are comparing an Unstaged file, so we want to compare it against any changes that may be Staged already.
+								// Else we are comparing an Unstaged file that also has some Staged changes already, so we want to compare the target against the Staged changes.
 								else
 								{
-									// If there is a Staged version of this file, we will be comparing against it instead of the last committed version, so adjust the label text appropriately.
-									var labelPrefix = "Server";
-									var labelFileVersion = "HEAD";
-									if (GitHelper.IsFileStaged(gitRepositoryPath, gitFileChange.LocalOrServerFilePath))
-									{
-										labelPrefix = "Local";
-										labelFileVersion = "Staged";
-									}
-
 									sourceFileLabel = GitHelper.GetSpecificVersionOfFile(gitRepositoryPath, gitFileChange.LocalOrServerFilePath, filePathsAndLabels.SourceFilePathAndLabel.FilePath, "Staged") ?
-									new FileLabel(labelPrefix, gitFileChange.ServerOrLocalFilePath, labelFileVersion) :
-									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(gitFileChange.ServerOrLocalFilePath, labelFileVersion));
+									new FileLabel("Local", gitFileChange.ServerOrLocalFilePath, "Staged") :
+									new FileLabel(DiffAllFilesHelper.NO_FILE_TO_COMPARE_NO_FILE_VERSION_LABEL(gitFileChange.ServerOrLocalFilePath, "Staged"));
 								}
 								break;
 						}

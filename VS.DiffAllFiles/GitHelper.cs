@@ -58,8 +58,7 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 		/// <param name="gitRepositoryPath">The git repository path.</param>
 		/// <param name="filePathInRepository">The full file path of the file in the repository.</param>
 		/// <param name="filePathToCopyFileTo">The file path to copy the specific version of the file to.</param>
-		/// <param name="commitSha">The commit containing the file version to obtain. If this is null, the most recent commit of the file will be used.</param>
-		/// <returns></returns>
+		/// <param name="commitSha">The commit containing the file version to obtain. If this is null, the most recent commit of the file will be used. If "Staged" the staged version of the file will used, and if there are no Staged changed for the file, then the most recent commit of the file will be used.</param>
 		public static bool GetSpecificVersionOfFile(string gitRepositoryPath, string filePathInRepository, string filePathToCopyFileTo, string commitSha = null)
 		{
 			// Get the path to the Git repository from the file path.
@@ -102,6 +101,14 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			return true;
 		}
 
+		/// <summary>
+		/// Copies the previous version of a file to the specified path.
+		/// <para>Returns true if the version was found and the file copy performed; false if not.</para>
+		/// </summary>
+		/// <param name="gitRepositoryPath">The git repository path.</param>
+		/// <param name="filePathInRepository">The full file path of the file in the repository.</param>
+		/// <param name="filePathToCopyFileTo">The file path to copy the specific version of the file to.</param>
+		/// <param name="commitSha">The file as it existed previous to this commit will be obtained. If this is null, the most recent commit of the file will be used.</param>
 		public static bool GetPreviousVersionOfFile(string gitRepositoryPath, string filePathInRepository, string previousVersionsFilePathInRepository, string filePathToCopyFileTo, string commitSha)
 		{
 			// Get the path to the Git repository from the file path.
