@@ -4,7 +4,7 @@ Quickly and easily compare all files in Git (a commit or Staged/Unstaged files) 
 
 This extension adds a new control into the Team Explorer pane wherever Visual Studio shows what files have changes. You may edit the extension's settings from the Tools -> Options... -> Diff All Files settings page.
 
-Download this extension for Visual Studio [2012](https://visualstudiogallery.msdn.microsoft.com/a1091118-9765-4554-bc7f-0227028310d5), [2013](https://visualstudiogallery.msdn.microsoft.com/d8d61cc9-6660-41af-b8d0-0f8403b4b39c), or [2015](https://visualstudiogallery.msdn.microsoft.com/e6390f80-c953-4896-bd93-a7dfeba9887b) from the VS Extension Gallery.
+Download this extension for [Visual Studio 2012](https://visualstudiogallery.msdn.microsoft.com/a1091118-9765-4554-bc7f-0227028310d5), [2013](https://visualstudiogallery.msdn.microsoft.com/d8d61cc9-6660-41af-b8d0-0f8403b4b39c), or [2015](https://visualstudiogallery.msdn.microsoft.com/e6390f80-c953-4896-bd93-a7dfeba9887b) from the VS Extension Gallery.
 
 # Features
 
