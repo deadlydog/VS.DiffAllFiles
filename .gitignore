@@ -14,6 +14,7 @@ _[Rr]e[Ss]harper.*
 *.log
 *.backup
 *.nupkg
+*.scgdat
 AppPackages/
 DansLibGit2SharpKey.snk
 LibGit2Sharp.il
