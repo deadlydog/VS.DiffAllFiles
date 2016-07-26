@@ -133,6 +133,12 @@
     <Compile Include="Adapters\ITfsFileChange.cs" />
     <Compile Include="Adapters\ITfsPendingChangesService.cs" />
     <Compile Include="Adapters\TfsFileChange.cs" />
+    <Compile Include="Settings\ConfigureDiffToolSettingsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Settings\ConfigureDiffToolSettingsPageControl.xaml.cs">
+      <DependentUpon>ConfigureDiffToolSettingsPageControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="StructuresAndEnums\CompareModes.cs" />
     <Compile Include="StructuresAndEnums\DiffToolConfiguration.cs" />
     <Compile Include="StructuresAndEnums\FileLabel.cs" />
@@ -182,6 +188,10 @@
     <Page Include="Sections\DiffAllFilesSectionControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Settings\ConfigureDiffToolSettingsPageControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Settings\DiffAllFilesSettingsPageControl.xaml">
       <Generator>MSBuild:Compile</Generator>

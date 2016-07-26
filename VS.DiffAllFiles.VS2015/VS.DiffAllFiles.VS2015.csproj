@@ -131,6 +131,14 @@
     <Compile Include="..\VS.DiffAllFiles\Sections\ShelvesetDetailsSection.cs">
       <Link>FilesFromShared\Sections\ShelvesetDetailsSection.cs</Link>
     </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Settings\ConfigureDiffToolSettingsPage.cs">
+      <Link>FilesFromShared\Settings\ConfigureDiffToolSettingsPage.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="..\VS.DiffAllFiles\Settings\ConfigureDiffToolSettingsPageControl.xaml.cs">
+      <Link>FilesFromShared\Settings\ConfigureDiffToolSettingsPageControl.xaml.cs</Link>
+      <DependentUpon>ConfigureDiffToolSettingsPageControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="..\VS.DiffAllFiles\Settings\DiffAllFilesSettings.cs">
       <Link>FilesFromShared\Settings\DiffAllFilesSettings.cs</Link>
       <SubType>Component</SubType>
@@ -409,6 +417,11 @@
   <ItemGroup>
     <Page Include="..\VS.DiffAllFiles\Sections\DiffAllFilesSectionControl.xaml">
       <Link>FilesFromShared\Sections\DiffAllFilesSectionControl.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\VS.DiffAllFiles\Settings\ConfigureDiffToolSettingsPageControl.xaml">
+      <Link>FilesFromShared\Settings\ConfigureDiffToolSettingsPageControl.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

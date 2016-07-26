@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="VS_DiffAllFiles.Settings.ConfigureDiffToolSettingsPageControl"
+						 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+						 xmlns:local="clr-namespace:VS_DiffAllFiles.Settings"
+						 mc:Ignorable="d" 
+						 d:DesignHeight="200" d:DesignWidth="400">
+	<Grid>
+		<StackPanel Orientation="Vertical">
+
+			<StackPanel Orientation="Vertical">
+				<TextBlock Text="Team Foundation Version Control (TFVC):" />
+				<StackPanel Orientation="Horizontal" Margin="20,5,0,0">
+					<Button Content="Configure TFVC Diff Tool..." HorizontalAlignment="Left" Click="btnConfigureDiffTool_Click" ToolTip="Select the tool to use for comparing different types of files." />
+					<TextBlock VerticalAlignment="Center" Margin="5,0,0,0">
+						<Hyperlink NavigateUri="https://github.com/deadlydog/VS.DiffAllFiles/wiki/Common-Diff-Tool-Configurations-For-TFVC" RequestNavigate="Hyperlink_RequestNavigate">View common diff tool configurations</Hyperlink>
+					</TextBlock>
+				</StackPanel>
+			</StackPanel>
+
+			<StackPanel Orientation="Vertical" Margin="0,20,0,0">
+				<TextBlock Text="Git:" />
+				<StackPanel Orientation="Horizontal" Margin="20,0,0,0">
+					<TextBlock Text="Configure the Git Diff Tool to use by " />
+					<TextBlock>
+						<Hyperlink NavigateUri="http://stackoverflow.com/questions/6412516/configuring-diff-tool-with-gitconfig" RequestNavigate="Hyperlink_RequestNavigate">editing your .gitconfig file.</Hyperlink>
+					</TextBlock>
+				</StackPanel>
+			</StackPanel>
+
+		</StackPanel>
+	</Grid>
+</UserControl>
