@@ -6,28 +6,47 @@
 						 xmlns:local="clr-namespace:VS_DiffAllFiles.Settings"
 						 mc:Ignorable="d" 
 						 d:DesignHeight="200" d:DesignWidth="400">
+	<UserControl.Resources>
+		<Style TargetType="{x:Type Button}">
+			<Setter Property="Padding" Value="5" />
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+		</Style>
+		<Style TargetType="{x:Type CheckBox}">
+			<Setter Property="Margin" Value="0,5,0,0" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+		</Style>
+		<Style TargetType="{x:Type TextBlock}">
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+		</Style>
+		<Style TargetType="{x:Type TextBox}">
+			<Setter Property="ToolTipService.ShowDuration" Value="60000" />
+		</Style>
+		<Style TargetType="{x:Type GroupBox}">
+			<Setter Property="Padding" Value="2" />
+		</Style>
+	</UserControl.Resources>
+	
 	<Grid>
 		<StackPanel Orientation="Vertical">
 
-			<StackPanel Orientation="Vertical">
-				<TextBlock Text="Team Foundation Version Control (TFVC):" />
-				<StackPanel Orientation="Horizontal" Margin="20,5,0,0">
+			<GroupBox Header="Team Foundation Version Control (TFVC)">
+				<StackPanel Orientation="Horizontal">
 					<Button Content="Configure TFVC Diff Tool..." HorizontalAlignment="Left" Click="btnConfigureDiffTool_Click" ToolTip="Select the tool to use for comparing different types of files." />
 					<TextBlock VerticalAlignment="Center" Margin="5,0,0,0">
 						<Hyperlink NavigateUri="https://github.com/deadlydog/VS.DiffAllFiles/wiki/Common-Diff-Tool-Configurations-For-TFVC" RequestNavigate="Hyperlink_RequestNavigate">View common diff tool configurations</Hyperlink>
 					</TextBlock>
 				</StackPanel>
-			</StackPanel>
+			</GroupBox>
 
-			<StackPanel Orientation="Vertical" Margin="0,20,0,0">
-				<TextBlock Text="Git:" />
-				<StackPanel Orientation="Horizontal" Margin="20,0,0,0">
-					<TextBlock Text="Configure the Git Diff Tool to use by " />
+			<GroupBox Header="Git" Margin="0,10,0,0">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Text="Configure the Diff Tool to use in Git by " />
 					<TextBlock>
-						<Hyperlink NavigateUri="http://stackoverflow.com/questions/6412516/configuring-diff-tool-with-gitconfig" RequestNavigate="Hyperlink_RequestNavigate">editing your .gitconfig file.</Hyperlink>
+						<Hyperlink NavigateUri="https://github.com/deadlydog/VS.DiffAllFiles/wiki/How-To-Change-The-Default-Diff-Tool-For-Git" RequestNavigate="Hyperlink_RequestNavigate">editing your .gitconfig file.</Hyperlink>
 					</TextBlock>
 				</StackPanel>
-			</StackPanel>
+			</GroupBox>
 
 		</StackPanel>
 	</Grid>
