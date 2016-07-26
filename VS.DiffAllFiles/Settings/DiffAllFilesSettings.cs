@@ -9,7 +9,7 @@ using VS_DiffAllFiles.StructuresAndEnums;
 namespace VS_DiffAllFiles.Settings
 {
 	[ClassInterface(ClassInterfaceType.AutoDual)]
-	[Guid("1D9ECCF3-5D2F-4112-9B25-264596873DC9")]	// Special guid to tell it that this is a custom Options dialog page, not the built-in grid dialog page.
+	[Guid("1D9ECCF3-5D2F-4112-9B25-264596873DC9")]
 	public class DiffAllFilesSettings : UIElementDialogPage, INotifyPropertyChanged
 	{
 		#region Notify Property Changed

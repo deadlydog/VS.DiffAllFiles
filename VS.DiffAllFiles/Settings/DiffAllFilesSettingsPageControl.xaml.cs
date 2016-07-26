@@ -31,40 +31,6 @@ namespace VS_DiffAllFiles.Settings
 			_settings.ResetSettings();
 		}
 
-		private System.Diagnostics.Process _configureDiffToolProcess = null;
-		private void btnConfigureDiffTool_Click(object sender, EventArgs e)
-		{
-			// If the Configure Diff Tool window is already open, just exit.
-			// For some reason the variable is not null until we actually try and check on of it's variables, so the HasExited check is required.
-			if (_configureDiffToolProcess != null && !_configureDiffToolProcess.HasExited)
-				return;
-
-			// Launch the window to configure the merge tool.
-			_configureDiffToolProcess = new System.Diagnostics.Process();
-			_configureDiffToolProcess.StartInfo.FileName = DiffAllFilesHelper.TfFilePath;
-			_configureDiffToolProcess.StartInfo.Arguments = string.Format("diff /configure");
-			_configureDiffToolProcess.StartInfo.CreateNoWindow = true;
-			_configureDiffToolProcess.StartInfo.UseShellExecute = false;
-			_configureDiffToolProcess.Exited += configureDiffToolProcess_Exited;
-			_configureDiffToolProcess.Start();
-		}
-
-		void configureDiffToolProcess_Exited(object sender, EventArgs e)
-		{
-			if (_configureDiffToolProcess != null)
-				_configureDiffToolProcess.Exited -= configureDiffToolProcess_Exited;
-
-			// Record that the user closed the Configure Diff Tool window.
-			_configureDiffToolProcess = null;
-		}
-
-		private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-		{
-			// Open the URL in the default browser.
-			Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
-			e.Handled = true;
-		}
-
 		private void UserControl_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
 			// Find all TextBoxes in this control force the Text bindings to fire to make sure all changes have been saved.
