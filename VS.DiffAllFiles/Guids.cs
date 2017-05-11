@@ -4,6 +4,8 @@ namespace VS_DiffAllFiles
 {
 	static class Guids
 	{
+		public const string guidVS_DiffAllFiles_VS2017PkgString = "8D0CE300-9898-128B-95F0-12C767EC20E3";   // This should match the Guid in the VSIX Manifest.
+
 		// VS 2015 Guids
 		public const string guidVS_DiffAllFiles_VS2015PkgString = "E3FB14C0-2288-4D95-93B3-948B7319420E";   // This should match the Guid in the VSIX Manifest.
 
