@@ -30,14 +30,21 @@ namespace VS_DiffAllFiles.Settings
 		private void btnConfigureDiffTool_Click(object sender, EventArgs e)
 		{
 			// If the Configure Diff Tool window is already open, just exit.
-			// For some reason the variable is not null until we actually try and check on of it's variables, so the HasExited check is required.
+			// For some reason the variable is not null until we actually try and check on one of it's variables, so the HasExited check is required.
 			if (_configureDiffToolProcess != null && !_configureDiffToolProcess.HasExited)
 				return;
 
+			var tfFilePath = DiffAllFilesHelper.TfFilePath;
+			if (string.IsNullOrWhiteSpace(tfFilePath))
+			{
+				MessageBox.Show("Could not locate the TF.exe on your computer.", "Cannot Open The TF Diff Tool Configuration Dialog");
+				return;
+			}
+
 			// Launch the window to configure the merge tool.
 			_configureDiffToolProcess = new System.Diagnostics.Process();
-			_configureDiffToolProcess.StartInfo.FileName = DiffAllFilesHelper.TfFilePath;
-			_configureDiffToolProcess.StartInfo.Arguments = string.Format("diff /configure");
+			_configureDiffToolProcess.StartInfo.FileName = tfFilePath;
+			_configureDiffToolProcess.StartInfo.Arguments = "diff /configure";
 			_configureDiffToolProcess.StartInfo.CreateNoWindow = true;
 			_configureDiffToolProcess.StartInfo.UseShellExecute = false;
 			_configureDiffToolProcess.Exited += configureDiffToolProcess_Exited;
