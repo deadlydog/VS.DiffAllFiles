@@ -10,6 +10,49 @@
   - Windows (x86/amd64): <https://ci.appveyor.com/project/libgit2/libgit2sharp>
   - Linux/Mac OS X: <https://travis-ci.org/libgit2/libgit2sharp>
 
+## v0.23.1 + 1
+
+### Additions
+
+### Changes
+
+### Fixes
+
+## v0.23.1 - ([diff](https://github.com/libgit2/libgit2sharp/compare/v0.23..v0.23.1))
+
+### Fixes
+
+ - Update to libgit2 0.25.1 which includes security fixes for smart
+   protocol parsing and TLS certificate validity check callbacks.
+
+## v0.23 - ([diff](https://github.com/libgit2/libgit2sharp/compare/v0.22..v0.23))
+
+### Additions
+
+ - Add `CherryPickCommit` and `RevertCommit` to `ObjectDatabase`.
+ - Add `IncludeIgnored` field to `SatusOptions`.
+ - Add `Commit.CreateBuffer` to write a commit object to a buffer and
+   `ObjectDatabase.CreateCommitWithSignature` to create commits which include a
+   signature.
+ - Add `Commit.ExtractSignature` to get a commit's signature.
+ - Add `ObjectDatabase.Write<T>` to write arbitrary objects to the object db.
+ - Add `Commit.PrettifyMessage`
+
+
+### Changes
+
+ - The native libraries are now expected to be in the `lib` directory,
+   instead of `NativeBinaries` for improved mono compatibility.  In
+   addition, the names of platform architectures now better reflect
+   the vendor naming (eg, `x86_64` instead of `amd64` on Linux).
+ - Deprecate the config paths in RepositoryOptions
+ - Deprecate the `QueryBy` overload with `FollowFilter`.
+ - Deprecate `Branch.Remote` in favour of `Branch.RemoteName`
+ - `Remote` no longer implement the equality operator.
+ - `Remote.Update` takes a remote name instead of an instance.
+ - `Fetch`, `Pull`, `Move`, `Remove`, `Stage` are now in a commands namespace to
+   indicate what they represent.
+
 ## v0.22 - ([diff](https://github.com/libgit2/libgit2sharp/compare/v0.21.1...v0.22))
 
 ### Additions
