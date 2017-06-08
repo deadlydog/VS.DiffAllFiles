@@ -4,7 +4,8 @@ Here are the steps taken to add Visual Studio 2017 support to Diff All Files:
 
 1. Copy the `VS.DiffAllFiles.VS2015` project directory, and name it `VS.DiffAllFiles.VS2017`.
 1. Change all file names with `2015` to `2017`.
-1. Add the new 2017 project to the solution in Visual Studio.
+1. Add the new 2017 project to the solution in Visual Studio, and let VS upgrade it.
+1. Remove the v14 Microsoft.VSSDK.BuildTools NuGet package, and then add the v15 NuGet package.
 1. Grep the 2017 project directory and change `2015` to `2017` where needed.
 1. Add a new Guid to the `Guids.cs` file.
 1. Replace the .dll files in the 2017 project's `VersionSpecificReferences` directory with the Visual Studio 2017 version of the assemblies.
