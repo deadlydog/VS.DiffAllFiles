@@ -228,9 +228,9 @@
   <PropertyGroup>
     <PreBuildEvent>:: Strongly sign the LibGit2Sharp.dll, as every few builds it gets overwritten, and VS Extensions want strongly signed assemblies.
 :: http://www.codeproject.com/Tips/341645/Referenced-assembly-does-not-have-a-strong-name
-cd "$(SolutionDir)packages\LibGit2Sharp.0.22.0\lib\net40\"
-"C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\ildasm.exe" /all /out=LibGit2Sharp.il LibGit2Sharp.dll
-"C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0A\bin\NETFX 4.0 Tools\sn.exe" -k DansLibGit2SharpKey.snk
+cd "$(SolutionDir)packages\LibGit2Sharp.0.23.1\lib\net40\"
+"C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools\ildasm.exe" /all /out=LibGit2Sharp.il LibGit2Sharp.dll
+"C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools\sn.exe" -k DansLibGit2SharpKey.snk
 "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\ilasm.exe" /dll /key=DansLibGit2SharpKey.snk LibGit2Sharp.il
 :: Sometimes the build fails because the Lib2GitSharp.dll is in use when we are trying to overwrite it. Simply rebuilding the solution usually fixes the problem.</PreBuildEvent>
   </PropertyGroup>
