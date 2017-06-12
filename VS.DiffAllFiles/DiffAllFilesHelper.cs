@@ -39,7 +39,24 @@ namespace VS_DiffAllFiles
 		/// </summary>
 		public static string TfFilePath
 		{
-			get { return Path.Combine(Path.GetDirectoryName(PackageHelper.VisualStudioExecutablePath), "TF.exe"); }
+			get
+			{
+				string vsIdeDirectoryPath = Path.GetDirectoryName(PackageHelper.VisualStudioExecutablePath);
+
+				string potentialPathToTfExe = Path.Combine(vsIdeDirectoryPath, @"CommonExtensions\Microsoft\TeamFoundation\Team Explorer\TF.exe");
+				if (File.Exists(potentialPathToTfExe))
+				{
+					return potentialPathToTfExe;
+				}
+
+				potentialPathToTfExe = Path.Combine(vsIdeDirectoryPath, "TF.exe");
+				if (File.Exists(potentialPathToTfExe))
+				{
+					return potentialPathToTfExe;
+				}
+
+				return null;
+			}
 		}
 
 		/// <summary>

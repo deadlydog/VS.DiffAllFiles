@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS.DiffAllFiles", "VS.DiffAllFiles\VS.DiffAllFiles.csproj", "{992757D4-23CF-434A-802B-6A615706557C}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS.DiffAllFiles.VS2012", "VS.DiffAllFiles.VS2012\VS.DiffAllFiles.VS2012.csproj", "{0EBBE851-C353-4AC6-B021-FC576DDEC4C7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS.DiffAllFiles.VS2015", "VS.DiffAllFiles.VS2015\VS.DiffAllFiles.VS2015.csproj", "{4FA6DCEE-2D83-4799-BD32-ACA356202CF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS.DiffAllFiles.VS2017", "VS.DiffAllFiles.VS2017\VS.DiffAllFiles.VS2017.csproj", "{717987A0-095F-4AC1-AD53-C9A9514847A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{4FA6DCEE-2D83-4799-BD32-ACA356202CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FA6DCEE-2D83-4799-BD32-ACA356202CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FA6DCEE-2D83-4799-BD32-ACA356202CF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{717987A0-095F-4AC1-AD53-C9A9514847A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{717987A0-095F-4AC1-AD53-C9A9514847A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{717987A0-095F-4AC1-AD53-C9A9514847A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{717987A0-095F-4AC1-AD53-C9A9514847A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

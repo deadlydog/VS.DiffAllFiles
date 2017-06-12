@@ -21,8 +21,9 @@ namespace VS_DiffAllFiles.Settings
 
 		public DiffAllFilesSettingsPageControl(DiffAllFilesSettings settings)
 		{
+			_settings = settings ?? throw new ArgumentNullException(nameof(settings), $"The settings passed to the '{nameof(DiffAllFilesSettingsPageControl)}' class cannot be null.");
+
 			InitializeComponent();
-			_settings = settings;
 			this.DataContext = _settings;
 		}
 

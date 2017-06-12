@@ -33,7 +33,7 @@ namespace VS_DiffAllFiles.Settings
 		/// Gets or sets the Current Settings of the package.
 		/// </summary>
 		public static DiffAllFilesSettings CurrentSettings { get { return _currentSettings; } set { _currentSettings = value; CurrentSettingsChanged(null, System.EventArgs.Empty); } }
-		private static DiffAllFilesSettings _currentSettings = null;
+		private static DiffAllFilesSettings _currentSettings = new DiffAllFilesSettings();
 
 		/// <summary>
 		/// Fires when the Current Settings instance is changed.
