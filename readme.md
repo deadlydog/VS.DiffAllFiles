@@ -1,4 +1,4 @@
-# Description
+# Diff All Files Description
 
 Quickly and easily compare all files in Git (a commit or Staged/Unstaged files) or TFS (a changeset, shelveset, or files with pending changes) to see what was changed. Instead of clicking on each file individually and choosing to compare it with a different version, just click one button to compare all of the files.
 
