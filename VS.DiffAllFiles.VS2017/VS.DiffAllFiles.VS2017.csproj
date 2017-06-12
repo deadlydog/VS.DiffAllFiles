@@ -240,9 +240,9 @@
     <Reference Include="EnvDTE90">
       <HintPath>..\..\..\..\Program Files (x86)\Common Files\Microsoft Shared\MSEnv\PublicAssemblies\envdte90.dll</HintPath>
     </Reference>
-    <Reference Include="LibGit2Sharp, Version=0.23.1.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibGit2Sharp.0.23.1\lib\net40\LibGit2Sharp.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="LibGit2Sharp, Version=0.23.1.0, Culture=neutral, PublicKeyToken=c11730087e4c9ba1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\VS.DiffAllFiles\LibGit2Sharp\LibGit2Sharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.CSharp" />
@@ -408,15 +408,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\packages\LibGit2Sharp.NativeBinaries.1.0.164\runtimes\win7-x64\native\git2-a5cf255.dll">
-      <Link>NativeBinaries\amd64\git2-a5cf255.dll</Link>
+    <Content Include="..\VS.DiffAllFiles\_LibGit2Sharp\git2-a5cf255.dll">
+      <Link>_LibGit2Sharp\git2-a5cf255.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <VSIXSubPath>\</VSIXSubPath>
     </Content>
-    <Content Include="..\packages\LibGit2Sharp.NativeBinaries.1.0.164\runtimes\win7-x86\native\git2-a5cf255.dll">
-      <Link>NativeBinaries\x86\git2-a5cf255.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="..\VS.DiffAllFiles\_LibGit2Sharp\LibGit2Sharp.dll">
+      <Link>_LibGit2Sharp\LibGit2Sharp.dll</Link>
+    </Content>
+    <Content Include="..\VS.DiffAllFiles\_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.txt">
+      <Link>_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.txt</Link>
     </Content>
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Common.dll" />
@@ -426,9 +427,6 @@
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Client.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Controls.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.VisualStudio.Services.Common.dll" />
-    <Resource Include="..\VS.DiffAllFiles.VS2013\NativeBinaries\Why is this folder here - For LibGit2Sharp.txt">
-      <Link>NativeBinaries\Why is this folder here - For LibGit2Sharp.txt</Link>
-    </Resource>
     <Content Include="..\VS.DiffAllFiles\Resources\PackageIcon_Small.ico">
       <Link>FilesFromShared\Resources\PackageIcon_Small.ico</Link>
       <IncludeInVSIX>true</IncludeInVSIX>

@@ -43,9 +43,9 @@
     <Reference Include="envdte80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="LibGit2Sharp, Version=0.23.1.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibGit2Sharp.0.23.1\lib\net40\LibGit2Sharp.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="LibGit2Sharp, Version=0.23.1.0, Culture=neutral, PublicKeyToken=c11730087e4c9ba1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>LibGit2Sharp\LibGit2Sharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -217,6 +217,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="_LibGit2Sharp\git2-a5cf255.dll" />
+    <Content Include="_LibGit2Sharp\LibGit2Sharp.dll" />
+    <Content Include="_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.txt" />
     <Content Include="Resources\PackageIcon_Small.ico" />
     <Content Include="Resources\PreviewImage.png" />
   </ItemGroup>
@@ -224,15 +227,11 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>:: Strongly sign the LibGit2Sharp.dll, as every few builds it gets overwritten, and VS Extensions want strongly signed assemblies.
-:: http://www.codeproject.com/Tips/341645/Referenced-assembly-does-not-have-a-strong-name
-cd "$(SolutionDir)packages\LibGit2Sharp.0.23.1\lib\net40\"
-"C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools\ildasm.exe" /all /out=LibGit2Sharp.il LibGit2Sharp.dll
-"C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools\sn.exe" -k DansLibGit2SharpKey.snk
-"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\ilasm.exe" /dll /key=DansLibGit2SharpKey.snk LibGit2Sharp.il
-:: Sometimes the build fails because the Lib2GitSharp.dll is in use when we are trying to overwrite it. Simply rebuilding the solution usually fixes the problem.</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
