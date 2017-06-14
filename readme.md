@@ -1,12 +1,15 @@
-# Diff All Files Description
+# Diff All Files Visual Studio Extension
 
-Quickly and easily compare all files in Git (a commit or Staged/Unstaged files) or TFS (a changeset, shelveset, or files with pending changes) to see what was changed. Instead of clicking on each file individually and choosing to compare it with a different version, just click one button to compare all of the files.
+## Description
+
+A Visual Studio extension to quickly and easily compare all files in Git (a commit or staged/unstaged files) or TFS (a changeset, shelveset, or files with pending changes) to see what was changed. Instead of clicking on each file individually and choosing to compare it with a different version, just click one button to compare all of the files.
 
 This extension adds a new control into the Team Explorer pane wherever Visual Studio shows what files have changes. You may edit the extension's settings from the `Tools -> Options... -> Diff All Files` settings page.
 
 Download this extension for [Visual Studio 2017][DiffAllFilesVs2017MarketplaceUrl], [2015][DiffAllFilesVs2015MarketplaceUrl], [2013][DiffAllFilesVs2013MarketplaceUrl], or [2012][DiffAllFilesVs2012MarketplaceUrl] from the VS Extension Gallery.
 
-# Features
+
+## Features
 
 * Compare files one at a time, many files at a time, or with all files combined in a single file.
 * Uses the same diff (i.e. compare) tool that you have configured in your .gitconfig (for Git) and Visual Studio (for TFVC). e.g. KDiff, Beyond Compare, Visual Studio, etc.
@@ -16,7 +19,8 @@ Download this extension for [Visual Studio 2017][DiffAllFilesVs2017MarketplaceUr
 * Specify the file versions to compare against (i.e. Unmodified, Workspace, Previous, Latest).
 * Supports both Git and TFVC source control providers.
 
-# Screenshots
+
+## Screenshots
 
 Before comparing files (left) and while comparing files (right):
 
@@ -25,9 +29,15 @@ Before comparing files (left) and while comparing files (right):
 Settings Screen (available in Visual Studio from `Tools -> Options... -> Diff All Files`):
 
 ![Diff All Files Settings page][DiffAllFilesSettingsImage]
- 
+
+
+ ## Contributing
+
+ Pull requests are welcome and appreciated. You may find [the internal docs][DiffAllFilesInternalDocs] helpful to get you up and running.
+
 
 <!-- Links -->
+[DiffAllFilesInternalDocs]:[https://github.com/deadlydog/VS.DiffAllFiles/tree/master/docs/internal]
 [DiffAllFilesVs2012MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2012
 [DiffAllFilesVs2013MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2013
 [DiffAllFilesVs2015MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2015
