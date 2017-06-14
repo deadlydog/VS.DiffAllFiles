@@ -35,7 +35,7 @@ Pull requests are welcome and appreciated. You may find [the internal docs][Diff
 
 
 <!-- Links -->
-[DiffAllFilesInternalDocs]: [https://github.com/deadlydog/VS.DiffAllFiles/tree/master/docs/internal]
+[DiffAllFilesInternalDocs]: https://github.com/deadlydog/VS.DiffAllFiles/tree/master/docs/internal
 [DiffAllFilesVs2012MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2012
 [DiffAllFilesVs2013MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2013
 [DiffAllFilesVs2015MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2015
