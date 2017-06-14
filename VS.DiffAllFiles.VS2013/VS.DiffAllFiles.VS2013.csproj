@@ -50,8 +50,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\DansUtilityLibraries.CSharpLibrary.1.1.2.0\lib\net40-Client\DansCSharpLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="LibGit2Sharp">
-      <HintPath>..\packages\LibGit2Sharp.0.20.0.0\lib\net40\LibGit2Sharp.dll</HintPath>
+    <Reference Include="LibGit2Sharp, Version=0.23.1.0, Culture=neutral, PublicKeyToken=c11730087e4c9ba1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\VS.DiffAllFiles\_LibGit2Sharp\LibGit2Sharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.TeamFoundation.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -345,14 +346,6 @@
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\packages\LibGit2Sharp.0.20.0.0\lib\net40\NativeBinaries\amd64\git2-3f8d005.dll">
-      <Link>NativeBinaries\amd64\git2-3f8d005.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="..\packages\LibGit2Sharp.0.20.0.0\lib\net40\NativeBinaries\x86\git2-3f8d005.dll">
-      <Link>NativeBinaries\x86\git2-3f8d005.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="..\VS.DiffAllFiles\Resources\PackageIcon_Small.ico">
       <Link>FilesFromShared\Resources\PackageIcon_Small.ico</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -361,7 +354,17 @@
       <Link>FilesFromShared\Resources\PreviewImage.png</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Resource Include="NativeBinaries\Why is this folder here - For LibGit2Sharp.txt" />
+    <Content Include="..\VS.DiffAllFiles\_LibGit2Sharp\git2-a5cf255.dll">
+      <Link>_LibGit2Sharp\git2-a5cf255.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>\</VSIXSubPath>
+    </Content>
+    <Content Include="..\VS.DiffAllFiles\_LibGit2Sharp\LibGit2Sharp.dll">
+      <Link>_LibGit2Sharp\LibGit2Sharp.dll</Link>
+    </Content>
+    <Resource Include="..\VS.DiffAllFiles\_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.txt">
+      <Link>_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.txt</Link>
+    </Resource>
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.dll" />
     <Resource Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.xml" />
