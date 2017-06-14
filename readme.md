@@ -1,6 +1,4 @@
-# Diff All Files Visual Studio Extension
-
-## Description
+# Diff All Files Visual Studio Extension Description
 
 A Visual Studio extension to quickly and easily compare all files in Git (a commit or staged/unstaged files) or TFS (a changeset, shelveset, or files with pending changes) to see what was changed. Instead of clicking on each file individually and choosing to compare it with a different version, just click one button to compare all of the files.
 
@@ -31,13 +29,13 @@ Settings Screen (available in Visual Studio from `Tools -> Options... -> Diff Al
 ![Diff All Files Settings page][DiffAllFilesSettingsImage]
 
 
- ## Contributing
+## Contributing
 
- Pull requests are welcome and appreciated. You may find [the internal docs][DiffAllFilesInternalDocs] helpful to get you up and running.
+Pull requests are welcome and appreciated. You may find [the internal docs][DiffAllFilesInternalDocs] helpful to get you up and running.
 
 
 <!-- Links -->
-[DiffAllFilesInternalDocs]:[https://github.com/deadlydog/VS.DiffAllFiles/tree/master/docs/internal]
+[DiffAllFilesInternalDocs]: [https://github.com/deadlydog/VS.DiffAllFiles/tree/master/docs/internal]
 [DiffAllFilesVs2012MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2012
 [DiffAllFilesVs2013MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2013
 [DiffAllFilesVs2015MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2015
