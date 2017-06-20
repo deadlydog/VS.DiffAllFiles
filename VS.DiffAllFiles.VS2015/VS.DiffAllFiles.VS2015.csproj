@@ -3,11 +3,16 @@
   <Import Project="..\packages\LibGit2Sharp.NativeBinaries.1.0.129\build\LibGit2Sharp.NativeBinaries.props" Condition="Exists('..\packages\LibGit2Sharp.NativeBinaries.1.0.129\build\LibGit2Sharp.NativeBinaries.props')" />
   <Import Project="..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.props')" />
   <PropertyGroup>
-    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <UseCodebase>true</UseCodebase>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>14.0</OldToolsVersion>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -220,9 +225,9 @@
     <Reference Include="EnvDTE90">
       <HintPath>..\..\..\..\Program Files (x86)\Common Files\Microsoft Shared\MSEnv\PublicAssemblies\envdte90.dll</HintPath>
     </Reference>
-    <Reference Include="LibGit2Sharp">
-      <HintPath>..\packages\LibGit2Sharp.0.22.0\lib\net40\LibGit2Sharp.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="LibGit2Sharp, Version=0.23.1.0, Culture=neutral, PublicKeyToken=c11730087e4c9ba1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\VS.DiffAllFiles\_LibGit2Sharp\LibGit2Sharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.CSharp" />
@@ -386,13 +391,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\packages\LibGit2Sharp.NativeBinaries.1.0.129\libgit2\windows\amd64\git2-785d8c4.dll">
-      <Link>NativeBinaries\amd64\git2-785d8c4.dll</Link>
+    <Content Include="..\VS.DiffAllFiles\_LibGit2Sharp\git2-a5cf255.dll">
+      <Link>_LibGit2Sharp\git2-a5cf255.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>\</VSIXSubPath>
     </Content>
-    <Content Include="..\packages\LibGit2Sharp.NativeBinaries.1.0.129\libgit2\windows\x86\git2-785d8c4.dll">
-      <Link>NativeBinaries\x86\git2-785d8c4.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
+    <Content Include="..\VS.DiffAllFiles\_LibGit2Sharp\LibGit2Sharp.dll">
+      <Link>_LibGit2Sharp\LibGit2Sharp.dll</Link>
+    </Content>
+    <Content Include="..\VS.DiffAllFiles\_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.txt">
+      <Link>_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.txt</Link>
     </Content>
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Common.dll" />
@@ -402,9 +410,6 @@
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Client.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.VersionControl.Controls.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.VisualStudio.Services.Common.dll" />
-    <Resource Include="..\VS.DiffAllFiles.VS2013\NativeBinaries\Why is this folder here - For LibGit2Sharp.txt">
-      <Link>NativeBinaries\Why is this folder here - For LibGit2Sharp.txt</Link>
-    </Resource>
     <Content Include="..\VS.DiffAllFiles\Resources\PackageIcon_Small.ico">
       <Link>FilesFromShared\Resources\PackageIcon_Small.ico</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
