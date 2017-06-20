@@ -124,7 +124,7 @@ namespace VS_DiffAllFiles
 		/// <returns></returns>
 		public static List<FileExtensionDiffToolConfiguration> GetGitDiffToolsConfigured(string gitRepositoryPath)
 		{
-            var diffToolsConfigured = new List<FileExtensionDiffToolConfiguration>();
+			var diffToolsConfigured = new List<FileExtensionDiffToolConfiguration>();
 
 			// Get the name of the diff tool entry to use.
 			var configurationEntries = GitHelper.GetGitConfigurationEntries(gitRepositoryPath);
@@ -138,11 +138,11 @@ namespace VS_DiffAllFiles
 				var diffToolExePath = string.Empty;
 				var diffToolExeArgumentFormat = string.Empty;
 				GetGitExePathAndArgumentsFormatFromCmdValue(diffToolCmdEntry.Value, out diffToolExePath, out diffToolExeArgumentFormat);
-				diffToolExePath = GetSanitizedFilePath(diffToolExePath);
+				diffToolExePath = GetSanitizedExecutableFilePath(diffToolExePath);
 
 				if (!string.IsNullOrWhiteSpace(diffToolExePath))
 					diffToolsConfigured.Add(new FileExtensionDiffToolConfiguration(".*", new DiffToolConfiguration(diffToolExePath, diffToolExeArgumentFormat)));
-            }
+			}
 			// Else a specific command to use to launch the diff tool does not exist, so let's assume the exe takes the default arguments.
 			else
 			{
@@ -150,7 +150,7 @@ namespace VS_DiffAllFiles
 				if (diffToolPathEntry == null) return diffToolsConfigured;
 
 				// Make sure the executable path is using the correct slashes for a path, and that it is wrapped in double quotes in case it contains spaces.
-				var diffToolExePath = GetSanitizedFilePath(diffToolPathEntry.Value);
+				var diffToolExePath = GetSanitizedExecutableFilePath(diffToolPathEntry.Value);
 				diffToolsConfigured.Add(new FileExtensionDiffToolConfiguration(".*", new DiffToolConfiguration(diffToolExePath, _defaultExeArgumentFormat)));
 			}
 
@@ -162,11 +162,32 @@ namespace VS_DiffAllFiles
 		/// </summary>
 		/// <param name="filePath">The file path.</param>
 		/// <returns></returns>
-		private static string GetSanitizedFilePath(string filePath)
+		private static string GetSanitizedExecutableFilePath(string filePath)
 		{
-			// Make sure the file path is using the correct slashes for a path, and that it is wrapped in double quotes in case it contains spaces.
+			// Make sure the file path is using the correct slashes for a path.
 			filePath = filePath.Replace("/", @"\");
-			return string.Format("\"{0}\"", filePath.Trim("\"".ToCharArray()));
+
+			// No leading or trailing whitespace.
+			filePath = filePath.Trim();
+
+			// Remove any single quotes around the file path. It is valid syntax in the .gitconfig file for Git Bash, but we don't want it here.
+			filePath = filePath.Trim("'".ToCharArray());
+			
+			// Make sure the path is wrapped in double quotes in case it contains spaces.
+			filePath = string.Format("\"{0}\"", filePath.Trim("\"".ToCharArray()));
+
+			return filePath;
+		}
+
+		private static string RemoveSingleQuotesSurroundingFilePath(string executableFilePath)
+		{
+			// If the file path is wrapped in both double and single quotes, remove the single quotes.
+			if (executableFilePath.Contains("\"'") && executableFilePath.Contains("'\""))
+			{
+				executableFilePath = executableFilePath.Replace("\"'", "\"");
+				executableFilePath = executableFilePath.Replace("'\"", "\"");
+			}
+			return executableFilePath;
 		}
 
 		/// <summary>
