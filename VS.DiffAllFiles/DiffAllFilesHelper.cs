@@ -179,17 +179,6 @@ namespace VS_DiffAllFiles
 			return filePath;
 		}
 
-		private static string RemoveSingleQuotesSurroundingFilePath(string executableFilePath)
-		{
-			// If the file path is wrapped in both double and single quotes, remove the single quotes.
-			if (executableFilePath.Contains("\"'") && executableFilePath.Contains("'\""))
-			{
-				executableFilePath = executableFilePath.Replace("\"'", "\"");
-				executableFilePath = executableFilePath.Replace("'\"", "\"");
-			}
-			return executableFilePath;
-		}
-
 		/// <summary>
 		/// Gets the executable path and arguments format from command value.
 		/// </summary>
