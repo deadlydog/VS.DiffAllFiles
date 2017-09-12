@@ -1,5 +1,5 @@
 ﻿To update LibGit2Sharp to a new version, follow these steps:
-1. Update the LibGit2Sharp NuGet package to obtain the new version of the LibGit2Sharp.dll, and it's corresponding LibGit2Sharp.NativeBinaries NuGet package's git2-*.dll.
+1. Update the LibGit2Sharp NuGet package to obtain the new version of the LibGit2Sharp.dll, and it's corresponding LibGit2Sharp.NativeBinaries NuGet package's git2-*.dll. Use the Package Manager Console if the UI is giving you trouble.
 2. Run the following batch script against the LibGit2Sharp.dll to create a signed version of the dll file with a new strong name (i.e. PublicKeyToken). We do this to 
 	prevent runtime conflicts with other Visual Studio extensions that may also be using a different version of this assembly. The script paths may need to be updated.
 
