@@ -1,27 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-	<Metadata>
-		<Identity Id="8D0CE300-9898-128B-95F0-12C767EC20E3" Version="1.0.1" Language="en-US" Publisher="deadlydog" />
-		<DisplayName>Diff All Files for VS2017</DisplayName>
-		<Description xml:space="preserve">Quickly compare changes to all files in Git (staged/unstaged files or a commit) or TFS (shelveset, changeset, or with pending changes).</Description>
-		<MoreInfo>https://github.com/deadlydog/VS.DiffAllFiles</MoreInfo>
-		<Icon>FilesFromShared\Resources\PackageIcon_Small.ico</Icon>
-		<PreviewImage>FilesFromShared\Resources\PreviewImage.png</PreviewImage>
-		<Tags>Diff, Difference, Differences, Compare, Review, All, Many, Multiple, Files, Items, TF, TFS, Team Foundation, Team Foundation Server, TFVC, Pending Changes, Pending, Changes, Changeset, Shelveset, Git, Commit</Tags>
-	</Metadata>
-	<Installation>
-		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0]" />
-	</Installation>
-	<Dependencies>
-		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-		<Dependency Id="Microsoft.VisualStudio.MPF.15.0" DisplayName="Visual Studio MPF 15.0" d:Source="Installed" Version="[15.0,16.0)" />
-	</Dependencies>
-	<Assets>
-		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
-	</Assets>
-	<Prerequisites>
-		<Prerequisite Id="Microsoft.VisualStudio.Component.ManagedDesktop.Core" Version="[15.0.26208.0,16.0)" DisplayName="Managed Desktop Workload Core" />
-		<Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0.26208.0,16.0)" DisplayName="Visual Studio core editor" />
-	</Prerequisites>
+    <Metadata>
+        <Identity Id="8D0CE300-9898-128B-95F0-12C767EC20E3" Version="1.0.1.1" Language="en-US" Publisher="deadlydog" />
+        <DisplayName>Diff All Files for VS2017</DisplayName>
+        <Description xml:space="preserve">Quickly compare changes to all files in Git (staged/unstaged files or a commit) or TFS (shelveset, changeset, or with pending changes).</Description>
+        <MoreInfo>https://github.com/deadlydog/VS.DiffAllFiles</MoreInfo>
+        <Icon>FilesFromShared\Resources\PackageIcon_Small.ico</Icon>
+        <PreviewImage>FilesFromShared\Resources\PreviewImage.png</PreviewImage>
+        <Tags>Diff, Difference, Differences, Compare, Review, All, Many, Multiple, Files, Items, TF, TFS, Team Foundation, Team Foundation Server, TFVC, Pending Changes, Pending, Changes, Changeset, Shelveset, Git, Commit</Tags>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0]" />
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+        <Dependency Id="Microsoft.VisualStudio.MPF.15.0" DisplayName="Visual Studio MPF 15.0" d:Source="Installed" Version="[15.0,16.0)" />
+    </Dependencies>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+    </Assets>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.ManagedDesktop.Core" Version="[15.0.26208.0,16.0)" DisplayName="Managed Desktop Workload Core" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0.26208.0,16.0)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
 </PackageManifest>
