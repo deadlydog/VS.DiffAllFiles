@@ -19,3 +19,4 @@ AppPackages/
 DansLibGit2SharpKey.snk
 LibGit2Sharp.il
 packages/
+.vs/
