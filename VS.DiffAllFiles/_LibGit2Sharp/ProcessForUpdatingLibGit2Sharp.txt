@@ -12,9 +12,9 @@
 
 3. Replace the file at VS.DiffAllFiles\_LibGit2Sharp\LibGit2Sharp.dll with the new signed version.
 4. Remove the LibGit2Sharp reference from all of the VS projects, and re-add it, pointing it to the new signed version.
-5. Delete the VS.DiffAllFiles\_LibGit2Sharp\git2-*.dll file.
+5. Delete the VS.DiffAllFiles\_LibGit2Sharp\git2-*.dll file from the project and hard drive.
 6. Copy the x86 version of the git2-*.dll file from the new LigGit2Sharp.NativeBinaries NuGet package to the VS.DiffAllFiles\_LibGit2Sharp directory.
 	e.g. "packages\LibGit2Sharp.NativeBinaries.1.0.164\runtimes\win7-x86\native\git2-a5cf255.dll"
-7. Update the _LibGit2Sharp shortcut files in the other VS projects.
+7. Add the VS.DiffAllFiles\_LibGit2Sharp\git2-*.dll file back to the project, and update the _LibGit2Sharp shortcut files in the other VS projects.
 8. In the VSIX projects, change the _LibGit2Sharp\git2-*.dll properties to have Include In VSIX set to "True", and set the VSIX Sub Path to "\".
 	This will ensure that the git2-*.dll file required by LibGit2Sharp.dll is included in the root directory of the extension when it is installed.
