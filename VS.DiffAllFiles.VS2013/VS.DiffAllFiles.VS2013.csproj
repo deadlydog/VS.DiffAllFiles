@@ -336,6 +336,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\VS.DiffAllFiles\_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.md">
+      <Link>_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.md</Link>
+    </None>
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
@@ -362,9 +365,6 @@
     <Content Include="..\VS.DiffAllFiles\_LibGit2Sharp\LibGit2Sharp.dll">
       <Link>_LibGit2Sharp\LibGit2Sharp.dll</Link>
     </Content>
-    <Resource Include="..\VS.DiffAllFiles\_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.txt">
-      <Link>_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.txt</Link>
-    </Resource>
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Client.dll" />
     <Content Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.dll" />
     <Resource Include="VersionSpecificReferences\Microsoft.TeamFoundation.Controls.xml" />

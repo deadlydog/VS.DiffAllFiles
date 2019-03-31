@@ -219,13 +219,13 @@
   <ItemGroup>
     <Content Include="_LibGit2Sharp\git2-a5cf255.dll" />
     <Content Include="_LibGit2Sharp\LibGit2Sharp.dll" />
-    <Content Include="_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.txt" />
     <Content Include="Resources\PackageIcon_Small.ico" />
     <Content Include="Resources\PreviewImage.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="_LibGit2Sharp\ProcessForUpdatingLibGit2Sharp.md" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
