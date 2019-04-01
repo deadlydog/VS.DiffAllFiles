@@ -6,7 +6,6 @@ This extension adds a new control into the Team Explorer pane wherever Visual St
 
 Download this extension for [Visual Studio 2017][DiffAllFilesVs2017MarketplaceUrl], [2015][DiffAllFilesVs2015MarketplaceUrl], [2013][DiffAllFilesVs2013MarketplaceUrl], or [2012][DiffAllFilesVs2012MarketplaceUrl] from the VS Extension Gallery.
 
-
 ## Features
 
 * Compare files one at a time, many files at a time, or with all files combined in a single file.
@@ -16,7 +15,6 @@ Download this extension for [Visual Studio 2017][DiffAllFilesVs2017MarketplaceUr
 * Remaining files to be compared will open automatically when current file diff windows are closed.
 * Specify the file versions to compare against (i.e. Unmodified, Workspace, Previous, Latest).
 * Supports both Git and TFVC source control providers.
-
 
 ## Screenshots
 
@@ -28,14 +26,12 @@ Settings Screen (available in Visual Studio from `Tools -> Options... -> Diff Al
 
 ![Diff All Files Settings page][DiffAllFilesSettingsImage]
 
-
 ## Contributing
 
-Pull requests are welcome and appreciated. You may find [the internal docs][DiffAllFilesInternalDocs] helpful to get you up and running.
-
+Pull requests are welcome and appreciated. You may find [the contributing docs][DiffAllFilesContributingPage] helpful to get you up and running.
 
 <!-- Links -->
-[DiffAllFilesInternalDocs]: https://github.com/deadlydog/VS.DiffAllFiles/tree/master/docs/internal
+[DiffAllFilesContributingPage]: docs/Contributing.md
 [DiffAllFilesVs2012MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2012
 [DiffAllFilesVs2013MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2013
 [DiffAllFilesVs2015MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2015
