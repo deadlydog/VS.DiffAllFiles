@@ -30,7 +30,9 @@ If you are trying to contribute code, you may find these other pages useful:
 - [How to debug VSIX projects][HowToDebugVsixProjectsPage]
 - [Process for updating the LibGit2Sharp version][ProcessForUpdatingLibGit2SharpPage]
 - [Adding support for new versions of Visual Studio][SupportingNewVisualStudioVersionsPage]
+- [Things to do before publishing a new version][PublishingANewVersionPage]
 
 [HowToDebugVsixProjectsPage]: Contributing/HowToDebugVsixProjects.md
 [ProcessForUpdatingLibGit2SharpPage]: Contributing/ProcessForUpdatingLibGit2Sharp.md
 [SupportingNewVisualStudioVersionsPage]: Contributing/SupportingNewVisualStudioVersions.md
+[PublishingANewVersionPage]: PublishingANewVersion.md
