@@ -35,4 +35,4 @@ If you are trying to contribute code, you may find these other pages useful:
 [HowToDebugVsixProjectsPage]: Contributing/HowToDebugVsixProjects.md
 [ProcessForUpdatingLibGit2SharpPage]: Contributing/ProcessForUpdatingLibGit2Sharp.md
 [SupportingNewVisualStudioVersionsPage]: Contributing/SupportingNewVisualStudioVersions.md
-[PublishingANewVersionPage]: PublishingANewVersion.md
+[PublishingANewVersionPage]: Contributing/PublishingANewVersion.md
