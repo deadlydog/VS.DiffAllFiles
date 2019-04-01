@@ -31,6 +31,6 @@ If you are trying to contribute code, you may find these other pages useful:
 - [Process for updating the LibGit2Sharp version][ProcessForUpdatingLibGit2SharpPage]
 - [Adding support for new versions of Visual Studio][SupportingNewVisualStudioVersionsPage]
 
-[HowToDebugVsixProjectsPage]: Contributing\HowToDebugVsixProjects.md
-[ProcessForUpdatingLibGit2SharpPage]: Contributing\ProcessForUpdatingLibGit2Sharp.md
-[SupportingNewVisualStudioVersionsPage]: Contributing\SupportingNewVisualStudioVersions.md
+[HowToDebugVsixProjectsPage]: Contributing/HowToDebugVsixProjects.md
+[ProcessForUpdatingLibGit2SharpPage]: Contributing/ProcessForUpdatingLibGit2Sharp.md
+[SupportingNewVisualStudioVersionsPage]: Contributing/SupportingNewVisualStudioVersions.md
