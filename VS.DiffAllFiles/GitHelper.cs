@@ -70,6 +70,9 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			var repoRootDirectory = repositoryPath.Replace(@".git\", string.Empty);
 			var relativeFilePath = filePathInRepository.Replace(repoRootDirectory, string.Empty);
 
+			// An update to LibGit2Sharp removed support for backslashes, so file paths must use forward slashes: https://github.com/libgit2/libgit2sharp/issues/1075
+			relativeFilePath = ReplaceBackslashesWithForwardSlashes(relativeFilePath);
+
 			// Connect to the Git repository.
 			using (var repository = GetGitRepository(repositoryPath))
 			{
@@ -121,6 +124,10 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			var relativeFilePath = filePathInRepository.Replace(repoRootDirectory, string.Empty);
 			var previousVersionsRelativeFilePath = previousVersionsFilePathInRepository.Replace(repoRootDirectory, string.Empty);
 
+			// An update to LibGit2Sharp removed support for backslashes, so file paths must use forward slashes: https://github.com/libgit2/libgit2sharp/issues/1075
+			relativeFilePath = ReplaceBackslashesWithForwardSlashes(relativeFilePath);
+			previousVersionsRelativeFilePath = ReplaceBackslashesWithForwardSlashes(previousVersionsRelativeFilePath);
+
 			// Connect to the Git repository.
 			using (var repository = GetGitRepository(repositoryPath))
 			{
@@ -152,7 +159,8 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 		private static Commit GetPreviousCommitOfFile(Repository repository, string filePathRelativeToRepository, string commitSha = null)
 		{
 			bool versionMatchesGivenVersion = false;
-			var fileHistory = repository.Commits.QueryBy(filePathRelativeToRepository);
+			// Need to use Topological sort to avoid "Given key not present in dictionary" error: https://github.com/libgit2/libgit2sharp/issues/1520
+			var fileHistory = repository.Commits.QueryBy(filePathRelativeToRepository, new CommitFilter { SortBy = CommitSortStrategies.Topological });
 			foreach (var version in fileHistory)
 			{
 				// If they want the latest commit or we have found the "previous" commit that they were after, return it.
@@ -183,6 +191,9 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			var repoRootDirectory = repositoryPath.Replace(@".git\", string.Empty);
 			var relativeFilePath = filePathInRepository.Replace(repoRootDirectory, string.Empty);
 
+			// An update to LibGit2Sharp removed support for backslashes, so file paths must use forward slashes: https://github.com/libgit2/libgit2sharp/issues/1075
+			relativeFilePath = ReplaceBackslashesWithForwardSlashes(relativeFilePath);
+
 			// Connect to the Git repository.
 			using (var repository = GetGitRepository(repositoryPath))
 			{
@@ -209,5 +220,7 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 				return repository.Config.ToList();
 			}
 		}
+
+		private static string ReplaceBackslashesWithForwardSlashes(string path) => path.Replace('\\', '/');
 	}
 }
