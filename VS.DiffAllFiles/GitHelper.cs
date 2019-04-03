@@ -70,6 +70,9 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			var repoRootDirectory = repositoryPath.Replace(@".git\", string.Empty);
 			var relativeFilePath = filePathInRepository.Replace(repoRootDirectory, string.Empty);
 
+			// An update to LibGit2Sharp removed support for backslashes, so file paths must use forward slashes: https://github.com/libgit2/libgit2sharp/issues/1075
+			relativeFilePath = ReplaceBackslashesWithForwardSlashes(relativeFilePath);
+
 			// Connect to the Git repository.
 			using (var repository = GetGitRepository(repositoryPath))
 			{
@@ -120,6 +123,10 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			var repoRootDirectory = repositoryPath.Replace(@".git\", string.Empty);
 			var relativeFilePath = filePathInRepository.Replace(repoRootDirectory, string.Empty);
 			var previousVersionsRelativeFilePath = previousVersionsFilePathInRepository.Replace(repoRootDirectory, string.Empty);
+
+			// An update to LibGit2Sharp removed support for backslashes, so file paths must use forward slashes: https://github.com/libgit2/libgit2sharp/issues/1075
+			relativeFilePath = ReplaceBackslashesWithForwardSlashes(relativeFilePath);
+			previousVersionsRelativeFilePath = ReplaceBackslashesWithForwardSlashes(previousVersionsRelativeFilePath);
 
 			// Connect to the Git repository.
 			using (var repository = GetGitRepository(repositoryPath))
@@ -183,6 +190,9 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 			var repoRootDirectory = repositoryPath.Replace(@".git\", string.Empty);
 			var relativeFilePath = filePathInRepository.Replace(repoRootDirectory, string.Empty);
 
+			// An update to LibGit2Sharp removed support for backslashes, so file paths must use forward slashes: https://github.com/libgit2/libgit2sharp/issues/1075
+			relativeFilePath = ReplaceBackslashesWithForwardSlashes(relativeFilePath);
+
 			// Connect to the Git repository.
 			using (var repository = GetGitRepository(repositoryPath))
 			{
@@ -209,5 +219,7 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 				return repository.Config.ToList();
 			}
 		}
+
+		private static string ReplaceBackslashesWithForwardSlashes(string path) => path.Replace('\\', '/');
 	}
 }
