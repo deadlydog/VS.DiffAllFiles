@@ -159,7 +159,8 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 		private static Commit GetPreviousCommitOfFile(Repository repository, string filePathRelativeToRepository, string commitSha = null)
 		{
 			bool versionMatchesGivenVersion = false;
-			var fileHistory = repository.Commits.QueryBy(filePathRelativeToRepository);
+			// Need to use Topological sort to avoid "Given key not present in dictionary" error: https://github.com/libgit2/libgit2sharp/issues/1520
+			var fileHistory = repository.Commits.QueryBy(filePathRelativeToRepository, new CommitFilter { SortBy = CommitSortStrategies.Topological });
 			foreach (var version in fileHistory)
 			{
 				// If they want the latest commit or we have found the "previous" commit that they were after, return it.
