@@ -34,7 +34,6 @@ namespace VS_DiffAllFiles
 #else
 	// Async Package info: https://docs.microsoft.com/en-us/visualstudio/extensibility/how-to-use-asyncpackage-to-load-vspackages-in-the-background?view=vs-2019
 	[PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-	//[ProvideService(typeof(SMyTestService), IsAsyncQueryable = true)]
 	[ProvideAutoLoad(Microsoft.VisualStudio.Shell.Interop.UIContextGuids.NoSolution, PackageAutoLoadFlags.BackgroundLoad)]
 	public abstract class VS_DiffAllFilesPackage : AsyncPackage
 #endif
@@ -75,7 +74,6 @@ namespace VS_DiffAllFiles
 		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 			InitializeSettings();
-			//return base.InitializeAsync(cancellationToken, progress);
 		}
 #endif
 		private void InitializeSettings()
