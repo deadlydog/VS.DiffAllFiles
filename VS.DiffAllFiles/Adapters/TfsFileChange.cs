@@ -26,6 +26,14 @@ namespace VS_DiffAllFiles.Adapters
 			_pendingChange = pendingChange;
 		}
 
+		public TfsFileChange(Microsoft.TeamFoundation.VersionControl.Controls.Extensibility.PendingChangesItem pendingChangeItem)
+		{
+			if (pendingChangeItem == null || pendingChangeItem.PendingChange == null)
+				throw new ArgumentNullException("pendingChange", "The TFS Pending Change Item used to initialize a TfsFileChange instance cannot be null.");
+
+			_pendingChange = pendingChangeItem.PendingChange;
+		}
+
 		/// <summary>
 		/// Gets the version.
 		/// </summary>
