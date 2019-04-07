@@ -51,6 +51,7 @@ namespace VS_DiffAllFiles.Adapters
 		{
 			get
 			{
+// As of VS 2019 FilteredIncludedChanges has been deprecated in favor of SelectedIncludedItems.
 #if (!VS2019)
 				return _pendingChangesService.FilteredIncludedChanges.Length > 0
 					  ? _pendingChangesService.FilteredIncludedChanges.Select(pendingChange => new TfsFileChange(pendingChange)).ToList()
@@ -58,7 +59,7 @@ namespace VS_DiffAllFiles.Adapters
 #else
 				return _pendingChangesService.SelectedIncludedItems.Length > 0
 					  ? _pendingChangesService.SelectedIncludedItems.Select(pendingChange => new TfsFileChange(pendingChange)).ToList()
-					  : _pendingChangesService.SelectedIncludedItems.Select(pendingChange => new TfsFileChange(pendingChange)).ToList();
+					  : _pendingChangesService.IncludedChanges.Select(pendingChange => new TfsFileChange(pendingChange)).ToList();
 #endif
 			}
 		}
@@ -70,6 +71,7 @@ namespace VS_DiffAllFiles.Adapters
 		{
 			get
 			{
+// As of VS 2019 FilteredExcludedChanges has been deprecated in favor of SelectedExcludedItems.
 #if (!VS2019)
 				return _pendingChangesService.FilteredExcludedChanges.Length > 0
 					  ? _pendingChangesService.FilteredExcludedChanges.Select(pendingChange => new TfsFileChange(pendingChange)).ToList()
