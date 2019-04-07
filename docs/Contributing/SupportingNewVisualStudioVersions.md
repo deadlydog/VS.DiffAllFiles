@@ -2,6 +2,7 @@
 
 Here are the steps taken to add Visual Studio 2019 support to Diff All Files:
 
+1. Make sure there are no pending changes, and do a `git clean -xfd` to remove all temp files.
 1. Copy the `VS.DiffAllFiles.VS2017` project directory, and name it `VS.DiffAllFiles.VS2019`.
 1. Change all file names with `2017` to `2019`.
 1. Add the new 2019 project to the solution in Visual Studio, and let VS upgrade it if necessary.
@@ -20,6 +21,8 @@ Here are the steps taken to add Visual Studio 2019 support to Diff All Files:
    - Change any other basic information (Product name, description, tags, website URLs, etc.)
    - Change the Install Targets to target the new version of Visual Studio.
    - Change any other information needed to support the new .vsixmanifest requirements.
+1. Remove Microsoft.VisualStudio.Shell.14.0 NuGet package from VS 2019 project and install 15.0 NuGet package, to avoid runtime error when loading Diff All Files Settings page.
+1. Remove Microsoft.VisualStudio.Shell.Immutable.14.0 NuGet package from VS 2019 project to avoid type conflicts.
 1. If there are breaking Visual Studio library changes, you will need to update the shared code appropriately.
 
 That should be it (hopefully). Now just test that everything still works:
