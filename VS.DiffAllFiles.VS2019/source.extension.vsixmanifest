@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+    <Metadata>
+        <Identity Id="B4202C10-5715-1294-9DBA-15A319FF9EBF" Version="1.0.1" Language="en-US" Publisher="deadlydog" />
+        <DisplayName>Diff All Files for VS2019</DisplayName>
+        <Description xml:space="preserve">Quickly compare changes to all files in Git (staged/unstaged files or a commit) or TFS (shelveset, changeset, or with pending changes).</Description>
+        <MoreInfo>https://github.com/deadlydog/VS.DiffAllFiles</MoreInfo>
+        <Icon>FilesFromShared\Resources\PackageIcon_Small.ico</Icon>
+        <PreviewImage>FilesFromShared\Resources\PreviewImage.png</PreviewImage>
+        <Tags>Diff, Difference, Differences, Compare, Review, All, Many, Multiple, Files, Items, TF, TFS, Team Foundation, Team Foundation Server, TFVC, Pending Changes, Pending, Changes, Changeset, Shelveset, Git, Commit</Tags>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0]" />
+    </Installation>
+    <Dependencies>
+    </Dependencies>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+    </Assets>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0.28315.86,17.0)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
+</PackageManifest>
