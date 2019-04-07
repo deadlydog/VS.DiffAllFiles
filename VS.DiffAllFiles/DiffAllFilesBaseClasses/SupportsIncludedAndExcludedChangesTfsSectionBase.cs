@@ -19,12 +19,14 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			switch (e.PropertyName)
 			{
 				case "IncludedChanges":
-				case "FilteredIncludedChanges":	// I believe the "Filtered" events and properties are deprecated, but we'll leave this case here for now; no harm.
+				case "FilteredIncludedChanges": // I believe the "Filtered" events and properties are deprecated, but we'll leave this case here for now; no harm.
+				case "SelectedIncludedItems":	// New non-deprecated events to listen to as of VS 2019.
 					NotifyPropertyChanged("IsCompareIncludedFilesEnabled");
 					break;
 
 				case "ExcludedChanges":
-				case "FilteredExcludedChanges":	// I believe the "Filtered" events and properties are deprecated, but we'll leave this case here for now; no harm.
+				case "FilteredExcludedChanges": // I believe the "Filtered" events and properties are deprecated, but we'll leave this case here for now; no harm.
+				case "SelectedExcludedItems":   // New non-deprecated events to listen to as of VS 2019.
 					NotifyPropertyChanged("IsCompareExcludedFilesEnabled");
 					break;
 			}
