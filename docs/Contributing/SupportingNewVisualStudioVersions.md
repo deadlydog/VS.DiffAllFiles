@@ -20,6 +20,7 @@ Here are the steps taken to add Visual Studio 2019 support to Diff All Files:
    - Change the Guid to match the new Guid added to the `Guids.cs` file earlier above.
    - Change any other basic information (Product name, description, tags, website URLs, etc.)
    - Change the Install Targets to target the new version of Visual Studio.
+   - Change the Prerequisites to target the new version of Visual Studio.
    - Change any other information needed to support the new .vsixmanifest requirements.
 1. Remove Microsoft.VisualStudio.Shell.14.0 NuGet package from VS 2019 project and install 15.0 NuGet package, to avoid runtime error when loading Diff All Files Settings page.
 1. Remove Microsoft.VisualStudio.Shell.Immutable.14.0 NuGet package from VS 2019 project to avoid type conflicts.
