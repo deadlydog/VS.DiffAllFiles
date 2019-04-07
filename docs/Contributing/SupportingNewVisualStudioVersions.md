@@ -25,7 +25,6 @@ Here are the steps taken to add Visual Studio 2019 support to Diff All Files:
 1. Remove Microsoft.VisualStudio.Shell.Immutable.14.0 NuGet package from VS 2019 project to avoid type conflicts.
 1. If there are breaking Visual Studio library changes, you will need to update the shared code appropriately.
 
-That should be it (hopefully). Now just test that everything still works:
+That should be it (hopefully). Now just [test that everything still works][ThingsToTestAfterMakingChanges].
 
-1. Make sure the button in the Settings window to open the TF Diff Tool Configuration window still works (i.e. that the location of where we expect to find TF.exe hasn't changed).
-1. Test diffing both TFVC and Git changes to make sure they work as expected, and fix any bugs that may have arisen.
+[ThingsToTestAfterMakingChanges]: ThingsToTestAfterMakingChanges.md
