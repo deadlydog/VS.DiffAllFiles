@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="B4202C10-5715-1294-9DBA-15A319FF9EBF" Version="1.0.2" Language="en-US" Publisher="deadlydog" />
+        <Identity Id="B4202C10-5715-1294-9DBA-15A319FF9EBF" Version="1.0.3" Language="en-US" Publisher="deadlydog" />
         <DisplayName>Diff All Files for VS2019</DisplayName>
         <Description xml:space="preserve">Quickly compare changes to all files in Git (staged/unstaged files or a commit) or TFS (shelveset, changeset, or with pending changes).</Description>
         <MoreInfo>https://github.com/deadlydog/VS.DiffAllFiles</MoreInfo>
