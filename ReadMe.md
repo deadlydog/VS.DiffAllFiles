@@ -30,6 +30,12 @@ Settings Screen (available in Visual Studio from `Tools -> Options... -> Diff Al
 
 Pull requests are welcome and appreciated. You may find [the contributing docs][DiffAllFilesContributingPage] helpful to get you up and running.
 
+## Donate
+
+Buy me a toque for providing this extension open source and for free :)
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CZP8CU53RJ29W)
+
 <!-- Links -->
 [DiffAllFilesContributingPage]: docs/Contributing.md
 [DiffAllFilesVs2012MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2012
