@@ -4,6 +4,8 @@
 
 - Make sure you can open the Diff All Files Settings pages without any errors.
 - Make sure the button in the Settings window to open the TF Diff Tool Configuration window still works (i.e. that the location of where we expect to find TF.exe hasn't changed).
+- Make sure you can change settings, close the window, restart Visual Studio, and the settings persisted.
+- Make sure the Restore Defaults button works.
 
 ## Diff functionality
 
