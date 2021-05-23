@@ -30,6 +30,10 @@ Settings Screen (available in Visual Studio from `Tools -> Options... -> Diff Al
 
 Pull requests are welcome and appreciated. You may find [the contributing docs][DiffAllFilesContributingPage] helpful to get you up and running.
 
+## Changelogs
+
+See what's changed and when in each version of the extension in [the Changelog](Changelog.md).
+
 ## Donate
 
 Buy me a toque for providing this extension open source and for free :)
