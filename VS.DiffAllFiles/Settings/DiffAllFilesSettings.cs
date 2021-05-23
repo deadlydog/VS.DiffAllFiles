@@ -54,7 +54,11 @@ namespace VS_DiffAllFiles.Settings
 			ShelvesetDetailsCompareVersionValue = CompareVersion.UnmodifiedVersion.Value;
 			GitChangesCompareVersionValue = CompareVersion.UnmodifiedVersion.Value;
 			GitCommitDetailsCompareVersionValue = CompareVersion.UnmodifiedVersion.Value;
+
+			// Mark that the class has been initialized, so any changes made from here on can be saved.
+			_isInitialized = true;
 		}
+		private bool _isInitialized = false;
 
 		#region Global Extension Settings
 
@@ -82,25 +86,33 @@ namespace VS_DiffAllFiles.Settings
 		/// <summary>
 		/// Get / Set if new files being added to source control should be compared.
 		/// </summary>
-		public bool CompareNewFiles { get { return _compareNewFiles; } set { _compareNewFiles = value; NotifyPropertyChanged("CompareNewFiles"); } }
+		public bool CompareNewFiles { get { return _compareNewFiles; } set { _compareNewFiles = value; NotifyPropertyChanged(nameof(CompareNewFiles)); } }
 		private bool _compareNewFiles = false;
 
 		/// <summary>
 		/// Get / Set if files being deleted from source control should be compared.
 		/// </summary>
-		public bool CompareDeletedFiles { get { return _compareDeletedFiles; } set { _compareDeletedFiles = value; NotifyPropertyChanged("CompareDeletedFiles"); } }
+		public bool CompareDeletedFiles { get { return _compareDeletedFiles; } set { _compareDeletedFiles = value; NotifyPropertyChanged(nameof(CompareDeletedFiles)); } }
 		private bool _compareDeletedFiles = false;
 
 		/// <summary>
 		/// Get / Set if files whose contents have not been changed should be compared.
 		/// </summary>
-		public bool CompareFilesNotChanged { get { return _compareFilesNotChanged; } set { _compareFilesNotChanged = value; NotifyPropertyChanged("CompareFilesNotChanged"); } }
+		public bool CompareFilesNotChanged { get { return _compareFilesNotChanged; } set { _compareFilesNotChanged = value; NotifyPropertyChanged(nameof(CompareFilesNotChanged)); } }
 		private bool _compareFilesNotChanged = false;
 
 		/// <summary>
 		/// Get / Set the number of files to compare at a time when using Individual File Compare Mode.
 		/// </summary>
-		public int NumberOfIndividualFilesToCompareAtATime { get { return _numberOfIndividualFilesToCompareAtATime; } set { _numberOfIndividualFilesToCompareAtATime = value; NotifyPropertyChanged("NumberOfIndividualFilesToCompareAtATime"); } }
+		public int NumberOfIndividualFilesToCompareAtATime
+		{
+			get { return _numberOfIndividualFilesToCompareAtATime; }
+			set
+			{
+				_numberOfIndividualFilesToCompareAtATime = value;
+				NotifyPropertyChanged(nameof(NumberOfIndividualFilesToCompareAtATime));
+			}
+		}
 		private int _numberOfIndividualFilesToCompareAtATime = 0;
 
 		/// <summary>
@@ -112,8 +124,8 @@ namespace VS_DiffAllFiles.Settings
 			set
 			{
 				_fileExtensionsToIgnoreList = value;
-				NotifyPropertyChanged("FileExtensionsToIgnoreList");
-				NotifyPropertyChanged("FileExtensionsToIgnore");
+				NotifyPropertyChanged(nameof(FileExtensionsToIgnoreList));
+				NotifyPropertyChanged(nameof(FileExtensionsToIgnore));
 			}
 		}
 		private List<string> _fileExtensionsToIgnoreList = new List<string>();
@@ -140,7 +152,7 @@ namespace VS_DiffAllFiles.Settings
 		/// Get / Set the available Compare Modes that may be used compare files.
 		/// <para>This should not be used to decide which compare mode to use; instead use the CompareModeToUse property.</para>
 		/// </summary>
-		public CompareModes CompareModesAvailable { get { return _compareModesAvailable; } set { _compareModesAvailable = value; NotifyPropertyChanged("CompareModesAvailable"); } }
+		public CompareModes CompareModesAvailable { get { return _compareModesAvailable; } set { _compareModesAvailable = value; NotifyPropertyChanged(nameof(CompareModesAvailable)); } }
 		private CompareModes _compareModesAvailable = CompareModes.AllowUserToChoose;
 
 		/// <summary>
@@ -153,14 +165,14 @@ namespace VS_DiffAllFiles.Settings
 				if (CompareModesAvailable == CompareModes.AllowUserToChoose) return _compareModeToUse;
 				else return CompareModesAvailable;
 			}
-			set { _compareModeToUse = value; NotifyPropertyChanged("CompareModeToUse"); }
+			set { _compareModeToUse = value; NotifyPropertyChanged(nameof(CompareModeToUse)); }
 		}
 		private CompareModes _compareModeToUse = CompareModes.IndividualFiles;
 
 		/// <summary>
 		/// If true, the file headers placed in the Combined files will be the same when in the CombinedIntoSingleFile Compare Mode.
 		/// </summary>
-		public bool UseSameHeadersForCombinedFiles { get { return _useSameHeadersForCombinedFiles; } set { _useSameHeadersForCombinedFiles = value; NotifyPropertyChanged("UseSameHeadersForCombinedFiles"); } }
+		public bool UseSameHeadersForCombinedFiles { get { return _useSameHeadersForCombinedFiles; } set { _useSameHeadersForCombinedFiles = value; NotifyPropertyChanged(nameof(UseSameHeadersForCombinedFiles)); } }
 		private bool _useSameHeadersForCombinedFiles = false;
 
 		#endregion
@@ -178,7 +190,7 @@ namespace VS_DiffAllFiles.Settings
 		public CompareVersion.Values PendingChangesCompareVersionValue
 		{
 			get { return _pendingChangesCompareVersionValue; }
-			set { _pendingChangesCompareVersionValue = value; NotifyPropertyChanged("PendingChangesCompareVersionValue"); NotifyPropertyChanged("PendingChangesCompareVersion"); }
+			set { _pendingChangesCompareVersionValue = value; NotifyPropertyChanged(nameof(PendingChangesCompareVersionValue)); NotifyPropertyChanged(nameof(PendingChangesCompareVersion)); }
 		}
 		private CompareVersion.Values _pendingChangesCompareVersionValue = CompareVersion.Values.WorkspaceVersion;
 		
@@ -194,7 +206,7 @@ namespace VS_DiffAllFiles.Settings
 		public CompareVersion.Values ChangesetDetailsCompareVersionValue
 		{
 			get { return _changesetDetailsCompareVersionValue; }
-			set { _changesetDetailsCompareVersionValue = value; NotifyPropertyChanged("ChangesetDetailsCompareVersionValue"); NotifyPropertyChanged("ChangesetDetailsCompareVersion"); }
+			set { _changesetDetailsCompareVersionValue = value; NotifyPropertyChanged(nameof(ChangesetDetailsCompareVersionValue)); NotifyPropertyChanged(nameof(ChangesetDetailsCompareVersion)); }
 		}
 		private CompareVersion.Values _changesetDetailsCompareVersionValue = CompareVersion.Values.PreviousVersion;
 
@@ -210,7 +222,7 @@ namespace VS_DiffAllFiles.Settings
 		public CompareVersion.Values ShelvesetDetailsCompareVersionValue
 		{
 			get { return _shelvesetDetailsCompareVersionValue; }
-			set { _shelvesetDetailsCompareVersionValue = value; NotifyPropertyChanged("ShelvesetDetailsCompareVersionValue"); NotifyPropertyChanged("ShelvesetDetailsCompareVersion"); }
+			set { _shelvesetDetailsCompareVersionValue = value; NotifyPropertyChanged(nameof(ShelvesetDetailsCompareVersionValue)); NotifyPropertyChanged(nameof(ShelvesetDetailsCompareVersion)); }
 		}
 		private CompareVersion.Values _shelvesetDetailsCompareVersionValue = CompareVersion.Values.UnmodifiedVersion;
 
@@ -226,7 +238,7 @@ namespace VS_DiffAllFiles.Settings
 		public CompareVersion.Values GitChangesCompareVersionValue
 		{
 			get { return _gitChangesCompareVersionValue; }
-			set { _gitChangesCompareVersionValue = value; NotifyPropertyChanged("GitChangesCompareVersionValue"); NotifyPropertyChanged("GitChangesCompareVersion"); }
+			set { _gitChangesCompareVersionValue = value; NotifyPropertyChanged(nameof(GitChangesCompareVersionValue)); NotifyPropertyChanged(nameof(GitChangesCompareVersion)); }
 		}
 		private CompareVersion.Values _gitChangesCompareVersionValue = CompareVersion.Values.UnmodifiedVersion;
 
@@ -242,7 +254,7 @@ namespace VS_DiffAllFiles.Settings
 		public CompareVersion.Values GitCommitDetailsCompareVersionValue
 		{
 			get { return _gitCommitDetailsCompareVersionValue; }
-			set { _gitCommitDetailsCompareVersionValue = value; NotifyPropertyChanged("GitCommitDetailsCompareVersionValue"); NotifyPropertyChanged("GitCommitDetailsCompareVersion"); }
+			set { _gitCommitDetailsCompareVersionValue = value; NotifyPropertyChanged(nameof(GitCommitDetailsCompareVersionValue)); NotifyPropertyChanged(nameof(GitCommitDetailsCompareVersion)); }
 		}
 		private CompareVersion.Values _gitCommitDetailsCompareVersionValue = CompareVersion.Values.UnmodifiedVersion;
 
@@ -272,6 +284,15 @@ namespace VS_DiffAllFiles.Settings
 		{
 			ResetGlobalSettings();
 			base.ResetSettings();
+		}
+
+		public override void SaveSettingsToStorage()
+		{
+			// If the settings are still being initialized (i.e. properties are being set to their default values), don't save changes being made to the settings.
+			if (!_isInitialized)
+				return;
+
+			base.SaveSettingsToStorage();
 		}
 
 		#endregion

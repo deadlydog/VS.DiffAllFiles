@@ -79,7 +79,8 @@ namespace VS_DiffAllFiles
 		private void InitializeSettings()
 		{
 			// Load the current settings for this package and save a handle to them.
-			DiffAllFilesSettings.CurrentSettings = GetDialogPage(typeof(DiffAllFilesSettings)) as DiffAllFilesSettings;
+			var previouslySavedSettings = GetDialogPage(typeof(DiffAllFilesSettings)) as DiffAllFilesSettings;
+			DiffAllFilesSettings.CurrentSettings = previouslySavedSettings;
 		}
 	}
 }
