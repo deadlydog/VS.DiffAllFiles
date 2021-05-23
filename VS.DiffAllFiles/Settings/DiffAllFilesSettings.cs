@@ -54,7 +54,11 @@ namespace VS_DiffAllFiles.Settings
 			ShelvesetDetailsCompareVersionValue = CompareVersion.UnmodifiedVersion.Value;
 			GitChangesCompareVersionValue = CompareVersion.UnmodifiedVersion.Value;
 			GitCommitDetailsCompareVersionValue = CompareVersion.UnmodifiedVersion.Value;
+
+			// Mark that the class has been initialized, so any changes made from here on can be saved.
+			_isInitialized = true;
 		}
+		private bool _isInitialized = false;
 
 		#region Global Extension Settings
 
@@ -100,7 +104,15 @@ namespace VS_DiffAllFiles.Settings
 		/// <summary>
 		/// Get / Set the number of files to compare at a time when using Individual File Compare Mode.
 		/// </summary>
-		public int NumberOfIndividualFilesToCompareAtATime { get { return _numberOfIndividualFilesToCompareAtATime; } set { _numberOfIndividualFilesToCompareAtATime = value; NotifyPropertyChanged(nameof(NumberOfIndividualFilesToCompareAtATime)); } }
+		public int NumberOfIndividualFilesToCompareAtATime
+		{
+			get { return _numberOfIndividualFilesToCompareAtATime; }
+			set
+			{
+				_numberOfIndividualFilesToCompareAtATime = value;
+				NotifyPropertyChanged(nameof(NumberOfIndividualFilesToCompareAtATime));
+			}
+		}
 		private int _numberOfIndividualFilesToCompareAtATime = 0;
 
 		/// <summary>
@@ -272,6 +284,15 @@ namespace VS_DiffAllFiles.Settings
 		{
 			ResetGlobalSettings();
 			base.ResetSettings();
+		}
+
+		public override void SaveSettingsToStorage()
+		{
+			// If the settings are still being initialized (i.e. properties are being set to their default values), don't save changes being made to the settings.
+			if (!_isInitialized)
+				return;
+
+			base.SaveSettingsToStorage();
 		}
 
 		#endregion
