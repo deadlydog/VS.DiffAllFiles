@@ -1,5 +1,11 @@
 # Visual Studio 2019 Extension Changelog
 
+## v1.0.5 - May 23, 2020
+
+Fixes:
+
+- Fix bug where settings were not saved and would always revert back to defaults.
+
 ## v1.0.4 - May 26, 2019
 
 Fixes:
