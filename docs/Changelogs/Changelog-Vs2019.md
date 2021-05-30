@@ -1,5 +1,11 @@
 # Visual Studio 2019 Extension Changelog
 
+## vNext
+
+Fixes:
+
+- Prevent NumberOfIndividualFilesToCompareAtATime from ever being zero and resulting in divide by zero error.
+
 ## v1.0.5 - May 23, 2020
 
 Fixes:

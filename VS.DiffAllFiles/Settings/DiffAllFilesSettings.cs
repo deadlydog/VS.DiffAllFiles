@@ -113,7 +113,7 @@ namespace VS_DiffAllFiles.Settings
 				NotifyPropertyChanged(nameof(NumberOfIndividualFilesToCompareAtATime));
 			}
 		}
-		private int _numberOfIndividualFilesToCompareAtATime = 0;
+		private int _numberOfIndividualFilesToCompareAtATime = 1;
 
 		/// <summary>
 		/// Get / Set the list of file extensions to not compare.
