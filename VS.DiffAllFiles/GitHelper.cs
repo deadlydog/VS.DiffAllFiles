@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !VS2012
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 		public static string GetGitRepositoryPath(string path)
 		{
 			// If an invalid path was given, just return null.
-			if (!Directory.Exists(path) && !File.Exists(path))
+			if (string.IsNullOrEmpty(path) || (!Directory.Exists(path) && !File.Exists(path)))
 				return null;
 
 			// Return the path of the Git repository, if this path is actually within one.
@@ -224,3 +225,4 @@ namespace VS_DiffAllFiles.StructuresAndEnums
 		private static string ReplaceBackslashesWithForwardSlashes(string path) => path.Replace('\\', '/');
 	}
 }
+#endif

@@ -5,10 +5,12 @@
 The VS.DiffAllFiles solution is organized into a number of different projects.
 
 - VS.DiffAllFiles - This project doesn't actually produce any used binaries, but contains all of the code that is shared with the version-specific VS20** projects.
-The code from this project is added to the other projects _as links_. This allows us to only have to make code changes in a single place and have it apply to all of the other projects.
-- VS.DiffAllFiles.VS2012 - This project only contains the TFVC shared code, because Visual Studio 2012 does not support Git.
-This project is used to build the VSIX installer for Visual Studio 2012.
-- VS.DiffAllFiles.VS20** - These projects are used to build the VSIX installer for the various versions of Visual Studio.
+This is a shared project (project type was added in VS2015), and this shared project is added to the main version specific projects. This allows us to only have to make code changes in a single place and have it apply to all of the other projects. See the [Guidance for Updating an Extension for Visual Studio 2022](https://docs.microsoft.com/en-us/visualstudio/extensibility/migration/update-visual-studio-extension).
+- VS.DiffAllFiles.VS20** - These projects are used to build the VSIX installer for the various versions of Visual Studio. Notable caveats for each version are listed below.
+- VS.DiffAllFiles.VS2012 - Git was not supported in the TeamExplorer window for this version, so there are less references and some preprocessor exclusions for files related to Git.
+- VS.DiffAllFiles.VS2019 - Throughout the point releases of VS2019, Git functionality was slowly moved from the TeamExplorer window to a new window. As of now, no extensibility points have been documented for this new window, so recent versions of VS2019 will not benefit from this extension for Git. 
+- VS.DiffAllFiles.VS2022 - Git was completely removed from the TeamExplorer window for this version, so some preprocessor exclusions exist for files related to Git. As of now, no extensibility points have been documented for this new window, so VS2022 will not benefit from this extension for Git. 
+
 
 ### Why is there a project for each version of Visual Studio
 

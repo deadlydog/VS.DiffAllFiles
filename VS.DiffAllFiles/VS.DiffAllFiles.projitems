@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>{39744FC9-A89A-4ae1-80D8-D97992E5B77A}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>VS_DiffAllFiles</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Adapters\GitCommitFileChange.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Adapters\GitFileChange.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Adapters\IGitFileChange.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Adapters\ITfsFileChange.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Adapters\ITfsPendingChangesService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Adapters\TfsFileChange.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\ConfigureDiffToolSettingsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\ConfigureDiffToolSettingsPageControl.xaml.cs">
+      <DependentUpon>ConfigureDiffToolSettingsPageControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)StructuresAndEnums\CompareModes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StructuresAndEnums\DiffToolConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StructuresAndEnums\FileLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StructuresAndEnums\FilePathAndLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GitHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Adapters\GitChangesService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Adapters\GitCommitDetailsService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Adapters\IFileChange.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StructuresAndEnums\SectionTypes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StructuresAndEnums\FileExtensionDiffToolConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DiffAllFilesBaseClasses\GitDiffAllFilesSectionBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sections\ShelvesetDetailsSection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sections\GitChangesSection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sections\GitCommitDetailsSection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sections\ChangesetDetailsSection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StructuresAndEnums\CompareVersion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DiffAllFilesBaseClasses\DiffAllFilesSectionBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DiffAllFilesBaseClasses\IDiffAllFilesSection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StructuresAndEnums\ItemStatusTypesToCompare.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DiffAllFilesBaseClasses\TfsDiffAllFilesSectionBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DiffAllFilesHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Guids.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PackageHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Sections\DiffAllFilesSectionControl.xaml.cs">
+      <DependentUpon>DiffAllFilesSectionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Sections\PendingChangesSection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\DiffAllFilesSettings.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\DiffAllFilesSettingsPageControl.xaml.cs">
+      <DependentUpon>DiffAllFilesSettingsPageControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)DiffAllFilesBaseClasses\SupportsIncludedAndExcludedChangesTfsSectionBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StructuresAndEnums\SourceAndTargetFilePathsAndLabels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TaskExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TeamExplorerBaseClasses\TeamExplorerBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TeamExplorerBaseClasses\TeamExplorerBaseNavigationItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TeamExplorerBaseClasses\TeamExplorerBaseNavigationLink.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TeamExplorerBaseClasses\TeamExplorerBasePage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TeamExplorerBaseClasses\TeamExplorerBaseSection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VS.DiffAllFilesPackage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Adapters\IFileChangesService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Adapters\TfsPendingChangesService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Sections\DiffAllFilesSectionControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Settings\ConfigureDiffToolSettingsPageControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Settings\DiffAllFilesSettingsPageControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+</Project>

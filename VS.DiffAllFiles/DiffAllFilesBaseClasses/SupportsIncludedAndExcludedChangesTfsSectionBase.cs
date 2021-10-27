@@ -87,7 +87,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <summary>
 		/// Refresh the section contents.
 		/// </summary>
-		public override async void Refresh()
+		public override void Refresh()
 		{
 			base.Refresh();
 			NotifyPropertyChanged("IsCompareIncludedFilesEnabled");

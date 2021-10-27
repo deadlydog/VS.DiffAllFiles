@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SUPPORTS_GIT_CONTROLS_EXTENSIBILITY
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -40,7 +41,7 @@ namespace VS_DiffAllFiles.Adapters
 			PropertyChanged(sender, e);
 		}
 
-		#region IFileChangesService Implementation.
+#region IFileChangesService Implementation.
 
 		/// <summary>
 		/// Occurs when [property changed].
@@ -119,6 +120,7 @@ namespace VS_DiffAllFiles.Adapters
 			}
 		}
 
-		#endregion
+#endregion
 	}
 }
+#endif

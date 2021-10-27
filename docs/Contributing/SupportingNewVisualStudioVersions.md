@@ -1,6 +1,7 @@
 # Supporting New Visual Studio Versions
 
-Here are the steps taken to add Visual Studio 2019 support to Diff All Files:
+Here are the steps taken to add Visual Studio 2019 support to Diff All Files. For versions newer than
+2022, use the 2022 project as a source to copy from:
 
 1. Make sure there are no pending changes, and do a `git clean -xfd` to remove all temp files.
 1. Copy the `VS.DiffAllFiles.VS2017` project directory, and name it `VS.DiffAllFiles.VS2019`.
@@ -22,9 +23,8 @@ Here are the steps taken to add Visual Studio 2019 support to Diff All Files:
    - Change the Install Targets to target the new version of Visual Studio.
    - Change the Prerequisites to target the new version of Visual Studio.
    - Change any other information needed to support the new .vsixmanifest requirements.
-1. Remove Microsoft.VisualStudio.Shell.14.0 NuGet package from VS 2019 project and install 15.0 NuGet package, to avoid runtime error when loading Diff All Files Settings page.
-1. Remove Microsoft.VisualStudio.Shell.Immutable.14.0 NuGet package from VS 2019 project to avoid type conflicts.
-1. If there are breaking Visual Studio library changes, you will need to update the shared code appropriately.
+1. Starting with Visual Studio 2017, the only other reference for Visual Studio libraries should be the nuget package `Microsoft.VisualStudio.Sdk` which will need to be updated to the correct version for the new Visual Studio.
+1. If there are breaking Visual Studio library changes, you will need to update the shared code appropriately. Each head VSIX project has a preprocessor variable defined for the Visual Studio version. VS2013-2019 additionally have defined `SUPPORTS_GIT_CONTROLS_EXTENSIBILITY` which enables Git support for the Team Explorer window. This was added in VS2013, deprecated in a VS2019 point release, and fully removed in VS2022 (in favor of `Git Changes` window).
 
 That should be it (hopefully). Now just [test that everything still works][ThingsToTestAfterMakingChanges].
 

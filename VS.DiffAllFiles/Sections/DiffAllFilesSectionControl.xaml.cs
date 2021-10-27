@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.VisualStudio.Shell;
 using VS_DiffAllFiles.DiffAllFilesBaseClasses;
 using VS_DiffAllFiles.StructuresAndEnums;
 
@@ -27,9 +29,9 @@ namespace VS_DiffAllFiles.Sections
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-		private async void btnDiffAllFiles_Click(object sender, RoutedEventArgs e)
+		private void btnDiffAllFiles_Click(object sender, RoutedEventArgs e)
 		{
-			await _viewModel.PerformItemDiffs(ItemStatusTypesToCompare.All);
+			_viewModel.PerformItemDiffsAsync(ItemStatusTypesToCompare.All).FireAndForget();
 		}
 
 		/// <summary>
@@ -37,9 +39,9 @@ namespace VS_DiffAllFiles.Sections
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-		private async void btnDiffSelectedFiles_Click(object sender, RoutedEventArgs e)
+		private void btnDiffSelectedFiles_Click(object sender, RoutedEventArgs e)
 		{
-			await _viewModel.PerformItemDiffs(ItemStatusTypesToCompare.Selected);
+			_viewModel.PerformItemDiffsAsync(ItemStatusTypesToCompare.Selected).FireAndForget();
 		}
 
 		/// <summary>
@@ -47,9 +49,9 @@ namespace VS_DiffAllFiles.Sections
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-		private async void btnDiffIncludedFiles_Click(object sender, RoutedEventArgs e)
+		private void btnDiffIncludedFiles_Click(object sender, RoutedEventArgs e)
 		{
-			await _viewModel.PerformItemDiffs(ItemStatusTypesToCompare.Included);
+			_viewModel.PerformItemDiffsAsync(ItemStatusTypesToCompare.Included).FireAndForget();
 		}
 
 		/// <summary>
@@ -57,9 +59,9 @@ namespace VS_DiffAllFiles.Sections
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-		private async void btnDiffExcludedFiles_Click(object sender, RoutedEventArgs e)
+		private void btnDiffExcludedFiles_Click(object sender, RoutedEventArgs e)
 		{
-			await _viewModel.PerformItemDiffs(ItemStatusTypesToCompare.Excluded);
+			_viewModel.PerformItemDiffsAsync(ItemStatusTypesToCompare.Excluded).FireAndForget();
 		}
 
 		/// <summary>
@@ -89,6 +91,9 @@ namespace VS_DiffAllFiles.Sections
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private void btnCloseAllOpenDiffTools_Click(object sender, RoutedEventArgs e)
 		{
+#if !VS2012
+            ThreadHelper.ThrowIfNotOnUIThread();
+#endif
 			_viewModel.CloseAllOpenCompareWindows();
 		}
 
@@ -99,6 +104,9 @@ namespace VS_DiffAllFiles.Sections
 		/// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
 		private void btnCloseAllOpenDiffToolsInThisSet_Click(object sender, RoutedEventArgs e)
 		{
+#if !VS2012
+            ThreadHelper.ThrowIfNotOnUIThread();
+#endif
 			_viewModel.CloseAllOpenCompareWindowsInThisSet();
 		}
 	}

@@ -1,21 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using EnvDTE;
-using EnvDTE80;
-using Microsoft.TeamFoundation.Controls;
-using Microsoft.TeamFoundation.Git.Controls.Extensibility;
-using Microsoft.TeamFoundation.VersionControl.Client;
-using VS_DiffAllFiles.Adapters;
+﻿using System.Threading.Tasks;
 using VS_DiffAllFiles.DiffAllFilesBaseClasses;
-using VS_DiffAllFiles.Sections;
-using VS_DiffAllFiles.Settings;
-using VS_DiffAllFiles.StructuresAndEnums;
 
 namespace VS_DiffAllFiles
 {
@@ -25,10 +9,10 @@ namespace VS_DiffAllFiles
 		/// Gets if version control service is available.
 		/// </summary>
 		/// <returns></returns>
-		protected override async Task<bool> GetIfVersionControlServiceIsAvailable()
+		protected override Task<bool> GetIfVersionControlServiceIsAvailableAsync()
 		{
 			// Git uses a local repository which should always be available, so just return true.
-			return true;
+			return Task.FromResult(true);
 		}
 
 		/// <summary>
