@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 
 namespace VS_DiffAllFiles
 {
@@ -33,7 +34,9 @@ namespace VS_DiffAllFiles
 			var command = commands.Item(commandName, 0);
 			if (command == null)
 				return false;
-
+#if !VS2012
+            ThreadHelper.ThrowIfNotOnUIThread();
+#endif
 			return command.IsAvailable;
 		}
 

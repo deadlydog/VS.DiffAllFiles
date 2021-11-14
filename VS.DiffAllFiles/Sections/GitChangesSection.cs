@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SUPPORTS_GIT_CONTROLS_EXTENSIBILITY
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -154,3 +155,4 @@ namespace VS_DiffAllFiles.Sections
 		private readonly List<CompareVersion> _compareVersions = new List<CompareVersion> { CompareVersion.UnmodifiedVersion };
 	}
 }
+#endif

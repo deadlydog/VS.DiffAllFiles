@@ -80,7 +80,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Gets if the version control service is available or not.
 		/// </summary>
 		/// <returns></returns>
-		protected override async Task<bool> GetIfVersionControlServiceIsAvailable()
+		protected override async Task<bool> GetIfVersionControlServiceIsAvailableAsync()
 		{
 			// Make sure we have a connection to Team Foundation.
 			ITeamFoundationContext context = this.CurrentContext;

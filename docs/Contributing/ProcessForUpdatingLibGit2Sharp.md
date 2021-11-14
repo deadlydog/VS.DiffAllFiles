@@ -1,20 +1,12 @@
-﻿# LibGit2Sharp version update process
+# LibGit2Sharp version update process
 
 To update LibGit2Sharp to a new version, follow these steps:
 
-1. Update the LibGit2Sharp NuGet package to obtain the new version of the LibGit2Sharp.dll, and it's corresponding LibGit2Sharp.NativeBinaries NuGet package's git2-*.dll.
-Use the Package Manager Console if the UI is giving you trouble.
-1. Run the `StronglySignLibGit2SharpDll.cmd` batch script against the LibGit2Sharp.dll to create a signed version of the dll file with a new strong name (i.e. PublicKeyToken).
-The new file will overwrite the existing LibGit2Sharp.dll file.
-   - e.g. "packages\LibGit2Sharp.0.26.0\lib\netstandard2.0\LibGit2Sharp.dll"
-We do this to prevent runtime conflicts with other Visual Studio extensions that may also be using a different version of this assembly.
+1. We are not referencing the package, but rather a local copy of the package contents with a different signature. We do this to prevent runtime conflicts with other Visual Studio extensions that may also be using a different version of this assembly.
+1. Install the LibGit2Sharp NuGet package to obtain the new version of the LibGit2Sharp.dll. Use the Package Manager Console, [nuget package explorer](https://github.com/NuGetPackageExplorer/NuGetPackageExplorer), etc. if the UI is giving you trouble. There is a managed and native version of the package, and can be found at `%userprofile%\.nuget\packages\libgit2sharp\0.26.2\lib\net46` and `%userprofile%\.nuget\packages\libgit2sharp.nativebinaries\2.0.306\runtimes\[platform]\native` respectively. Replace the existing `VS.DiffAllFiles\_LibGit2Sharp\LibGit2Sharp.dll` with the managed version and from the native paths copy the `git2-*.dll` from the `win-x64` and `win-x86` directories to the corresponding platform specific folders in `VS.DiffAllFiles\_LibGit2Sharp\` (the native dll names change by version, so delete the old ones).
+1. Run the `VS.DiffAllFiles\_LibGit2Sharp\StronglySignLibGit2SharpDll.cmd` batch script against the LibGit2Sharp.dll to create a signed version of the dll file with a new strong name (i.e. PublicKeyToken). The new file will overwrite the existing LibGit2Sharp.dll file.
 The script paths may need to be updated.
-1. Replace the file at "VS.DiffAllFiles\_LibGit2Sharp\LibGit2Sharp.dll" with the new signed version.
-1. Remove the LibGit2Sharp reference from all of the VS projects, and re-add it, pointing it to the new signed version.
-This will ensure the .csproj files have their hint path set properly.
-1. Delete the VS.DiffAllFiles\_LibGit2Sharp\git2-*.dll file from the project and hard drive.
-1. Copy the x86 version of the git2-*.dll file from the new LigGit2Sharp.NativeBinaries NuGet package to the VS.DiffAllFiles\_LibGit2Sharp directory.
-   - e.g. "packages\LibGit2Sharp.NativeBinaries.2.0.267\runtimes\win-x86\native\git2-572e4d8.dll" to "VS.DiffAllFiles\_LibGit2Sharp\git2-572e4d8.dll"
-1. Add the "VS.DiffAllFiles\_LibGit2Sharp\git2-*.dll" file to the VS.DiffAllFiles project, and update the _LibGit2Sharp shortcut files in the other VS projects to point to this new file.
-1. In the VSIX projects, change the Visual Studio properties of the _LibGit2Sharp\git2-*.dll file to have `Include In VSIX` set to `True`, and set the `VSIX Sub Path` to `\`.
+1. In the .csproj files for all but VS2012, edit the project file to change the version of the LibGit2Sharp reference, eg: `<Reference Include="LibGit2Sharp, Version=0.26.0.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">`. Also update the name of the native dll, eg: `<Content Include="..\VS.DiffAllFiles\_LibGit2Sharp\win-x86\git2-106a5f2.dll"><Link>win-x86\git2-106a5f2.dll</Link>`
+1. Note that in the VSIX projects, the Visual Studio properties of the `_LibGit2Sharp\[platform]\git2-*.dll` has `Include In VSIX` set to `True`, the `VSIX Sub Path` to `\`.
 This will ensure that the git2-*.dll file required by LibGit2Sharp.dll is included in the root directory of the extension when it is installed.
+1. Also note that as VS2022 is 64-bit, the native binary from the `win-x64` is referenced in the .csproj rather than the `win-x86` which is referenced in prior Visual Studio versions.

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SUPPORTS_GIT_CONTROLS_EXTENSIBILITY // VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013, and removed in 2022 so don't try to register the control in VS 2012.
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -15,10 +16,7 @@ namespace VS_DiffAllFiles.Sections
 	/// <summary>
 	/// Diff All Files section in the Changeset Details window.
 	/// </summary>
-// VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013, so don't try to register the control in VS 2012.
-#if (!VS2012)
 	[TeamExplorerSection(GitCommitDetailsSection.SectionId, TeamExplorerPageIds.GitCommitDetails, 25)]
-#endif
 	public class GitCommitDetailsSection : GitDiffAllFilesSectionBase
 	{
 		/// <summary>
@@ -100,3 +98,4 @@ namespace VS_DiffAllFiles.Sections
 		private readonly List<CompareVersion> _compareVersions = new List<CompareVersion> {CompareVersion.PreviousVersion}; //, CompareVersion.WorkspaceVersion, CompareVersion.LatestVersion };	   // Visual Studio only offers to compare against the Previous Version, but we can likely do Workspace and Latest as well.
 	}
 }
+#endif

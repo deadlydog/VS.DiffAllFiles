@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SUPPORTS_GIT_CONTROLS_EXTENSIBILITY
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -85,3 +86,4 @@ namespace VS_DiffAllFiles.Adapters
 		}
 	}
 }
+#endif

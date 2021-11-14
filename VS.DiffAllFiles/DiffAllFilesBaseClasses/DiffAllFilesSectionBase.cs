@@ -11,11 +11,15 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.TeamFoundation.Controls;
 using Microsoft.TeamFoundation.VersionControl.Client;
+#if !VS2012
+using Microsoft.VisualStudio.Threading;
+#endif
 using VS_DiffAllFiles.Adapters;
 using VS_DiffAllFiles.Sections;
 using VS_DiffAllFiles.Settings;
 using VS_DiffAllFiles.StructuresAndEnums;
 using VS_DiffAllFiles.TeamExplorerBaseClasses;
+using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 {
@@ -68,8 +72,8 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			if (this is PendingChangesSection) sectionType = SectionTypes.PendingChanges;
 			else if (this is ChangesetDetailsSection) sectionType = SectionTypes.ChangesetDetails;
 			else if (this is ShelvesetDetailsSection) sectionType = SectionTypes.ShelvesetDetails;
-// VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013.
-#if (!VS2012)
+// VS 2012 doesn't know about anything Git related, as that was all added to be native in VS 2013, and removed in VS2022
+#if SUPPORTS_GIT_CONTROLS_EXTENSIBILITY
 			else if (this is GitChangesSection) sectionType = SectionTypes.GitChanges;
 			else if (this is GitCommitDetailsSection) sectionType = SectionTypes.GitCommitDetails;
 #endif
@@ -409,22 +413,29 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <summary>
 		/// Refresh the section contents.
 		/// </summary>
-		public override async void Refresh()
+		public override void Refresh()
 		{
 			base.Refresh();
-
-			// Make sure we can still connect to the version control before refreshing any other child controls.
-			IsVersionControlServiceAvailable = await GetIfVersionControlServiceIsAvailable();
-
-			// Refresh the commands common to all sections.
-			NotifyPropertyChanged("IsCompareAllFilesEnabled");
-			NotifyPropertyChanged("IsCompareSelectedFilesEnabled");
+#if VS2012
+            IsVersionControlServiceAvailable = GetIfVersionControlServiceIsAvailableAsync().GetAwaiter().GetResult();
+#else
+			ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+				// Make sure we can still connect to the version control before refreshing any other child controls.
+				IsVersionControlServiceAvailable = await GetIfVersionControlServiceIsAvailableAsync();
+#endif
+			    // Refresh the commands common to all sections.
+			    NotifyPropertyChanged("IsCompareAllFilesEnabled");
+                NotifyPropertyChanged("IsCompareSelectedFilesEnabled");
+#if !VS2012
+			});
+#endif
 		}
 
 		/// <summary>
 		/// Gets if the version control service is available or not.
 		/// </summary>
-		protected abstract Task<bool> GetIfVersionControlServiceIsAvailable();
+		protected abstract Task<bool> GetIfVersionControlServiceIsAvailableAsync();
 
 		/// <summary>
 		/// Cancel any running operations.
@@ -459,6 +470,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		public void CloseAllOpenCompareWindows()
 		{
+#if !VS2012
+            ThreadHelper.ThrowIfNotOnUIThread();
+#endif
 			CloseAllOpenWindows(ExternalDiffToolProcessIdsRunning, VsDiffToolTabCaptionsStillOpen);
 		}
 
@@ -467,6 +481,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		public void CloseAllOpenCompareWindowsInThisSet()
 		{
+#if !VS2012
+            ThreadHelper.ThrowIfNotOnUIThread();
+#endif
 			CloseAllOpenWindows(ExternalDiffToolProcessIdsRunningInThisSet, VsDiffToolTabCaptionsStillOpenInThisSet);
 		}
 
@@ -495,6 +512,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			// Close all windows that we opened using the built-in VS diff tool and are still open.
 			// Loop through the list backwards as it will be modified while we loop through it as we close windows.
 			// The windows Item list index starts at 1, not 0.
+#if !VS2012
+            ThreadHelper.ThrowIfNotOnUIThread();
+#endif
 			var windows = PackageHelper.DTE2.Windows;
 			var vsDiffToolCaptionsToLookFor = vsDiffToolTabCaptionsStillOpen.ToList();	// Create a copy of the list so we can remove from it safely when a matching window is found; this avoids us removing too many windows when multiple have the same name.
 			for (int windowIndex = windows.Count; windowIndex > 0; windowIndex--)
@@ -556,7 +576,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// Asynchronously launch the diff tools to compare the files.
 		/// </summary>
 		/// <param name="itemStatusTypesToCompare">The files that should be compared.</param>
-		public async Task PerformItemDiffs(ItemStatusTypesToCompare itemStatusTypesToCompare)
+		public async Task PerformItemDiffsAsync(ItemStatusTypesToCompare itemStatusTypesToCompare)
 		{
 			try
 			{
@@ -565,7 +585,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				this.IsBusy = true;
 
 				// Compare all of the files.
-				await CompareItems(itemStatusTypesToCompare);
+				await CompareItemsAsync(itemStatusTypesToCompare);
 			}
 			catch (Exception ex)
 			{
@@ -585,7 +605,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		/// <param name="itemStatusTypesToCompare">The item status types to compare.</param>
 		/// <returns></returns>
-		private async Task CompareItems(ItemStatusTypesToCompare itemStatusTypesToCompare)
+		private async Task CompareItemsAsync(ItemStatusTypesToCompare itemStatusTypesToCompare)
 		{
 			// If we don't have a handle to the File Changes Service, display an error and exit.
 			if (FileChangesService == null)
@@ -618,14 +638,14 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			}
 
 			// Compare all of the files.
-			await CompareItems(itemsToCompare);
+			await CompareItemsAsync(itemsToCompare);
 		}
 
 		/// <summary>
 		/// Downloads and compares the given list of items.
 		/// </summary>
 		/// <param name="itemsToCompare">The items to compare.</param>
-		private async Task CompareItems(List<IFileChange> itemsToCompare)
+		private async Task CompareItemsAsync(List<IFileChange> itemsToCompare)
 		{
 			// If there are no file sot diff, display a message about it and exit without doing anything.
 			if (itemsToCompare == null || !itemsToCompare.Any())
@@ -646,12 +666,14 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			List<FileExtensionDiffToolConfiguration> diffToolConfigurations;
 			switch (SectionType)
 			{
+#if !VS2012
 				// If using Git source control, get the configured Git tools.
 				case SectionTypes.GitChanges:
 				case SectionTypes.GitCommitDetails:
-					var gitRepositoryPath = GetGitRepositoryPath() ?? itemsToCompare.FirstOrDefault().LocalOrServerFilePath;
+					var gitRepositoryPath = GetGitRepositoryPath() ?? itemsToCompare.FirstOrDefault()?.LocalOrServerFilePath;
 					diffToolConfigurations = DiffAllFilesHelper.GetGitDiffToolsConfigured(gitRepositoryPath);
 					break;
+#endif
 				// Else using TFS source control, so get the configured TFS tools.
 				default:
 					diffToolConfigurations = DiffAllFilesHelper.TfsDiffToolsConfigured;
@@ -763,6 +785,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					else
 					{
 						// Perform the diff for this file using the built-in Visual Studio diff tool.
+#if !VS2012
+						await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+#endif
 						OpenFileDiffInVsDiffTool(filePathsAndLabels, tempDiffFilesDirectory, Path.GetFileName(pendingChange.LocalOrServerFilePath), dte2);
 					}
 
@@ -773,7 +798,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					if (((ExternalDiffToolProcessIdsRunningInThisSet.Count + VsDiffToolTabCaptionsStillOpenInThisSet.Count) % settings.NumberOfIndividualFilesToCompareAtATime == 0 &&
 						NumberOfFilesCompared < NumberOfFilesToCompare) || IsCompareOperationsCancelled)
 					{
-						await WaitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelled(dte2);
+						await WaitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelledAsync(dte2);
 					}
 
 					// If the user wants to cancel comparing the rest of the files in this set, break out of the loop so we stop comparing more files.
@@ -784,14 +809,17 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				else
 				{
 					// Append the source and target file's contents to the Combined files asynchronously.
-					await AppendFilesContentsToCombinedFiles(diffToolConfigurationAndExtension, combinedDiffToolConfigurationsAndFilePaths, compareVersion,
+					await AppendFilesContentsToCombinedFilesAsync(diffToolConfigurationAndExtension, combinedDiffToolConfigurationsAndFilePaths, compareVersion,
 						pendingChange, filePathsAndLabels, settings, tempDiffFilesDirectory);
 
 					// If we have finished creating all of the Combined files, or the user has cancelled the combine process, actually perform the diff now with the combined files.
 					if (NumberOfFilesCompared == NumberOfFilesToCompare || IsCompareOperationsCancelled)
 					{
 						// Launch all of the diff tools at the same time.
-						await OpenAllCombinedFilesInTheirRespectiveDiffTools(combinedDiffToolConfigurationsAndFilePaths, dte2);
+#if !VS2012
+						await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+#endif
+						OpenAllCombinedFilesInTheirRespectiveDiffTools(combinedDiffToolConfigurationsAndFilePaths, dte2);
 					}
 
 					// If the user wants to cancel comparing the rest of the files in this set, break out of the loop so we stop comparing more files.
@@ -807,7 +835,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		private string GetGitRepositoryPath()
 		{
 			string gitRepoPath = null;
-
+#if !VS2012
 			var gitService = this.GetService<Microsoft.VisualStudio.TeamFoundation.Git.Extensibility.IGitExt>();
 			if (gitService != null)
 			{
@@ -817,7 +845,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					gitRepoPath = gitRepo.RepositoryPath;
 				}
 			}
-
+#endif
 			return gitRepoPath;
 		}
 
@@ -826,8 +854,12 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// </summary>
 		/// <param name="combinedDiffToolConfigurationsAndFilePaths">The combined difference tool configurations and file paths.</param>
 		/// <param name="dte2">The dte2.</param>
-		private async Task OpenAllCombinedFilesInTheirRespectiveDiffTools(Dictionary<DiffToolConfiguration, SourceAndTargetFilePathsAndLabels> combinedDiffToolConfigurationsAndFilePaths, DTE2 dte2)
+		private void OpenAllCombinedFilesInTheirRespectiveDiffTools(Dictionary<DiffToolConfiguration, SourceAndTargetFilePathsAndLabels> combinedDiffToolConfigurationsAndFilePaths, DTE2 dte2)
 		{
+#if !VS2012
+            ThreadHelper.ThrowIfNotOnUIThread();
+#endif
+
 			// Loop through each diff tool to use and launch it.
 			foreach (var combinedFileSet in combinedDiffToolConfigurationsAndFilePaths)
 			{
@@ -869,7 +901,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <param name="filePathsAndLabels">The file paths and labels.</param>
 		/// <param name="settings">The settings.</param>
 		/// <param name="tempDiffFilesDirectory">The temporary difference files directory.</param>
-		private async Task AppendFilesContentsToCombinedFiles(FileExtensionDiffToolConfiguration diffToolConfigurationAndExtension, Dictionary<DiffToolConfiguration, SourceAndTargetFilePathsAndLabels> combinedDiffToolConfigurationsAndFilePaths,
+		private async Task AppendFilesContentsToCombinedFilesAsync(FileExtensionDiffToolConfiguration diffToolConfigurationAndExtension, Dictionary<DiffToolConfiguration, SourceAndTargetFilePathsAndLabels> combinedDiffToolConfigurationsAndFilePaths,
 			CompareVersion compareVersion, IFileChange fileChange, SourceAndTargetFilePathsAndLabels filePathsAndLabels, DiffAllFilesSettings settings, string tempDiffFilesDirectory)
 		{
 			// Get the Diff Tool Configuration that should be used to diff this file.
@@ -998,13 +1030,13 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 		/// <para>Returns True if everything finished properly, and False if the user cancelled the operations.</para>
 		/// </summary>
 		/// <param name="dte2">The dte2.</param>
-		private async Task WaitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelled(DTE2 dte2)
+		private async Task WaitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelledAsync(DTE2 dte2)
 		{
 			// Get the Cancellation Token to use for the tasks we create.
 			var cancellationToken = _waitForAllDiffToolWindowsInThisSetOfFilesToBeClosedOrCancelledCancellationTokenSource.Token;
 
 			// Get the Tasks to wait for all of the external diff tool processes to be closed.
-			var waitForAllExternalDiffToolProcessFromThisSetToCloseTasks = ExternalDiffToolProcessIdsRunningInThisSet.Select(processId => Task.Run(() =>
+			var waitForAllExternalDiffToolProcessFromThisSetToCloseTasks = ExternalDiffToolProcessIdsRunningInThisSet.Select(processId => Task.Run(async () =>
 			{
 				try
 				{
@@ -1012,7 +1044,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					System.Diagnostics.Process process = null;
 					do
 					{
-						System.Threading.Thread.Sleep(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME);
+						await Task.Delay(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME, CancellationToken.None); //delay is short, no need to use token and handle exception.
 						process = System.Diagnostics.Process.GetProcessById(processId);
 					} while (!cancellationToken.IsCancellationRequested && !process.HasExited);
 				}
@@ -1022,15 +1054,18 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			}, cancellationToken));
 
 			// Get the Task to wait for all of the VS diff tool tabs to closed.
-			var waitForAllVsDiffToolTabsFromThisSetToCloseTask = Task.Run(() =>
+			var waitForAllVsDiffToolTabsFromThisSetToCloseTask = Task.Run(async () =>
 			{
 				// Sleep this thread until the user has closed all of the VS Diff Tool tabs. 
 				while (!cancellationToken.IsCancellationRequested && VsDiffToolTabCaptionsStillOpenInThisSet.Count > 0)
 				{
 					// Sleep the thread for a bit before checking to see if the VS Diff Tabs are all closed or not.
-					System.Threading.Thread.Sleep(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME);
+					await Task.Delay(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME, CancellationToken.None); //delay is short, no need to use token and handle exception.
 
 					// Get the list of open Windows in Visual Studio right now.
+#if !VS2012
+					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+#endif
 					var openWindowsInVs = dte2.Windows;
 
 					// Loop through all of the VS Diff Tool Tabs that we launched and remove from our list any that have been closed.
@@ -1046,8 +1081,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 						try
 						{
 							// Loop through all of the open windows in Visual Studio and see if this VS Diff Tool Tab is still open or not.
+#pragma warning disable VSTHRD010 // JoinableTaskFactory.SwitchToMainThreadAsync is done above - this is a false positive from the analyzer
 							bool windowIsStillOpen = openWindowsInVs.Cast<Window>().Any(window => window.Caption.Equals(vsDiffToolWindowStillOpenCaption));
-
+#pragma warning restore VSTHRD010
 							// If the VS Diff Tool Tab is no longer open, remove it from our list.
 							if (!windowIsStillOpen && diffWindowIndex < VsDiffToolTabCaptionsStillOpenInThisSet.Count)
 								VsDiffToolTabCaptionsStillOpenInThisSet.RemoveAt(diffWindowIndex);
@@ -1062,11 +1098,11 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			});
 
 			// Get the Task to wait for the Next Set Of Files or Cancel buttons to be clicked.
-			var waitForNextSetOfFilesOrCancelCommandsToBeExecutedTask = Task.Run(() =>
+			var waitForNextSetOfFilesOrCancelCommandsToBeExecutedTask = Task.Run(async () =>
 			{
 				// Just sleep this thread until the user wants to compare the next set of files, or cancels the compare operations.
 				while (!cancellationToken.IsCancellationRequested && !_compareNextSetOfFiles && !IsCompareOperationsCancelled)
-					System.Threading.Thread.Sleep(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME);
+					await Task.Delay(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME, CancellationToken.None); //delay is short, no need to use token and handle exception.
 			});
 
 			// Merge the list of tasks waiting for the external diff tool windows and the VS diff tool tabs to be closed.
@@ -1127,6 +1163,9 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 
 			// If the diff tool was not opened successfully, just exit.
 			// The active window's caption will typically contain the filename, except for "Combined" files it will contain the File Labels.
+#if !VS2012
+            ThreadHelper.ThrowIfNotOnUIThread();
+#endif
 			string diffToolWindowCaption = dte2.ActiveWindow.Caption;
 			if (!diffToolWindowCaption.Contains(fileName) &&
 				(!diffToolWindowCaption.Contains(filePathsAndLabels.SourceFilePathAndLabel.FileLabel.ToStringWithoutPrefix()) &&
@@ -1141,7 +1180,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			}
 
 			// Start a new Task to monitor for when this VS diff tool tab is closed, and remove it from our list of open VS diff tool tabs.
-			Task.Run(() =>
+			Task.Run(async () =>
 			{
 				string vsDiffToolWindowStillOpenCaption = diffToolWindowCaption;
 				var tempDirectory = tempDiffFilesDirectory;
@@ -1151,7 +1190,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				do
 				{
 					// Sleep the thread for a bit before checking to see if the VS Diff Tabs are all closed or not.
-					System.Threading.Thread.Sleep(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME);
+					await Task.Delay(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME);
 
 					// Get the list of open Windows in Visual Studio right now.
 					var openWindowsInVS = dte2.Windows;
@@ -1159,8 +1198,13 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					try
 					{
 						// Loop through all of the open windows in Visual Studio and see if this VS Diff Tool Tab is still open or not.
+#if !VS2012
+						await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+#endif
+#pragma warning disable VSTHRD010 // JoinableTaskFactory.SwitchToMainThreadAsync is done above - this is a false positive from the analyzer
 						windowIsStillOpen = openWindowsInVS.Cast<Window>().Any(window => window.Caption.Equals(vsDiffToolWindowStillOpenCaption));
-					}
+#pragma warning restore VSTHRD010
+                    }
 					// Sometimes a Window is already disposed when we try and access it here, so just eat those exceptions.
 					catch
 					{ }
@@ -1178,7 +1222,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				// Delete the temp files if they still exist.
 				if (!string.IsNullOrWhiteSpace(tempDirectory) && Directory.Exists(tempDirectory))
 					ForceDeleteDirectory(tempDirectory);
-			});
+			}).FireAndForget();
 		}
 
 		/// <summary>
@@ -1253,7 +1297,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 			}
 
 			// Start a new Task to monitor for when this external diff tool window is closed, and remove it from our list of running processes.
-			Task.Run(() =>
+			Task.Run(async () =>
 			{
 				try
 				{
@@ -1261,7 +1305,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 					System.Diagnostics.Process process = null;
 					do
 					{
-						System.Threading.Thread.Sleep(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME);
+						await Task.Delay(DiffAllFilesHelper.DEFAULT_THREAD_SLEEP_TIME);
 						process = System.Diagnostics.Process.GetProcessById(diffToolProcessId);
 					} while (!process.HasExited);
 				}
@@ -1281,7 +1325,7 @@ namespace VS_DiffAllFiles.DiffAllFilesBaseClasses
 				// Delete the temp files if they still exist.
 				if (!string.IsNullOrWhiteSpace(tempDiffFilesDirectory) && Directory.Exists(tempDiffFilesDirectory))
 					ForceDeleteDirectory(tempDiffFilesDirectory);
-			});
+			}).FireAndForget();
 		}
 
 		/// <summary>

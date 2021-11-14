@@ -1,20 +1,30 @@
 # Diff All Files Visual Studio Extension Description
 
-A Visual Studio extension to quickly and easily compare all files in Git (a commit or staged/unstaged files) or TFS (a changeset, shelveset, or files with pending changes) to see what was changed. Instead of clicking on each file individually and choosing to compare it with a different version, just click one button to compare all of the files.
+A Visual Studio extension to quickly and easily compare all files in TFS (a changeset, shelveset, or files with pending changes) to see what was changed. Instead of clicking on each file individually and choosing to compare it with a different version, just click one button to compare all of the files.
+
+Git support (a commit or staged/unstaged files) is available for VS2013 through VS2019 (prior to 16.6).
 
 This extension adds a new control into the Team Explorer pane wherever Visual Studio shows what files have changes. You may edit the extension's settings from the `Tools -> Options... -> Diff All Files` settings page.
 
 Download this extension for [Visual Studio 2019][DiffAllFilesVs2019MarketplaceUrl], [2017][DiffAllFilesVs2017MarketplaceUrl], [2015][DiffAllFilesVs2015MarketplaceUrl], [2013][DiffAllFilesVs2013MarketplaceUrl], or [2012][DiffAllFilesVs2012MarketplaceUrl] from the VS Extension Gallery.
 
-## Features
-
+## Features - All Visual Studio Versions
+* Supports Team Foundation Version Control (TFVC) from Azure DevOps (formerly Team Foundation Server - TFS)
 * Compare files one at a time, many files at a time, or with all files combined in a single file.
-* Uses the same diff (i.e. compare) tool that you have configured in your .gitconfig (for Git) and Visual Studio (for TFVC). e.g. KDiff, Beyond Compare, Visual Studio, etc.
 * Settings to exclude comparing files with specific extensions, or files that have been added or deleted from source control.
 * Button to quickly close all diff tool windows that have been opened.
 * Remaining files to be compared will open automatically when current file diff windows are closed.
 * Specify the file versions to compare against (i.e. Unmodified, Workspace, Previous, Latest).
+* Uses the same diff (i.e. compare) tool that you have configured in Visual Studio (for TFVC). e.g. KDiff, Beyond Compare, Visual Studio, etc.
+
+## Git Features (VS2013 - VS2019 prior to 16.6)
+
 * Supports both Git and TFVC source control providers.
+* Uses the same diff (i.e. compare) tool that you have configured in your .gitconfig (for Git).
+
+## Git Features (VS2012, VS2019 16.6+, and VS2022)
+
+* Unfortunately in VS2012 there was no Git support in Visual Studio. In VS2019 starting in version 16.6, and Visual Studio 2022+) the Git experience was updated with new User Interface, and has no currently documented extensibility points. 
 
 ## Screenshots
 
