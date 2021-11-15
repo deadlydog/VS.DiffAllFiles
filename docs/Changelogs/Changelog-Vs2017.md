@@ -1,5 +1,11 @@
 # Visual Studio 2017 Extension Changelog
 
+## vNext
+
+Fixes:
+
+- Prevent NumberOfIndividualFilesToCompareAtATime from ever being zero and resulting in divide by zero error.
+
 ## v1.1.1 - April 12, 2019
 
 Fixes:
@@ -34,4 +40,4 @@ Fixes:
 
 ## v1.0.0 - June 12, 2017
 
-Initial release of VS 2017 version of extension.
+- Initial release of VS 2017 version of the extension.

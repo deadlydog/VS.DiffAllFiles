@@ -1,5 +1,11 @@
 # Visual Studio 2012 Extension Changelog
 
+## vNext
+
+Fixes:
+
+- Prevent NumberOfIndividualFilesToCompareAtATime from ever being zero and resulting in divide by zero error.
+
 ## v2.3 - August 17, 2015
 
 Enhancements:

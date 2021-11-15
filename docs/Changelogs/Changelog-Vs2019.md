@@ -1,6 +1,6 @@
 # Visual Studio 2019 Extension Changelog
 
-## vNext
+## v1.0.6 - November 14, 2021
 
 Fixes:
 
@@ -39,4 +39,4 @@ Fixes:
 
 ## v1.0.0 - April 7, 2019
 
-Initial release of VS 2019 version of extension.
+- Initial release of VS 2019 version of the extension.

@@ -1,5 +1,11 @@
 # Visual Studio 2013 Extension Changelog
 
+## vNext
+
+Fixes:
+
+- Prevent NumberOfIndividualFilesToCompareAtATime from ever being zero and resulting in divide by zero error.
+
 ## v2.3 - August 17, 2015
 
 Enhancements:
@@ -57,4 +63,4 @@ Enhancements:
 
 ## v1.0 - March 13, 2014
 
-- Initial release.
+- Initial release of VS 2013 version of the extension.
