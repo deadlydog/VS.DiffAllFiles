@@ -1,5 +1,11 @@
 # Visual Studio 2015 Extension Changelog
 
+## vNext
+
+Fixes:
+
+- Prevent NumberOfIndividualFilesToCompareAtATime from ever being zero and resulting in divide by zero error.
+
 ## v1.2.2 - June 26, 2017
 
 Fixes:
@@ -42,5 +48,5 @@ Fixes:
 
 ## v1.0.0 - August 14, 2015
 
-- Initial release.
+- Initial release of VS 2015 version of the extension.
 - Known bug where the "Close All" button does not close external diff application, but wanted to get the VS 2015 version released asap.
