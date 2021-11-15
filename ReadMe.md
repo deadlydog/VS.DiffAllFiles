@@ -5,7 +5,7 @@ Instead of clicking on each file individually and choosing to compare it with a 
 
 This extension adds a new control into the Team Explorer pane wherever Visual Studio shows what files have changes.
 
-Download this extension for [Visual Studio 2022][DiffAllFilesVs2022MarketplaceUrl], [Visual Studio 2019][DiffAllFilesVs2019MarketplaceUrl], [2017][DiffAllFilesVs2017MarketplaceUrl], [2015][DiffAllFilesVs2015MarketplaceUrl], [2013][DiffAllFilesVs2013MarketplaceUrl], or [2012][DiffAllFilesVs2012MarketplaceUrl] from the VS Extension Gallery.
+Download this extension for [Visual Studio 2022][DiffAllFilesVs2022MarketplaceUrl], [2019][DiffAllFilesVs2019MarketplaceUrl], [2017][DiffAllFilesVs2017MarketplaceUrl], [2015][DiffAllFilesVs2015MarketplaceUrl], [2013][DiffAllFilesVs2013MarketplaceUrl], or [2012][DiffAllFilesVs2012MarketplaceUrl] from the VS Extension Gallery.
 
 ## Features
 
