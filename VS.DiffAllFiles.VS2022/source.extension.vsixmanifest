@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="B9E7DA30-EC44-451e-A1FA-DA08D6367C53" Version="1.0.0" Language="en-US" Publisher="deadlydog" />
+        <Identity Id="B9E7DA30-EC44-451e-A1FA-DA08D6367C53" Version="1.0.1" Language="en-US" Publisher="deadlydog" />
         <DisplayName>Diff All Files for VS2022</DisplayName>
-        <Description xml:space="preserve">Quickly compare changes to all files in Git (staged/unstaged files or a commit) or TFS (shelveset, changeset, or with pending changes).</Description>
+        <Description xml:space="preserve">Quickly compare changes to all files in TFVC (shelveset, changeset, or with pending changes) source control. Hoping to restore Git functionality in a future version.</Description>
         <MoreInfo>https://github.com/deadlydog/VS.DiffAllFiles</MoreInfo>
         <Icon>FilesFromShared\Resources\PackageIcon_Small.ico</Icon>
         <PreviewImage>FilesFromShared\Resources\PreviewImage.png</PreviewImage>
