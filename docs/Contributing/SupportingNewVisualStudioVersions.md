@@ -35,3 +35,4 @@ Use these as an example of how to add support for future versions of Visual Stud
 
 That should be it (hopefully).
 Now [build the project](./HowToDebugVsixProjects.md) and [test that everything still works](./ThingsToTestAfterMakingChanges.md).
+If all looks good, you can [publish a new version](./PublishingANewVersion.md) of the extension for the new Visual Studio version, and merge your branch back into the main branch.
