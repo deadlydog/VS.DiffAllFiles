@@ -11,6 +11,6 @@ The marketplace does not provide an easy way to rollback to a previous version, 
 1. Manually uninstall the old version and install the new version using the .vsix file.
 1. [Test all of the functionality](ThingsToTestAfterMakingChanges.md) to ensure nothing is broken.
 1. Update the appropriate changelog file in the `docs/Changelogs` directory with the new version number, date, and a list of changes made.
-1. If the new version is working as expected, publish the new version [to the Visual Studio extensions marketplace][VisualStudioMarketplaceUrl].
+1. If the new version is working as expected, manually publish the new version [to the Visual Studio extensions marketplace][VisualStudioMarketplaceUrl].
 
 [VisualStudioMarketplaceUrl]: https://marketplace.visualstudio.com/manage/publishers/deadlydog
