@@ -24,7 +24,7 @@ Use these as an example of how to add support for future versions of Visual Stud
    - If needed, change the `Install Targets` and `Prerequisites` to target the new version of Visual Studio.
       - e.g. change `[17.0, 18.0)` to `[18.0, 19.0)`.
       - Prior to VS 2026, we always had to update the version.
-      VS 2026 tried to make extensions backward compatible with VS 2022 though, and they have not yet created a v18 of the API, so the marketplace rejects v18 as a valid install target.
+      [VS 2026 tried to make extensions backward compatible with VS 2022 though](https://devblogs.microsoft.com/visualstudio/modernizing-visual-studio-extension-compatibility-effortless-migration-for-extension-developers-and-users/), and they have not yet created a v18 of the API, so the marketplace rejects v18 as a valid install target.
       We may be able to get away with not updating the target versions going forward.
       Unfortunately, this means the VS 2026 installer may also be installed on VS 2022 instance, but will likely not work properly.
    - Change any other information needed to support the new .vsixmanifest requirements.
