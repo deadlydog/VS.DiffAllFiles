@@ -4,6 +4,8 @@ Below are the steps taken to add Visual Studio 2026 (v18) support to Diff All Fi
 Use these as an example of how to add support for future versions of Visual Studio.
 
 1. Make sure there are no pending changes, and do a `git clean -xfd` to remove all temp files.
+1. Create a new git branch from the main branch for the new Visual Studio version support.
+   e.g. `feat/AddVisualStudio2026Support`
 1. Copy the `VS.DiffAllFiles.VS2022` project directory, and name it `VS.DiffAllFiles.VS2026`.
 1. Change all file names with `2022` to `2026`.
 1. Grep the new `VS.DiffAllFiles.VS2026` project directory and rename all instances of `2022` to `2026`.
@@ -23,7 +25,8 @@ Use these as an example of how to add support for future versions of Visual Stud
    e.g. change `[17.0, 18.0)` to `[18.0, 19.0)`.]
    - Change the Prerequisites to target the new version of Visual Studio.
    - Change any other information needed to support the new .vsixmanifest requirements.
-1. Starting with Visual Studio 2017, the only other reference for Visual Studio libraries should be the nuget package `Microsoft.VisualStudio.Sdk`, which we updated above to the correct version for the new Visual Studio.
+1. Create a new Changelog file in the [docs/Changelogs](/docs/Changelogs/) directory for the new Visual Studio version (e.g. `Changelog_VS2026.md`) and update it with the initial release information.
+1. Update the [ReadMe](/ReadMe.md) file to add a link to the new Visual Studio version's marketplace page.
 1. If there are breaking Visual Studio library changes, you will need to update the shared code appropriately.
    Each head VSIX project has a preprocessor variable defined for the Visual Studio version.
    e.g. `VS2026` for Visual Studio 2026.
@@ -31,4 +34,4 @@ Use these as an example of how to add support for future versions of Visual Stud
    This was added in VS2013, deprecated in a VS2019 patch release, and fully removed in VS2022 (in favor of `Git Changes` window).
 
 That should be it (hopefully).
-Now just [test that everything still works](./ThingsToTestAfterMakingChanges.md).
+Now [build the project](./HowToDebugVsixProjects.md) and [test that everything still works](./ThingsToTestAfterMakingChanges.md).
