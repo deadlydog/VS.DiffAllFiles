@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -8,7 +8,7 @@ using VS_DiffAllFiles;
 
 namespace DansKingdom.VS_DiffAllFiles_VS2022
 {
-	// Assign the VS 2019 Guid that matches the VSIX manifest to this package.
+	// Assign the VS 2022 Guid that matches the VSIX manifest to this package.
 	[Guid(Guids.guidVS_DiffAllFiles_VS2022PkgString)]
 	public sealed class VS_DiffAllFiles_VS2022Package : VS_DiffAllFilesPackage
 	{ }
