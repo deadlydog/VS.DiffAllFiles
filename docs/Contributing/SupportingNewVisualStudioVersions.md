@@ -21,9 +21,12 @@ Use these as an example of how to add support for future versions of Visual Stud
    - Reset the version number to `1.0.0`.
    - Change the `Product ID` Guid to match the new Guid added to the `Guids.cs` file earlier above.
    - Change any other basic information (Product name, description, tags, website URLs, etc.)
-   - Change the Install Targets to target the new version of Visual Studio.
-   e.g. change `[17.0, 18.0)` to `[18.0, 19.0)`.]
-   - Change the Prerequisites to target the new version of Visual Studio.
+   - If needed, change the `Install Targets` and `Prerequisites` to target the new version of Visual Studio.
+      - e.g. change `[17.0, 18.0)` to `[18.0, 19.0)`.
+      - Prior to VS 2026, we always had to update the version.
+      VS 2026 tried to make extensions backward compatible with VS 2022 though, and they have not yet created a v18 of the API, so the marketplace rejects v18 as a valid install target.
+      We may be able to get away with not updating the target versions going forward.
+      Unfortunately, this means the VS 2026 installer may also be installed on VS 2022 instance, but will likely not work properly.
    - Change any other information needed to support the new .vsixmanifest requirements.
 1. Create a new Changelog file in the [docs/Changelogs](/docs/Changelogs/) directory for the new Visual Studio version (e.g. `Changelog_VS2026.md`) and update it with the initial release information.
 1. Update the [ReadMe](/ReadMe.md) file to add a link to the new Visual Studio version's marketplace page.

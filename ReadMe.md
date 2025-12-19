@@ -7,6 +7,10 @@ This extension adds a new control into the Team Explorer pane wherever Visual St
 
 Download this extension for [Visual Studio 2026][DiffAllFilesVs2026MarketplaceUrl], [Visual Studio 2022][DiffAllFilesVs2022MarketplaceUrl], [2019][DiffAllFilesVs2019MarketplaceUrl], [2017][DiffAllFilesVs2017MarketplaceUrl], [2015][DiffAllFilesVs2015MarketplaceUrl], [2013][DiffAllFilesVs2013MarketplaceUrl], or [2012][DiffAllFilesVs2012MarketplaceUrl] from the VS Extension Gallery.
 
+> [!NOTE]
+> While the Visual Studio 2026 installer will offer to install on Visual Studio 2022, and vice versa, this extension will likely not work properly if installed on the wrong version of Visual Studio.
+> Please ensure you install the correct version of the extension for your version of Visual Studio.
+
 ## Features
 
 - Compare files one at a time, many files at a time, or with all files combined in a single file.
