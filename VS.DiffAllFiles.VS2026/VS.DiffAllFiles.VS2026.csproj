@@ -99,6 +99,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>VersionSpecificReferences\Microsoft.VisualStudio.Services.Common.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <!-- The native library for LibGit2Sharp. The name varies by version. See docs/Contributing/ProcessForUpdatingLibGit2Sharp.md -->
