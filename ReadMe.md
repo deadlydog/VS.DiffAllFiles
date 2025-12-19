@@ -5,7 +5,11 @@ Instead of clicking on each file individually and choosing to compare it with a 
 
 This extension adds a new control into the Team Explorer pane wherever Visual Studio shows what files have changes.
 
-Download this extension for [Visual Studio 2022][DiffAllFilesVs2022MarketplaceUrl], [2019][DiffAllFilesVs2019MarketplaceUrl], [2017][DiffAllFilesVs2017MarketplaceUrl], [2015][DiffAllFilesVs2015MarketplaceUrl], [2013][DiffAllFilesVs2013MarketplaceUrl], or [2012][DiffAllFilesVs2012MarketplaceUrl] from the VS Extension Gallery.
+Download this extension for [Visual Studio 2026][DiffAllFilesVs2026MarketplaceUrl], [Visual Studio 2022][DiffAllFilesVs2022MarketplaceUrl], [2019][DiffAllFilesVs2019MarketplaceUrl], [2017][DiffAllFilesVs2017MarketplaceUrl], [2015][DiffAllFilesVs2015MarketplaceUrl], [2013][DiffAllFilesVs2013MarketplaceUrl], or [2012][DiffAllFilesVs2012MarketplaceUrl] from the VS Extension Gallery.
+
+> [!NOTE]
+> While the Visual Studio 2026 installer will offer to install on Visual Studio 2022, and vice versa, this extension will likely not work properly if installed on the wrong version of Visual Studio.
+> Please ensure you install the correct version of the extension for your version of Visual Studio.
 
 ## Features
 
@@ -61,6 +65,7 @@ Buy me a toque for providing this extension open source and for free :)
 [DiffAllFilesVs2017MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2017
 [DiffAllFilesVs2019MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2019
 [DiffAllFilesVs2022MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2022
+[DiffAllFilesVs2026MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2026
 [DiffAllFilesBeforeCompareImage]: https://github.com/deadlydog/VS.DiffAllFiles/blob/master/docs/images/Diff%20All%20Files%20Before%20Compare.png
 [DiffAllFilesComparingImage]: https://github.com/deadlydog/VS.DiffAllFiles/blob/master/docs/images/Diff%20All%20Files%20Comparing.png
 [DiffAllFilesSettingsImage]: https://github.com/deadlydog/VS.DiffAllFiles/blob/master/docs/images/Diff%20All%20Files%20Settings.png

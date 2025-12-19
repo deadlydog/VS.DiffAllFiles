@@ -1,17 +1,19 @@
-﻿using System;
+using System;
 
 namespace VS_DiffAllFiles
 {
 	static class Guids
 	{
-        public const string guidVS_DiffAllFiles_VS2022PkgString = "B9E7DA30-EC44-451e-A1FA-DA08D6367C53";   // This should match the Guid in the VSIX Manifest.
+		public const string guidVS_DiffAllFiles_VS2026PkgString = "CEA29220-1FAC-12B3-9865-184DF6D33B59";	// This should match the Guid in the VSIX Manifest.
+
+		public const string guidVS_DiffAllFiles_VS2022PkgString = "B9E7DA30-EC44-451e-A1FA-DA08D6367C53";	// This should match the Guid in the VSIX Manifest.
 
 		public const string guidVS_DiffAllFiles_VS2019PkgString = "B4202C10-5715-1294-9DBA-15A319FF9EBF";	// This should match the Guid in the VSIX Manifest.
 
-		public const string guidVS_DiffAllFiles_VS2017PkgString = "8D0CE300-9898-128B-95F0-12C767EC20E3";   // This should match the Guid in the VSIX Manifest.
+		public const string guidVS_DiffAllFiles_VS2017PkgString = "8D0CE300-9898-128B-95F0-12C767EC20E3";	// This should match the Guid in the VSIX Manifest.
 
 		// VS 2015 Guids
-		public const string guidVS_DiffAllFiles_VS2015PkgString = "E3FB14C0-2288-4D95-93B3-948B7319420E";   // This should match the Guid in the VSIX Manifest.
+		public const string guidVS_DiffAllFiles_VS2015PkgString = "E3FB14C0-2288-4D95-93B3-948B7319420E";	// This should match the Guid in the VSIX Manifest.
 
 		// VS 2013 Guids
 		public const string guidVS_DiffAllFiles_VS2013PkgString = "975F4DB4-B063-4247-A120-A13CD1556AF4";	// This should match the Guid in the VSIX Manifest.
