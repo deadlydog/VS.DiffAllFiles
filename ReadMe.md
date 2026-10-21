@@ -66,6 +66,6 @@ Buy me a toque for providing this extension open source and for free :)
 [DiffAllFilesVs2019MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2019
 [DiffAllFilesVs2022MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2022
 [DiffAllFilesVs2026MarketplaceUrl]: https://marketplace.visualstudio.com/items?itemName=deadlydog.DiffAllFilesforVS2026
-[DiffAllFilesBeforeCompareImage]: https://github.com/deadlydog/VS.DiffAllFiles/blob/master/docs/images/Diff%20All%20Files%20Before%20Compare.png
-[DiffAllFilesComparingImage]: https://github.com/deadlydog/VS.DiffAllFiles/blob/master/docs/images/Diff%20All%20Files%20Comparing.png
-[DiffAllFilesSettingsImage]: https://github.com/deadlydog/VS.DiffAllFiles/blob/master/docs/images/Diff%20All%20Files%20Settings.png
+[DiffAllFilesBeforeCompareImage]: https://github.com/deadlydog/VS.DiffAllFiles/blob/main/docs/images/Diff%20All%20Files%20Before%20Compare.png
+[DiffAllFilesComparingImage]: https://github.com/deadlydog/VS.DiffAllFiles/blob/main/docs/images/Diff%20All%20Files%20Comparing.png
+[DiffAllFilesSettingsImage]: https://github.com/deadlydog/VS.DiffAllFiles/blob/main/docs/images/Diff%20All%20Files%20Settings.png
